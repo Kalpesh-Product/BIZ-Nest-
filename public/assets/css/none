@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+    <title>BIZ Nest - Subscribe to Life | Goa, India</title>
+    <meta
+      name="description"
+      content="Business with a Nest! India's Only Subscription Based Destination Lifestyle Platform. Its time we start ADAPTING to our FUTURE LIFESTYLE!Experience Subscription Based Living & Working in the most ASPIRING DESTINATIONS!"
+    />
+    <meta
+      name="keywords"
+      content="coworking, coworking space, business, office, workspace, startup, coworking life, entrepreneur, 
+      office space, work, cowork, coworking community, community, digital nomad, coworking spaces, coworkers, networking, remote work, 
+      design, coworking office, virtual office, freelance,  startups, digital nomads, covid meeting room, cowork space, shared office, 
+      coworking space Goa, BIZnest Coworking space, BIZnest Coworking space Goa, YATCH RENTAL, CAR RENTAL, SCOOTY/BIKE RENTAL, CYCLING, 
+      GYMING, EVENTS, LOCAL TOURS, MEALS, ANYTHING IN GOA EXPLORE, MEWO KAFFE GOA, Cafe Goa, Private Office, Private Open Desk, Virtual Office, 
+      Private Cabin Space, Complete Security, Unlimited Wifi, Printing, Correspondence Address, Meeting, Room Time, 
+      Exquisite Cafe Access, Community Events & Activities, Key People, Subscribe, Clients, BIZNEST Clients, BIZNEST Key People."
+    />
+    <meta
+      property="og:title"
+      content="BIZ Nest - Subscribe to Life | Goa, India "
+    />
+    <meta
+      property="og:description"
+      content="Business with a Nest! India's Only Subscription Based Destination Lifestyle Platform. Its time we start ADAPTING to our FUTURE LIFESTYLE!Experience Subscription Based Living & Working in the most ASPIRING DESTINATIONS!."
+    />
+    <meta
+      property="og:image"
+      itemprop="image"
+      content="https://biznest.co.in/linkimg.png"
+    />
+    <meta property="og:image:width" content="300" />
+    <meta property="og:image:height" content="300" />
+    <meta
+      property="og:image:alt"
+      content="BIZ Nest - Subscribe to Life | Goa, India"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://biznest.co.in" />
+
+    <!-- Google Tag Manager -->
+    <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-MLSWNCPF");
+    </script>
+    <!-- End Google Tag Manager -->
+
+    <!-- Favicons -->
+    <link href="assets/img/fav-icon.png" rel="icon" />
+    <link href="assets/img/fav-icon.png" rel="apple-touch-icon" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600;1,700&family=Roboto:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Work+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Vendor CSS Files -->
+    <link
+      href="assets/vendor/bootstrap/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="assets/vendor/bootstrap-icons/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link
+      href="assets/vendor/fontawesome-free/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link href="assets/vendor/aos/aos.css" rel="stylesheet" />
+    <link
+      href="assets/vendor/glightbox/css/glightbox.min.css"
+      rel="stylesheet"
+    />
+    <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet" />
+
+    <!-- Template Main CSS File -->
+    <link href="assets/css/main.css" rel="stylesheet" />
+
+    <style>
+      @media (min-width: 991px) {
+        .services .service-item h3 {
+          font-size: 14px;
+        }
+        @media (min-width: 768px) {
+          .services .service-item h3 {
+            font-size: 18px;
+          }
+        }
+      }
+
+      /*==========SCALE-IN==========*/
+      @-webkit-keyframes scale-in {
+        0% {
+          transform: scale(10, 10);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(1, 1);
+          opacity: 1;
+        }
+      }
+
+      @keyframes scale-in {
+        0% {
+          transform: scale(10, 10);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(1, 1);
+          opacity: 1;
+        }
+      }
+      /*==========ROLL-OUT==========*/
+      @-webkit-keyframes roll-out {
+        0% {
+          width: 0;
+        }
+        100% {
+          width: 100%;
+        }
+      }
+      @keyframes roll-out {
+        0% {
+          width: 0;
+        }
+        100% {
+          width: 100%;
+        }
+      }
+      .hero {
+        width: 100%;
+        /* max-width: 1200px; */
+        /* height: 100vh; */
+        text-align: center;
+        margin: 0 auto;
+        background: #392f28;
+        position: relative;
+        /* color: #392f28; */
+        color: #fff;
+        top: -100px;
+      }
+
+      .hero h1 {
+        font-size: 68px;
+        margin: auto;
+        position: absolute;
+        /* top: 120px; */
+        left: 0;
+        right: 0;
+        bottom: 325px;
+        z-index: 1;
+        letter-spacing: -1px;
+      }
+      .hero p {
+        font-size: 40px;
+        margin: auto;
+        position: absolute;
+        /* top: 220px; */
+        left: 0;
+        right: 0;
+        bottom: 260px;
+        z-index: 1;
+      }
+      .hero img {
+        width: 100%;
+        height: 100%;
+      }
+      /* .card-overlay{
+  position: relative;
+} */
+      .sub-button {
+        background: #0000004a;
+        text-transform: uppercase;
+        /* top: 50vh; */
+        left: 38vw;
+        bottom: 125px;
+        right: 0;
+        width: 20%;
+        color: white;
+        position: absolute;
+        transition: all 0.5s;
+        font-family: logo-font;
+        font-weight: 600;
+        font-size: 20px;
+        letter-spacing: 1px;
+        display: inline-block;
+        padding: 12px 40px;
+        border-radius: 50px;
+        transition: 0.5s;
+        margin: 10px;
+        color: #fff;
+        border: 2px solid #ffffff;
+        z-index: 1;
+      }
+      .card-overlay:after {
+        content: "";
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.3);
+      }
+      .sub-button-m {
+        background: #0000004a;
+        text-transform: uppercase;
+        left: 36w;
+        bottom: 180px;
+        right: 0;
+        width: 22%;
+        color: white;
+        position: absolute;
+        transition: all 0.5s;
+        /* background-color: rgba(0,0,0,0.3); */
+        padding: 5px 15px;
+        font-family: logo-font;
+        font-weight: 600;
+        font-size: 14px;
+        letter-spacing: 1px;
+        display: inline-block;
+        padding: 12px 40px;
+        border-radius: 50px;
+        transition: 0.5s;
+        margin: 10px;
+        color: #fff;
+        border: 2px solid #fff;
+        z-index: 1;
+      }
+      .main_index {
+        top: -100px;
+        position: relative;
+      }
+      /*==========SCALE-IN==========*/
+      @-webkit-keyframes scale-in {
+        0% {
+          transform: scale(10, 10);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(1, 1);
+          opacity: 1;
+        }
+      }
+
+      @keyframes scale-in {
+        0% {
+          transform: scale(10, 10);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(1, 1);
+          opacity: 1;
+        }
+      }
+      /*==========ROLL-OUT==========*/
+      @-webkit-keyframes roll-out {
+        0% {
+          width: 0;
+        }
+        100% {
+          width: 100%;
+        }
+      }
+      @keyframes roll-out {
+        0% {
+          width: 0;
+        }
+        100% {
+          width: 100%;
+        }
+      }
+
+      @media all and (max-width: 768px) {
+        .hero {
+          /* height: 90vw; */
+          top: 0;
+        }
+        .bar {
+          height: 26vw;
+          top: 10vw;
+        }
+        .hero h1 {
+          font-size: 10vw;
+          /* top: 13vw; */
+        }
+        .hero p {
+          font-size: 5vw;
+          bottom: 50vw;
+          padding: 20px 40px;
+        }
+        .hero img {
+          /* width: auto; */
+          height: 100%;
+          object-fit: cover;
+        }
+        .hero {
+          width: 100%;
+          /* max-width: 1200px; */
+          height: 100vh;
+          text-align: center;
+          margin: 0 auto;
+          background: #392f28;
+          position: relative;
+          /* color: #392f28; */
+          color: #fff;
+          top: -95px;
+        }
+        .services .service-item-img .icon img {
+          height: 95px;
+        }
+        .sub-button-m {
+          background: #0000004a;
+          text-transform: uppercase;
+          padding: 10px 30px;
+          left: 18vw;
+          bottom: 38vw;
+          right: 0;
+          width: 60%;
+          color: white;
+          position: absolute;
+          transition: all 0.5s;
+          font-family: logo-font;
+          font-weight: 600;
+          font-size: 12px;
+          letter-spacing: 1px;
+          display: inline-block;
+          border-radius: 50px;
+          margin: 10px;
+          border: 1px solid #ffffff;
+        }
+      }
+    </style>
+  </head>
+
+  <body oncontextmenu="return false;">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript
+      ><iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-MLSWNCPF"
+        height="0"
+        width="0"
+        style="display: none; visibility: hidden"
+      ></iframe
+    ></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <!-- ======= Header ======= -->
+    <header id="header" class="header d-flex align-items-center">
+      <div
+        class="container-fluid container-xl d-flex align-items-center justify-content-between"
+      >
+        <a href="index.html" class="logo d-flex align-items-center">
+          <!-- Uncomment the line below if you also wish to use an image logo -->
+          <img src="assets/img/BIZ Nest™ Rectangle.webp" alt="BIZNest logo" />
+          <!-- <h1>BIZ Nest</h1> -->
+        </a>
+
+        <i class="mobile-nav-toggle mobile-nav-show bi bi-list"></i>
+        <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
+
+        <nav id="navbar" class="navbar">
+          <ul>
+            <!-- <li><a href="index.html" class="active">Home</a></li> -->
+            <!--<li><a href="product.html">Products</a></li>-->
+            <li class="dropdown active">
+              <a href="#"
+                ><span>Products</span>
+                <i class="bi bi-chevron-down dropdown-indicator"></i
+              ></a>
+              <ul>
+                <li><a href="Co-Working_Goa.html">CO - WORKING</a></li>
+                <li><a href="Workation_Goa.html">WORKATION</a></li>
+                <li><a href="Meetingrooms_Goa.html">MEETING ROOMS</a></li>
+                <li><a href="Virtualoffice_Goa.html">VIRTUAL OFFICE</a></li>
+                <li><a href="product.html">ALL PRODUCTS</a></li>
+              </ul>
+            </li>
+            <li><a href="subscription.html">Subscriptions</a></li>
+            <li><a href="demos.html">DEMOS</a></li>
+            <!-- <li><a href="about.html">About</a></li> -->
+            <li><a href="partner.html">Partner </a></li>
+            <li><a href="career.html">Career </a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <!--<li>-->
+            <!--  <a href="https://www.youtube.com/watch?v=soKjXfduroY" class="logo d-flex align-items-center glightbox preview-link">-->
+            <!--    <img src="assets/img/Tour.png" alt="BIZNest logo">-->
+            <!--  </a>-->
+            <!--</li>-->
+            <li>
+              <a href="https://wonofe.vercel.app/" target="_blank">Login</a>
+            </li>
+          </ul>
+        </nav>
+        <!-- .navbar -->
+      </div>
+    </header>
+    <!-- End Header -->
+    <!-- <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+          <div id="carrousel" class="carousel-inner">
+              Carousel item  1
+                  <div data-pause="true" data-interval="10000" class="carousel-item active">
+                      <div class="videoSlider">
+                        <div class="img-box" style="background-image: url('assets/img/GOA.png');"></div>
+                        <video width="100%" class="elVideo" loop="loop"  autoPlay playsInline muted src="assets/img/Livv_Bito.mp4" id='video-slider-1'>
+                              </video>
+                              <h1 class="d-block sliderTitle">Happy Freedom</h1>
+
+                              <h2 class="d-block sliderSubtitle">India's First Destination Based Lifestyle Platform </h2>
+
+                              <a href="./subscription.html"><button type="button" class="sub-button btn-get-started aos-init aos-animate">Subscribe to Life</button></a>    
+                      </div>
+                  </div>
+              end of carousel item 1
+              style="margin: auto;
+      position: absolute;
+      top: 120px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1;"
+          
+          </div>
+    </div> -->
+
+    <!-- <div class="hero">
+      <div class="card-overlay">
+      <h1>Happy Freedom</h1>
+      <p>India's First Destination Based Lifestyle Platform</p>
+      <a href="./subscription.html" ><button type="button"  class="sub-button btn-get-started aos-init aos-animate">Subscribe to Life</buttonWork & Live from Goa!></a>
+      <img src="./assets/img/goa12.jpg" />
+       <div class="bar"></div>
+      </div>
+    </div> -->
+    <div class="hero card-overlay">
+      <!-- <h1>Happy Freedom</h1>
+      <p>India's First Destination Based Lifestyle Platform</p> -->
+      <h1>Destination Based Lifestyle Platform</h1>
+      <!--<p>Work & Live from Goa!</p>-->
+      <p>Goa’s Largest Co-Working & Workation Platform</p>
+      <a href="./subscription.html"
+        ><button
+          type="button"
+          class="sub-button-m btn-get-started aos-init aos-animate"
+        >
+          Subscribe to Life
+        </button></a
+      >
+      <img src="./assets/img/goa12.webp" />
+      <!-- <div class="bar"></div> -->
+    </div>
+
+    <main id="main" class="main_index">
+      <!-- ======= Our Team Section ======= -->
+      <section id="team" class="team section-bg-black">
+        <div class="container" data-aos="fade-up">
+          <div class="section-header" style="padding-bottom: 0">
+            <h2 style="color: #ffc732">About our Vision</h2>
+
+            <p>
+              BI<span style="color: red">Z</span> Nest ( Business with a Nest )
+              is built around a simple but powerful belief: the future of work
+              and life will move beyond crowded cities into more meaningful,
+              fulfilling destinations.
+            </p>
+
+            <p>
+              BI<span style="color: red">Z</span> Nest is an early-stage
+              platform pioneering a destination-based lifestyle model—enabling
+              individuals to relocate, work, and live from places that offer not
+              just productivity, but happiness, balance, and purpose.Our vision
+              is to become a global destination-based lifestyle subscription
+              platform by the end of this decade—supporting a new generation of
+              professionals who choose to live better, not just work harder.
+            </p>
+
+            <p>
+              We believe the future isn’t about just breathing, residing, and
+              working - it’s about truly living. We are an early ADAPTATION
+              Platform for our FUTURE Lifestyle!
+            </p>
+          </div>
+        </div>
+      </section>
+      <!-- End Our Team Section -->
+
+      <!-- ======= Recent Blog Posts Section ======= -->
+      <section
+        id="recent-blog-posts"
+        class="recent-blog-posts"
+        style="padding: 80px 0 5px 0"
+      >
+        <div class="container" data-aos="fade-up">
+          <!--<div class=" section-header">
+        <h2>Customer Relationship</h2>
+         <p>In commodi voluptatem excepturi quaerat nihil error autem voluptate ut et officia consequuntu</p> 
+      </div>-->
+
+          <div class="row gy-5">
+            <div
+              class="col-xl-6 col-md-6"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="post-item position-relative h-100">
+                <div class="post-content d-flex flex-column">
+                  <h3 class="post-title text-center">
+                    INTERNATIONAL CUSTOMERS
+                  </h3>
+                  <!-- <p class="fst-italic">
+                - India <br> - Germany <br> - UK <br> - USA  <br> - Sri Lanka <br> - Dubai <br> - South Africa <br> - Brazil <br> - Dubai 
+              </p> -->
+                </div>
+
+                <div class="post-img position-relative overflow-hidden">
+                  <img
+                    src="assets/img/map/world-map.webp"
+                    class="img-fluid"
+                    alt=""
+                  />
+                  <!-- <span class="post-date">December 12</span> -->
+                </div>
+              </div>
+            </div>
+            <!-- End post item -->
+
+            <div
+              class="col-xl-6 col-md-6"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="post-item position-relative h-100">
+                <div class="post-content d-flex flex-column">
+                  <h3 class="post-title text-center">DOMESTIC CUSTOMERS</h3>
+
+                  <!-- <p class="fst-italic">
+                -  Mumbai <br> - Bangalore <br> - Delhi <br> - Noida <br> - Pune <br> - Hyderabad <br> - Ahmedabad <br> - Rajistan <br> - Chandigadh <br> - Lacknow 
+              </p> -->
+                </div>
+
+                <div class="post-img position-relative overflow-hidden">
+                  <img
+                    src="assets/img/map/india-map.webp"
+                    class="img-fluid"
+                    alt=""
+                  />
+                  <!-- <span class="post-date">July 17</span> -->
+                </div>
+              </div>
+            </div>
+            <!-- End post item -->
+          </div>
+        </div>
+      </section>
+      <!-- End Recent Blog Posts Section -->
+
+      <!-- ======= Stats Counter Section ======= -->
+      <section
+        id="stats-counter"
+        class="stats-counter section"
+        style="padding: 10px 0"
+      >
+        <div class="container">
+          <div class="row gy-4">
+            <!--<div class="col-lg-6 col-md-6">
+           <div class="stats-item d-flex align-items-center w-100 h-100">
+              <i class="bi bi-people color-pink flex-shrink-0"></i>
+              <div>
+                <span data-purecounter-start="0" data-purecounter-end="3624" data-purecounter-duration="1" class="purecounter"></span>
+                <p>Total Subscriptions Serviced </p>
+              </div>
+            </div>
+          </div> End Stats Item -->
+
+            <div class="col-lg-6 col-md-6">
+              <div class="stats-item d-flex align-items-center w-100 h-100">
+                <i class="bi bi-globe color-pink flex-shrink-0"></i>
+                <div>
+                  <span
+                    data-purecounter-start="0"
+                    data-purecounter-end="11"
+                    data-purecounter-duration="1"
+                    class="purecounter"
+                  ></span>
+                  <p>Total Countries Serviced</p>
+                </div>
+              </div>
+            </div>
+            <!-- End Stats Item -->
+
+            <div class="col-lg-6 col-md-6">
+              <div class="stats-item d-flex align-items-center w-100 h-100">
+                <i class="bi bi-flag color-pink flex-shrink-0"></i>
+                <div>
+                  <span
+                    data-purecounter-start="0"
+                    data-purecounter-end="32"
+                    data-purecounter-duration="1"
+                    class="purecounter"
+                  ></span>
+                  <p>Indian Cities Serviced</p>
+                </div>
+              </div>
+            </div>
+            <!-- End Stats Item -->
+          </div>
+        </div>
+      </section>
+      <!-- End Stats Counter Section -->
+
+      <!-- ======= Recent Blog Posts Section ======= -->
+      <section
+        id="recent-blog-posts"
+        class="recent-blog-posts"
+        style="padding: 0 0 5px 0"
+      >
+        <div class="container" data-aos="fade-up">
+          <!--<div class=" section-header">
+         <h2>Customer Relationship</h2> -->
+          <!-- <p>In commodi voluptatem excepturi quaerat nihil error autem voluptate ut et officia consequuntu</p> 
+      </div>-->
+
+          <div class="row gy-5">
+            <div
+              class="col-xl-6 col-md-6"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="post-item position-relative">
+                <div class="d-flex flex-column">
+                  <!-- <h3 class="post-title text-center">Customers Serviced From</h3> -->
+                  <!-- <p class="fst-italic">
+                - India <br> - Germany <br> - UK <br> - USA  <br> - Sri Lanka <br> - Dubai <br> - South Africa <br> - Brazil <br> - Dubai 
+              </p> -->
+                </div>
+
+                <div class="post-img position-relative overflow-hidden">
+                  <img src="assets/img/map/SS1.png" class="img-fluid" alt="" />
+                  <!-- <span class="post-date">December 12</span> -->
+                </div>
+              </div>
+            </div>
+            <!-- End post item -->
+
+            <div
+              class="col-xl-6 col-md-6"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="post-item position-relative">
+                <div class="d-flex flex-column">
+                  <!-- <h3 class="post-title text-center">Customers Activated within India From</h3> -->
+
+                  <!-- <p class="fst-italic">
+                -  Mumbai <br> - Bangalore <br> - Delhi <br> - Noida <br> - Pune <br> - Hyderabad <br> - Ahmedabad <br> - Rajistan <br> - Chandigadh <br> - Lacknow 
+              </p> -->
+                </div>
+
+                <div class="post-img position-relative overflow-hidden">
+                  <img src="assets/img/map/SS2.png" class="img-fluid" alt="" />
+                  <!-- <span class="post-date">July 17</span> -->
+                </div>
+              </div>
+            </div>
+            <!-- End post item -->
+          </div>
+        </div>
+      </section>
+      <!-- End Recent Blog Posts Section -->
+
+      <!-- ======= Services Section ======= -->
+      <!-- <section id="services" class="services section-">
+      <div class="container" data-aos="fade-up">
+
+        <div class="section-header">
+          <h2>Types of Industries Activated </h2>
+        </div>
+
+        <div class="row gy-4">
+
+          <div class="col-6 col-sm-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="10">
+            <div class="service-item  position-relative">
+              <h3>IT</h3>
+            </div>
+          </div>
+          End Service Item
+          <div class="col-6 col-sm-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="10">
+            <div class="service-item  position-relative">
+              <h3>E-Commerce</h3>
+            </div>
+          </div>
+          End Service Item
+          <div class="col-6 col-sm-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="10">
+            <div class="service-item  position-relative">
+              <h3>FinTech</h3>
+            </div>
+          </div>
+          End Service Item
+          <div class="col-6 col-sm-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="10">
+            <div class="service-item  position-relative">
+              <h3>Net-Zero</h3>
+            </div>
+          </div>
+          End Service Item
+          <div class="col-6 col-sm-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="10">
+            <div class="service-item  position-relative">
+              <h3>Jobs</h3>
+            </div>
+          </div>
+          End Service Item
+          <div class="col-6 col-sm-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="10">
+            <div class="service-item  position-relative">
+              <h3>Real Estate</h3>
+            </div>
+          </div>
+          End Service Item
+          <div class="col-6 col-sm-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="10">
+            <div class="service-item  position-relative">
+              <h3>Food Tech</h3>
+            </div>
+          </div>
+          End Service Item
+          <div class="col-6 col-sm-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="10">
+            <div class="service-item  position-relative">
+              <h3>Services</h3>
+            </div>
+          </div>
+          End Service Item
+          <div class="col-6 col-sm-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="10">
+            <div class="service-item  position-relative">
+              <h3>Gaming</h3>
+            </div>
+          </div>
+          End Service Item
+          <div class="col-6 col-sm-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="10">
+            <div class="service-item  position-relative">
+              <h3>Edu-Tech</h3>
+            </div>
+          </div>
+          End Service Item
+          <div class="col-6 col-sm-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="10">
+            <div class="service-item  position-relative">
+              <h3>Insurance</h3>
+            </div>
+          </div>
+          End Service Item
+          <div class="col-6 col-sm-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="10">
+            <div class="service-item  position-relative">
+              <h3>Bankers</h3>
+            </div>
+          </div>
+          End Service Item
+          <div class="col-6 col-sm-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="10">
+            <div class="service-item  position-relative">
+              <h3>Professionals</h3>
+            </div>
+          </div>
+          End Service Item
+          <div class="col-6 col-sm-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="10">
+            <div class="service-item  position-relative">
+              <h3>D2C</h3>
+            </div>
+          </div>
+          End Service Item
+          <div class="col-6 col-sm-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="10">
+            <div class="service-item  position-relative">
+              <h3>Climate Tech</h3>
+            </div>
+          </div>
+          End Service Item
+          <div class="col-6 col-sm-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="10">
+            <div class="service-item  position-relative">
+              <h3>B2B</h3>
+            </div>
+          </div>
+          End Service Item
+
+          
+
+        </div>
+
+      </div>
+    </section> -->
+      <!-- End Services Section -->
+
+      <!-- ======= Services Section ======= -->
+      <section id="services" class="services" style="padding: 80px 0 0 0">
+        <div class="container" data-aos="fade-up">
+          <div class="section-header">
+            <h2>INCLUSIONS</h2>
+          </div>
+
+          <div class="row gy-4">
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img src="assets/img/icon_n/workspace.webp" alt="WORKSPACE" />
+                  <!-- <i class="fa-solid fa-house-building"></i> -->
+                </div>
+                <h3>WORKSPACE</h3>
+                <!-- <p>Provident nihil minus qui consequatur non omnis maiores. Eos accusantium minus dolores iure perferendis tempore et consequatur.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img
+                    src="assets/img/icon_n/livingspace.webp"
+                    alt="LIVING SPACE"
+                  />
+                  <!-- <i class="fa-solid fa-arrow-up-from-ground-water"></i> -->
+                </div>
+                <h3>LIVING SPACE</h3>
+                <!-- <p>Ut autem aut autem non a. Sint sint sit facilis nam iusto sint. Libero corrupti neque eum hic non ut nesciunt dolorem.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img
+                    src="assets/img/icon_n/airconditioner.webp"
+                    alt="AIR CONDITION"
+                  />
+                  <!-- <i class="fa-solid fa-compass-drafting"></i> -->
+                </div>
+                <h3>AIR CONDITION</h3>
+                <!-- <p>Ut excepturi voluptatem nisi sed. Quidem fuga consequatur. Minus ea aut. Vel qui id voluptas adipisci eos earum corrupti.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img
+                    src="assets/img/icon_n/internet.webp"
+                    alt="FAST INTERNET"
+                  />
+                  <!-- <i class="fa-solid fa-compass-drafting"></i> -->
+                </div>
+                <h3>FAST INTERNET</h3>
+                <!-- <p>Ut excepturi voluptatem nisi sed. Quidem fuga consequatur. Minus ea aut. Vel qui id voluptas adipisci eos earum corrupti.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img src="assets/img/icon_n/cafe.webp" alt="CAFE / DINING" />
+                  <!-- <i class="fa-solid fa-trowel-bricks"></i> -->
+                </div>
+                <h3>CAFE / DINING</h3>
+                <!-- <p>Non et temporibus minus omnis sed dolor esse consequatur. Cupiditate sed error ea fuga sit provident adipisci neque.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img
+                    src="assets/img/icon_n/receptionist.webp"
+                    alt="RECEPTIONIST"
+                  />
+                  <!-- <i class="fa-solid fa-helmet-safety"></i> -->
+                </div>
+                <h3>RECEPTIONIST</h3>
+                <!-- <p>Cumque et suscipit saepe. Est maiores autem enim facilis ut aut ipsam corporis aut. Sed animi at autem alias eius labore.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img
+                    src="assets/img/icon_n/meetingroom.webp"
+                    alt="MEETING ROOMS"
+                  />
+                  <!-- <i class="fa-solid fa-helmet-safety"></i> -->
+                </div>
+                <h3>MEETING ROOMS</h3>
+                <!-- <p>Cumque et suscipit saepe. Est maiores autem enim facilis ut aut ipsam corporis aut. Sed animi at autem alias eius labore.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img
+                    src="assets/img/icon_n/trainingroom.webp"
+                    alt="TRAINING ROOMS"
+                  />
+                  <!-- <i class="fa-solid fa-helmet-safety"></i> -->
+                </div>
+                <h3>TRAINING ROOMS</h3>
+                <!-- <p>Cumque et suscipit saepe. Est maiores autem enim facilis ut aut ipsam corporis aut. Sed animi at autem alias eius labore.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img
+                    src="assets/img/icon_n/itsupport.webp"
+                    alt="IT SUPPORT"
+                  />
+                  <!-- <i class="fa-solid fa-arrow-up-from-ground-water"></i> -->
+                </div>
+                <h3>IT SUPPORT</h3>
+                <!-- <p>Hic molestias ea quibusdam eos. Fugiat enim doloremque aut neque non et debitis iure. Corrupti recusandae ducimus enim.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img
+                    src="assets/img/icon_n/teacoffe.webp"
+                    alt="TEA & COFFEE"
+                  />
+                  <!-- <i class="fa-solid fa-arrow-up-from-ground-water"></i> -->
+                </div>
+                <h3>TEA & COFFEE</h3>
+                <!-- <p>Hic molestias ea quibusdam eos. Fugiat enim doloremque aut neque non et debitis iure. Corrupti recusandae ducimus enim.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img
+                    src="assets/img/icon_n/privateassistant.webp"
+                    alt="PRIVATTE ASSISTANT"
+                  />
+                  <!-- <i class="fa-solid fa-arrow-up-from-ground-water"></i> -->
+                </div>
+                <h3>ASSIST</h3>
+                <!-- <p>Hic molestias ea quibusdam eos. Fugiat enim doloremque aut neque non et debitis iure. Corrupti recusandae ducimus enim.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img src="assets/img/icon_n/community.webp" alt="COMMUNITY" />
+                  <!-- <i class="fa-solid fa-arrow-up-from-ground-water"></i> -->
+                </div>
+                <h3>COMMUNITY</h3>
+                <!-- <p>Hic molestias ea quibusdam eos. Fugiat enim doloremque aut neque non et debitis iure. Corrupti recusandae ducimus enim.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img src="assets/img/icon_n/ondemand.webp" alt="ON DEMAND" />
+                  <!-- <i class="fa-solid fa-arrow-up-from-ground-water"></i> -->
+                </div>
+                <h3>ON DEMAND</h3>
+                <!-- <p>Hic molestias ea quibusdam eos. Fugiat enim doloremque aut neque non et debitis iure. Corrupti recusandae ducimus enim.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img
+                    src="assets/img/icon_n/maintenance.webp"
+                    alt="MAINTANANCE"
+                  />
+                  <!-- <i class="fa-solid fa-arrow-up-from-ground-water"></i> -->
+                </div>
+                <h3>MAINTANANCE</h3>
+                <!-- <p>Hic molestias ea quibusdam eos. Fugiat enim doloremque aut neque non et debitis iure. Corrupti recusandae ducimus enim.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img src="assets/img/icon_n/generator.webp" alt="GENERATOR" />
+                  <!-- <i class="fa-solid fa-arrow-up-from-ground-water"></i> -->
+                </div>
+                <h3>GENERATOR</h3>
+                <!-- <p>Hic molestias ea quibusdam eos. Fugiat enim doloremque aut neque non et debitis iure. Corrupti recusandae ducimus enim.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img
+                    src="assets/img/icon_n/pickupdrop.webp"
+                    alt="PICKUP & DROP"
+                  />
+                  <!-- <i class="fa-solid fa-arrow-up-from-ground-water"></i> -->
+                </div>
+                <h3>PICKUP & DROP</h3>
+                <!-- <p>Hic molestias ea quibusdam eos. Fugiat enim doloremque aut neque non et debitis iure. Corrupti recusandae ducimus enim.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img
+                    src="assets/img/icon_n/rentbikecar.webp"
+                    alt="CAR / BIKE / BUS"
+                  />
+                  <!-- <i class="fa-solid fa-arrow-up-from-ground-water"></i> -->
+                </div>
+                <h3>CAR / BIKE / BUS</h3>
+                <!-- <p>Hic molestias ea quibusdam eos. Fugiat enim doloremque aut neque non et debitis iure. Corrupti recusandae ducimus enim.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img
+                    src="assets/img/icon_n/housekeeping.webp"
+                    alt="HOUSEKEEPING "
+                  />
+                  <!-- <i class="fa-solid fa-arrow-up-from-ground-water"></i> -->
+                </div>
+                <h3>HOUSEKEEPING</h3>
+                <!-- <p>Hic molestias ea quibusdam eos. Fugiat enim doloremque aut neque non et debitis iure. Corrupti recusandae ducimus enim.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img src="assets/img/icon_n/pool.webp" alt="SWIMMING POOL" />
+                  <!-- <i class="fa-solid fa-arrow-up-from-ground-water"></i> -->
+                </div>
+                <h3>SWIMMING POOL</h3>
+                <!-- <p>Hic molestias ea quibusdam eos. Fugiat enim doloremque aut neque non et debitis iure. Corrupti recusandae ducimus enim.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img
+                    src="assets/img/icon_n/television.webp"
+                    alt="TELEVISION"
+                  />
+                  <!-- <i class="fa-solid fa-arrow-up-from-ground-water"></i> -->
+                </div>
+                <h3>TELEVISION</h3>
+                <!-- <p>Hic molestias ea quibusdam eos. Fugiat enim doloremque aut neque non et debitis iure. Corrupti recusandae ducimus enim.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img src="assets/img/icon_n/gas.webp" alt="GAS" />
+                  <!-- <i class="fa-solid fa-arrow-up-from-ground-water"></i> -->
+                </div>
+                <h3>GAS</h3>
+                <!-- <p>Hic molestias ea quibusdam eos. Fugiat enim doloremque aut neque non et debitis iure. Corrupti recusandae ducimus enim.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img src="assets/img/icon_n/laundry.webp" alt="LAUNDARY" />
+                  <!-- <i class="fa-solid fa-arrow-up-from-ground-water"></i> -->
+                </div>
+                <h3>LAUNDARY</h3>
+                <!-- <p>Hic molestias ea quibusdam eos. Fugiat enim doloremque aut neque non et debitis iure. Corrupti recusandae ducimus enim.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img src="assets/img/icon_n/secure.webp" alt="SECURE" />
+                  <!-- <i class="fa-solid fa-arrow-up-from-ground-water"></i> -->
+                </div>
+                <h3>SECURE</h3>
+                <!-- <p>Hic molestias ea quibusdam eos. Fugiat enim doloremque aut neque non et debitis iure. Corrupti recusandae ducimus enim.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+            <div
+              class="col-6 col-sm-6 col-md-4 col-lg-2"
+              data-aos="fade-up"
+              data-aos-delay="10"
+            >
+              <div class="service-item position-relative">
+                <div class="icon">
+                  <img
+                    src="assets/img/icon_n/personalised.webp"
+                    alt="PERSONALISED"
+                  />
+                  <!-- <i class="fa-solid fa-arrow-up-from-ground-water"></i> -->
+                </div>
+                <h3>PERSONALISED</h3>
+                <!-- <p>Hic molestias ea quibusdam eos. Fugiat enim doloremque aut neque non et debitis iure. Corrupti recusandae ducimus enim.</p> -->
+                <!-- <a href="service-details.html" class="readmore stretched-link">Learn more <i class="bi bi-arrow-right"></i></a> -->
+              </div>
+            </div>
+            <!-- End Service Item -->
+          </div>
+        </div>
+      </section>
+      <!-- End Services Section -->
+
+      <!-- ======= Testimonials Section ======= -->
+      <!-- <section id="testimonials" class="testimonials section-bg">
+      <div class="container" data-aos="fade-up">
+
+        <div class="section-header">
+          <h2>Customer Testimonies</h2>
+        </div>
+
+        <div class="slides-2 swiper">
+          <div class="swiper-wrapper">
+
+            <div class="swiper-slide">
+              <div class="testimonial-wrap">
+                <div class="testimonial-item">
+                  <img src="assets/img/testimonials/Amar Goel.jpg" class="testimonial-img" alt="">
+                  <h3>Amar Goel </h3>
+                  <h4>Founder &amp; Chairman Pubmatic</h4>
+                  
+                  <p>
+                    <i class="bi bi-quote quote-icon-left"></i>
+                    Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et. Maecen aliquam, risus at semper.
+                    <i class="bi bi-quote quote-icon-right"></i>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide">
+              <div class="testimonial-wrap">
+                <div class="testimonial-item">
+                  <img src="assets/img/testimonials/Anand Das.jpg" class="testimonial-img" alt="">
+                  <h3>Anand Das</h3>
+                  <h4>Founder &amp; CTO Bito</h4>
+                  
+                  <p>
+                    <i class="bi bi-quote quote-icon-left"></i>
+                    Export tempor illum tamen malis malis eram quae irure esse labore quem cillum quid cillum eram malis quorum velit fore eram velit sunt aliqua noster fugiat irure amet legam anim culpa.
+                    <i class="bi bi-quote quote-icon-right"></i>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide">
+              <div class="testimonial-wrap">
+                <div class="testimonial-item">
+                  <img src="assets/img/testimonials/Hrushikesh.png" class="testimonial-img" alt="">
+                  <h3>Hrushikesh Mande </h3>
+                  <h4>Head of Engineering  CCD</h4>
+                  
+                  <p>
+                    <i class="bi bi-quote quote-icon-left"></i>
+                    Enim nisi quem export duis labore cillum quae magna enim sint quorum nulla quem veniam duis minim tempor labore quem eram duis noster aute amet eram fore quis sint minim.
+                    <i class="bi bi-quote quote-icon-right"></i>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide">
+              <div class="testimonial-wrap">
+                <div class="testimonial-item">
+                  <img src="assets/img/testimonials/Sascha Weiler.png" class="testimonial-img" alt="">
+                  <h3>Sascha Weiler</h3>
+                  <h4>Founder Go Group </h4>
+                  
+                  <p>
+                    <i class="bi bi-quote quote-icon-left"></i>
+                    Fugiat enim eram quae cillum dolore dolor amet nulla culpa multos export minim fugiat minim velit minim dolor enim duis veniam ipsum anim magna sunt elit fore quem dolore labore illum veniam.
+                    <i class="bi bi-quote quote-icon-right"></i>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide">
+              <div class="testimonial-wrap">
+                <div class="testimonial-item">
+                  <img src="assets/img/testimonials/Nico Weiler.png" class="testimonial-img" alt="">
+                  <h3>Nico Weiler</h3>
+                  <h4>Founder Go Group </h4>
+                  
+                  <p>
+                    <i class="bi bi-quote quote-icon-left"></i>
+                    Quis quorum aliqua sint quem legam fore sunt eram irure aliqua veniam tempor noster veniam enim culpa labore duis sunt culpa nulla illum cillum fugiat legam esse veniam culpa fore nisi cillum quid.
+                    <i class="bi bi-quote quote-icon-right"></i>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide">
+              <div class="testimonial-wrap">
+                <div class="testimonial-item">
+                  <img src="assets/img/testimonials/Shishir Goel.png" class="testimonial-img" alt="">
+                  <h3>Shishir Goel</h3>
+                  <h4>Founder Go Group </h4>
+                  
+                  <p>
+                    <i class="bi bi-quote quote-icon-left"></i>
+                    Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et. Maecen aliquam, risus at semper.
+                    <i class="bi bi-quote quote-icon-right"></i>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide">
+              <div class="testimonial-wrap">
+                <div class="testimonial-item">
+                  <img src="assets/img/testimonials/Tarun Sharma.jpg" class="testimonial-img" alt="">
+                  <h3>Tarun Sharma</h3>
+                  <h4>Co-Founder mCaffeine</h4>
+                  
+                  <p>
+                    <i class="bi bi-quote quote-icon-left"></i>
+                    Export tempor illum tamen malis malis eram quae irure esse labore quem cillum quid cillum eram malis quorum velit fore eram velit sunt aliqua noster fugiat irure amet legam anim culpa.
+                    <i class="bi bi-quote quote-icon-right"></i>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide">
+              <div class="testimonial-wrap">
+                <div class="testimonial-item">
+                  <img src="assets/img/testimonials/Naukri.png" class="testimonial-img" alt="">
+                  <h3>Vikramjit Tiwari </h3>
+                  <h4>State Head  Naukri.com </h4>
+                  
+                  <p>
+                    <i class="bi bi-quote quote-icon-left"></i>
+                    Enim nisi quem export duis labore cillum quae magna enim sint quorum nulla quem veniam duis minim tempor labore quem eram duis noster aute amet eram fore quis sint minim.
+                    <i class="bi bi-quote quote-icon-right"></i>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide">
+              <div class="testimonial-wrap">
+                <div class="testimonial-item">
+                  <img src="assets/img/testimonials/99acres.png" class="testimonial-img" alt="">
+                  <h3>99acres</h3>
+                  <h4>GOA</h4>
+                  
+                  <p>
+                    <i class="bi bi-quote quote-icon-left"></i>
+                    Fugiat enim eram quae cillum dolore dolor amet nulla culpa multos export minim fugiat minim velit minim dolor enim duis veniam ipsum anim magna sunt elit fore quem dolore labore illum veniam.
+                    <i class="bi bi-quote quote-icon-right"></i>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide">
+              <div class="testimonial-wrap">
+                <div class="testimonial-item">
+                  <img src="assets/img/testimonials/Zomato.png" class="testimonial-img" alt="">
+                  <h3>Zomato</h3>
+                  <h4>GOA</h4>
+                  
+                  <p>
+                    <i class="bi bi-quote quote-icon-left"></i>
+                    Quis quorum aliqua sint quem legam fore sunt eram irure aliqua veniam tempor noster veniam enim culpa labore duis sunt culpa nulla illum cillum fugiat legam esse veniam culpa fore nisi cillum quid.
+                    <i class="bi bi-quote quote-icon-right"></i>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide">
+              <div class="testimonial-wrap">
+                <div class="testimonial-item">
+                  <img src="assets/img/testimonials/AnandPrabhudesai.png" class="testimonial-img" alt="">
+                  <h3>Anand Prabhudesai</h3>
+                  <h4>Co-Founder Turtlemint</h4>
+                  
+                  <p>
+                    <i class="bi bi-quote quote-icon-left"></i>
+                    Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et. Maecen aliquam, risus at semper.
+                    <i class="bi bi-quote quote-icon-right"></i>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide">
+              <div class="testimonial-wrap">
+                <div class="testimonial-item">
+                  <img src="assets/img/testimonials/zimetrics.png" class="testimonial-img" alt="">
+                  <h3>Omkar Prabhu </h3>
+                  <h4>Head of Operations Zimterics</h4>
+                  
+                  <p>
+                    <i class="bi bi-quote quote-icon-left"></i>
+                    Export tempor illum tamen malis malis eram quae irure esse labore quem cillum quid cillum eram malis quorum velit fore eram velit sunt aliqua noster fugiat irure amet legam anim culpa.
+                    <i class="bi bi-quote quote-icon-right"></i>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="swiper-slide">
+              <div class="testimonial-wrap">
+                <div class="testimonial-item">
+                  <img src="assets/img/testimonials/Sidharth.png" class="testimonial-img" alt="">
+                  <h3>Sidharth Jain</h3>
+                  <h4>Head HR Lancesoft</h4>
+                  
+                  <p>
+                    <i class="bi bi-quote quote-icon-left"></i>
+                    Enim nisi quem export duis labore cillum quae magna enim sint quorum nulla quem veniam duis minim tempor labore quem eram duis noster aute amet eram fore quis sint minim.
+                    <i class="bi bi-quote quote-icon-right"></i>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            
+
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+
+      </div>
+    </section> -->
+      <!-- End Testimonials Section -->
+    </main>
+    <!-- End #main -->
+
+    <!-- ======= Footer ======= -->
+    <footer id="footer" class="footer">
+      <div class="footer-content position-relative">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-4 col-md-6">
+              <div class="footer-info">
+                <!-- <h3>UpConstruction</h3> -->
+                <img
+                  src="assets/img/BIZ Nest™ Rectangle.webp"
+                  alt="BIZNest logo"
+                  style="width: 110px; padding-bottom: 20px"
+                />
+                <p>
+                  <!-- BI<span style="color: red;">Z</span> Nest C, -->
+                  <span style="font-family: logo-font"
+                    >MUSTARO TECHNOSERVE PVT LTD<br />
+                    Sunteck Kanaka Corporate Park,<br />
+                    701 A, 701 B, 601 A, 601 B, 501 A & 501 B, Patto Centre,
+                    <br />
+                    Panaji,Goa 403001<br />
+                    <a
+                      href="tel://+91 8007126444"
+                      style="font-size: 1rem; color: #fff"
+                      >+91 80071 26444 </a
+                    ><br /><br
+                  /></span>
+
+                  <!-- <strong>Phone:</strong> +1 5589 55488 55<br>
+                  <strong>Email:</strong> info@example.com<br> -->
+                </p>
+                <div class="social-links d-flex mt-3">
+                  <a
+                    href="https://twitter.com/_BizNest_"
+                    target="_blank"
+                    class="d-flex align-items-center justify-content-center"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      class="bi bi-twitter-x"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"
+                      />
+                    </svg>
+                  </a>
+                  <a
+                    href="https://www.facebook.com/profile.php?id=100083081302950&mibextid=LQQJ4d"
+                    target="_blank"
+                    class="d-flex align-items-center justify-content-center"
+                    ><i class="bi bi-facebook"></i
+                  ></a>
+                  <a
+                    href="https://instagram.com/biznestgoa?igshid=NTc4MTIwNjQ2YQ=="
+                    target="_blank"
+                    class="d-flex align-items-center justify-content-center"
+                    ><i class="bi bi-instagram"></i
+                  ></a>
+                  <a
+                    href="https://www.linkedin.com/company/biz-nest-mustaro/"
+                    target="_blank"
+                    class="d-flex align-items-center justify-content-center"
+                    ><i class="bi bi-linkedin"></i
+                  ></a>
+                  <a
+                    href="https://youtube.com/@BIZNestGoa"
+                    target="_blank"
+                    class="d-flex align-items-center justify-content-center"
+                    ><i class="bi bi-youtube"></i
+                  ></a>
+                </div>
+              </div>
+            </div>
+            <!-- End footer info column-->
+
+            <div class="col-lg-3 col-md-3 footer-links">
+              <h4>CORPORATE</h4>
+              <ul>
+                <li><a href="#">HOME</a></li>
+                <li><a href="about.html">ABOUT</a></li>
+                <li><a href="subscription.html">SUBSCRIPTION</a></li>
+                <li><a href="partner.html">PARTNER</a></li>
+                <!-- <li><a href="#">Terms of service</a></li>
+                <li><a href="#">Privacy policy</a></li> -->
+              </ul>
+            </div>
+            <!-- End footer links column-->
+
+            <div class="col-lg-3 col-md-3 footer-links">
+              <h4>PRODUCT</h4>
+              <ul>
+                <li><a href="Co-Working_Goa.html">CO - WORKING</a></li>
+                <li><a href="Workation_Goa.html">WORKATION</a></li>
+                <li><a href="Meetingrooms_Goa.html">MEETING ROOMS</a></li>
+                <li><a href="Virtualoffice_Goa.html">VIRTUAL OFFICE</a></li>
+                <!-- <li><a href="#">Terms of service</a></li>
+                <li><a href="#">Privacy policy</a></li> -->
+              </ul>
+            </div>
+            <!-- End footer links column-->
+
+            <div class="col-lg-2 col-md-2 footer-links">
+              <h4>CONNECT NOW</h4>
+              <ul>
+                <li><a href="contact.html">CONTACT</a></li>
+                <li><a href="career.html">CAREER</a></li>
+                <li><a href="demos.html">DEMOS</a></li>
+                <li>
+                  EMAIL :
+                  <a href="mailto:response@biznest.co.in"
+                    >response@biznest.co.in</a
+                  >
+                </li>
+                <!-- <li><a href="#">Dilecta</a></li>
+                <li><a href="#">Sit quas consectetur</a></li> -->
+              </ul>
+            </div>
+            <!-- End footer links column-->
+
+            <!-- End footer links column-->
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-legal text-center position-relative">
+        <div class="container">
+          <!-- <div class="col-lg-3"></div> -->
+          <div class="col-lg-12">
+            <div class="copyright">
+              <!--&copy; Copyright 2023-24 by BI<span style="color: red;">Z</span> Nest - Powered By <strong><span>MUSTARO TECHNOSERVE PVT LTD</span></strong> . All-->
+              <!--rights reserved. <br><br>-->
+              &copy; Copyright 2026-27 BI<span style="color: red">Z</span> Nest
+              - All rights reserved. Powered By
+              <strong
+                ><span
+                  ><a
+                    href=" https://host.wono.co/"
+                    style="color: #0aa9ef"
+                    target="_blank"
+                    >WoNo</a
+                  ></span
+                ></strong
+              >
+              <br /><br />
+            </div>
+          </div>
+          <div class="col-lg-12">
+            <a href="privacy_policy.html" style="color: #fff"
+              >Privacy Policy |
+            </a>
+            &nbsp;<a href="terms_and_condition.html" style="color: #fff"
+              >Terms and condition
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!-- End Footer -->
+
+    <a
+      href="#"
+      class="scroll-top d-flex align-items-center justify-content-center"
+      ><i class="bi bi-arrow-up-short"></i
+    ></a>
+
+    <div id="preloader"></div>
+
+    <!-- Vendor JS Files -->
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/aos/aos.js"></script>
+    <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+    <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+    <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+    <script src="assets/vendor/php-email-form/validate.js"></script>
+
+    <!-- Template Main JS File -->
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>

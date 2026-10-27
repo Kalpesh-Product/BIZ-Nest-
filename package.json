@@ -3,9 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "styles:sync": "node scripts/sync-tailwind-candidates.mjs",
+    "predev": "npm run styles:sync",
+    "dev": "next dev --port 3011",
+    "prebuild": "npm run styles:sync",
     "build": "next build",
-    "start": "next start",
+    "start": "next start --port 3011",
     "lint": "eslint"
   },
   "dependencies": {
@@ -14,7 +17,7 @@
     "react-dom": "19.3.0"
   },
   "devDependencies": {
-    "@tailwindcss/turbopack": "^4",
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

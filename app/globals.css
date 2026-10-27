@@ -1,26 +1,14 @@
-@import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+/* Tailwind owns page, layout, responsive and state styling.
+   Preflight is intentionally omitted: the migrated normalization utilities retain
+   the original browser defaults exactly instead of introducing a new reset. */
+@layer theme, base, components, utilities;
+@import "../public/assets/vendor/bootstrap-icons/bootstrap-icons.css" layer(utilities);
+@import "../public/assets/vendor/fontawesome-free/css/all.min.css" layer(utilities);
+@import "../public/assets/vendor/swiper/swiper-bundle.min.css" layer(utilities);
+@import "tailwindcss/theme.css" layer(theme) prefix(tw);
+@import "./tailwind-exceptions.css";
+@import "./tailwind-variants.css";
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+@source "../content/tailwind-candidates.txt";
+@source "../components";
+@source "./";

@@ -1,0 +1,7 @@
+/* CSS-only primitives: font-face and any actually used named keyframes. */
+@font-face {
+  font-family: logo-font;
+  src: url(/assets/fonts/Belleza-Regular.ttf);
+  
+  
+}
