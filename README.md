@@ -6,7 +6,7 @@ The reference capture was made on **21 October 2026**. Content is served from fi
 
 > **Architecture:** This project renders migrated page content from JSON through a shared React component. There is no separate `.tsx` component for every inner page. JSON-based pages are a project-specific migration choice, not a Next.js requirement.
 
-> **Form delivery:** No database, SMTP service, or form delivery receiver is included. Submissions show an email fallback until a delivery webhook is configured.
+> **Backend:** All 50 forms across 37 pages save to local MongoDB on port 27017, including job applications and resume attachments. An optional webhook can notify another service after storage.
 
 ## Contents
 
@@ -315,42 +315,83 @@ For a design regression check against a separately running unchanged build, run 
 
 ## Forms and backend integration
 
-The browser component is [components/inquiry-form.tsx](components/inquiry-form.tsx). It collects `FormData`, adds the current pathname as `source`, posts to `/api/inquiry`, disables fields while pending, and shows the server's response. Successful submissions reset the form.
-
-The server endpoint is [app/api/inquiry/route.ts](app/api/inquiry/route.ts).
+The original website uses `forms/coworkinginquiry.php`, `forms/enquirymail.php`, `forms/partner.php`, and `forms/resume.php`. The local equivalent is `POST /api/inquiry`, using the existing forms and feedback area. All 50 original form field sets were compared with the local forms: product inquiries, partnership requests, and career applications. Static content, testimonials, pricing displays, and existing external login/booking links keep their existing behavior; no replacement account system or payment flow is introduced.
 
 ```text
-Form -> POST /api/inquiry -> validation -> configured webhook -> user feedback
+Existing form -> POST /api/inquiry -> server validation -> MongoDB -> optional notification -> existing feedback UI
 ```
 
-### Request and delivery contract
+### Local setup
 
-- Content type: `multipart/form-data`, with the browser generating the boundary.
-- Common required fields: `name`, `email`, and `mobile`.
-- The mobile validator currently requires 10 digits, starting with 1–9.
-- Other original named fields, hidden page/job identifiers, and resume attachments are forwarded with the form data.
-- `source` identifies the submitting page.
-- The webhook request optionally includes `Authorization: Bearer <INQUIRY_WEBHOOK_TOKEN>`.
-- The webhook has a 15-second timeout. Any successful HTTP status is treated as accepted delivery; its response body is not used.
+1. Run MongoDB Community Server on `127.0.0.1:27017` (the default port).
+2. Copy `.env.example` to `.env.local` if that file does not already exist. Keep existing environment settings.
+3. Run `npm install`, then `npm run db:setup` and `npm run db:check`.
+4. Run `npm run dev` and submit an existing form at `http://localhost:3011`.
 
-The endpoint rejects requests with a mismatched `Origin` header when one is supplied. It checks declared request length above 6,000,000 bytes, individual string lengths, and nonempty file uploads. Attachment validation currently permits `.pdf`, `.doc`, or `.docx` filenames and a maximum file size of 5,000,000 bytes. These checks do not inspect document contents or scan for malware.
+The defaults are `MONGODB_URI=mongodb://127.0.0.1:27017` and `MONGODB_DB=biznest`. `lib/mongodb.ts` maintains a shared connection pool and retries after connection failures. The application creates required indexes on first submission as well; setup lets you verify them in advance. Builds do not require a database connection.
 
-### Response statuses
+### Storage and operator access
 
-Responses contain a JSON `message` field.
+Connect MongoDB Compass to `mongodb://127.0.0.1:27017`, then open database `biznest`:
+
+| Collection | Contents |
+| --- | --- |
+| `inquiries` | All product/service inquiries; source page, selected product, dates and other original form fields distinguish requests |
+| `jobApplications` | All career applications, including job position, applicant details, answers and embedded resume bytes |
+| `partnerships` | Partnership contact details and message |
+| `submission_limits` | Temporary email hash and 15-minute bucket counter; TTL index removes expired counters |
+
+There are exactly three form-data collections, grouped by purpose rather than by page. All product pages use `inquiries`, all career forms use `jobApplications`, and the partner form uses `partnerships`. Business properties such as `name`, `email`, `mobile`, `pagename`, and job application answers are stored directly at the document root using explicit allowlists for each collection. Documents retain their `source`, `kind`, status, timestamps and retry metadata. `notification` and `resume` remain nested groups. The database does not store a generic `fields` wrapper. Run `npm run db:collections` for the complete page-to-collection mapping. `submission_limits` is a separate temporary anti-spam collection and does not store form submissions.
+
+Resume metadata and BSON binary bytes are embedded in the inquiry document, so application details and its attachment are saved atomically on standalone local MongoDB. Resumes are limited to 5,000,000 bytes, comfortably below MongoDB's document limit. They are never placed in `public/` or exposed through an unauthenticated download API.
+
+Operator commands run locally with database access:
+
+```bash
+npm run db:collections
+npm run db:inquiries
+npm run db:inquiries -- partnerships
+npm run db:inquiries -- INQUIRY_ID
+npm run db:resume -- INQUIRY_ID ./resume.pdf
+```
+
+The list command returns the newest 20 records across form collections (or just a selected collection), including its collection name and excluding binary bytes and internal retry fields. Resume export creates a new file and refuses to overwrite existing files. These commands reveal personal information; use them only in a trusted terminal. Database backup and retention follow your MongoDB operations policy; this application does not automatically delete inquiry records.
+
+### Migrating existing submissions
+
+Run `npm run db:setup` to create the three form-data collections and indexes. Then run `npm run db:migrate` to consolidate older page-specific `forms_*` collections, the previous legacy backup, and any misplaced records in the three target collections. Stop old server versions that still use the earlier storage layout before migrating.
+
+The migration validates source pages, writes a BSON-aware Extended JSON backup under ignored `.reference/mongodb-backups/`, and verifies document IDs, fields, dates, retry keys, notification status and resume bytes after copying. Once verified, obsolete page collections and the database backup collection are removed; any misplaced originals in the target collections are removed only after their copies are verified. The backup file remains outside MongoDB so the database does not accumulate extra form collections. Keep that file private: it contains complete submissions and resume data.
+
+Conflicting copies or unknown sources stop consolidation without removing their originals. Completed consolidation is safe to rerun. The same command then migrates existing nested `fields` into explicit top-level properties in all three collections, with a separate BSON-aware backup under `.reference/mongodb-backups/`. It rejects unknown business properties and conflicting existing top-level values instead of overwriting them. IDs, dates, field values and types, resume bytes, notification state, and retry fingerprints are preserved. Already flat records are skipped. New submissions use the flat schemas directly.
+
+### Validation, retries, and notifications
+
+`components/inquiry-form.tsx` keeps the same markup, styling, pending state, and feedback UI. It submits multipart data, adds `source`, and sends an `Idempotency-Key` that remains stable for retries of the same payload. A successful submission resets the form. Failed database writes show an error and retain the form values.
+
+`content/form-contracts.json` is generated from the actual page forms by `npm run forms:sync`, also run before development and production builds. Required fields, allowed select options, dates, numeric minimums, and known field names are validated on the server. Hidden page/job identifiers are taken from the server contract rather than trusting the browser. Names, email addresses, mobile numbers, duplicate fields, and unknown source pages are checked. Mobile numbers retain the existing 10-digit rule, starting with 1–9.
+
+The request body is bounded to 6,000,000 bytes even without `Content-Length`. Resume extension and initial PDF/Word/ZIP signatures are checked; these checks are not a malware scan or full document validation. Same-origin checks reject mismatching supplied origins. A database-backed limit permits 10 new submissions per normalized email per 15-minute bucket. This is basic abuse mitigation, not a complete public-site spam defense; apply infrastructure-level limits when deploying publicly.
+
+Each collection has a unique partial index on `source` and `idempotencyKey`, preventing duplicate retries of one form while allowing different pages to submit independently into the same collection. Reusing the same key with changed data returns `409`. No public GET/list/download endpoint exposes submissions.
+
+`INQUIRY_WEBHOOK_URL` is optional. If configured, a multipart notification is attempted only after the database insert, with a 15-second timeout and inquiry ID as its idempotency key. An optional bearer token is supported. Notification status is stored as `disabled`, `pending`, `delivered`, or `failed`. Notification failures do not discard data or turn a saved submission into a failed response. There is no automatic notification retry worker; review failed/pending notifications in MongoDB. With no webhook, local storage works fully and no email is sent.
 
 | HTTP status | Meaning |
 | --- | --- |
-| `200` | The configured webhook accepted the submission |
-| `400` | Invalid form data, fields, or attachment |
-| `403` | Supplied origin does not match the request origin |
-| `413` | Declared request size exceeds the endpoint's limit |
-| `502` | Delivery failed or timed out |
-| `503` | No delivery webhook is configured |
+| `200` | Saved, or an identical retry of a saved submission; JSON includes `message` and `id` |
+| `400` | Invalid fields, source page, retry key, or attachment |
+| `403` | Mismatching supplied origin |
+| `409` | Retry key reused for different data |
+| `413` | Request exceeds body limit |
+| `429` | Submission limit exceeded |
+| `503` | Database unavailable or write failed; retry or use the existing email fallback |
 
-Without a webhook, the UI offers `response@biznest.co.in`; it does not silently discard a submission or send it to the original PHP endpoints. The application does not persist submissions or uploaded resumes locally.
+### Backend verification
 
-For public form delivery, configure a receiver that handles storage/email and apply hosting-level request limits, rate limiting, and spam protection. The application's content-length check is not a replacement for an enforced body-size limit at the hosting boundary. Verify origin handling with the deployed reverse proxy and test delivery using a controlled receiver before launch.
+After `npm run build`, run `npm run test:backend`. It starts an isolated production server on port 3013, creates a randomly named `biznest_test_*` database, and removes that test database and server afterward. Your normal database and port 3011 are untouched. Set `BACKEND_TEST_PORT` if 3013 is occupied.
+
+The test covers every form page against real MongoDB, three-way purpose separation, explicit flat schemas, verified consolidation/flattening and file-backup preservation, compatibility with existing retry keys, resume bytes, canonical job/product metadata, concurrent retries, failed notifications, invalid fields and files, bounded chunked requests, origin checks, privacy, and persistent rate limiting. `npm run db:check` is the lightweight connection check for normal operation.
 
 ## Environment variables
 
@@ -359,7 +400,9 @@ Use [.env.example](.env.example) as the template.
 | Variable | Purpose | Behavior when unset |
 | --- | --- | --- |
 | `SITE_URL` | Production origin used by sitemap and robots generation; omit a trailing slash | Falls back to `https://biznest.co.in` |
-| `INQUIRY_WEBHOOK_URL` | Server-side delivery endpoint; configure an HTTPS receiver | Submissions return `503` and offer email fallback |
+| `MONGODB_URI` | Server-only MongoDB connection string | `mongodb://127.0.0.1:27017` |
+| `MONGODB_DB` | Database name | `biznest` |
+| `INQUIRY_WEBHOOK_URL` | Optional server-side notification endpoint | Submissions are saved locally without notification |
 | `INQUIRY_WEBHOOK_TOKEN` | Optional server-side bearer token for the receiver | No authorization header is added |
 
 Set `SITE_URL` before building. Restart after changing server environment settings; rebuild when changing settings used by generated output.
@@ -408,7 +451,7 @@ The audit checks:
 
 At the initial migration size, it reports **52 route checks** and **151 distinct local assets referenced through those attributes**. The full asset capture contains 214 files, including CSS dependencies and supporting files; those counts measure different things.
 
-The audit does not verify every CSS URL, external service, browser layout, successful webhook delivery, attachment-handling outcome, or complete accessibility behavior. It is a smoke audit, not a unit or end-to-end test suite. Use a production server for the route audit, particularly when checking filenames containing encoded characters.
+The audit does not verify every CSS URL, external service, browser layout, successful external notification delivery, or complete accessibility behavior. It is a smoke audit, not a unit or end-to-end test suite. Use a production server for the route audit, particularly when checking filenames containing encoded characters.
 
 The Tailwind migration has an additional audit:
 
@@ -496,7 +539,7 @@ This repository includes Next.js-version-specific instructions in [AGENTS.md](AG
 ## Current limitations
 
 - The content structure is a migration snapshot. Most inner pages are JSON trees, and header/footer markup is duplicated across them.
-- Form delivery needs an external receiver; no database, CMS, or authentication backend is implemented here.
+- Local MongoDB persists inquiries and resumes. Email notification is optional; no CMS, account system, or payment backend is added.
 - Login, social profiles, embedded maps, and video destinations depend on external services. The separately hosted login application was not replicated.
 - The original live site rendered blank in the available browser during initial implementation. Representative local pages and interactions were checked, but exact screenshot-to-screenshot parity and exhaustive mobile/accessibility verification have not been established.
 - Installed vendor assets do not imply every original vendor script is executed. The migration replaces source tracking and page scripts with the application's own rendering and interaction code.

@@ -4,17 +4,28 @@
   "private": true,
   "scripts": {
     "styles:sync": "node scripts/sync-tailwind-candidates.mjs",
-    "predev": "npm run styles:sync",
+    "predev": "npm run forms:sync && npm run styles:sync",
     "dev": "next dev --port 3011",
-    "prebuild": "npm run styles:sync",
+    "prebuild": "npm run forms:sync && npm run styles:sync",
     "build": "next build",
     "start": "next start --port 3011",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:check": "node scripts/database.mjs check",
+    "db:setup": "node scripts/database.mjs setup",
+    "db:inquiries": "node scripts/database.mjs inquiries",
+    "db:resume": "node scripts/database.mjs resume",
+    "test:backend": "node scripts/verify-backend.mjs",
+    "forms:sync": "node scripts/sync-form-contracts.mjs",
+    "db:migrate": "node scripts/database.mjs migrate",
+    "db:collections": "node scripts/database.mjs collections"
   },
   "dependencies": {
+    "@next/env": "^16.4.2",
+    "mongodb": "^6.21.0",
     "next": "16.4.2",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",

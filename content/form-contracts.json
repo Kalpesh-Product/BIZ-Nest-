@@ -1,0 +1,3259 @@
+{
+  "/Cafe.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "count",
+        "required": true,
+        "options": [
+          "Number of People",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "7",
+          "10+"
+        ]
+      },
+      {
+        "type": "date",
+        "name": "sdate",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "pagename",
+        "value": "WORK FROM CAFÉ - Flexible Café Workspace - Starting at INR 500 + GST.",
+        "required": false
+      }
+    ]
+  ],
+  "/Car_Renting.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "sdate",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "pagename",
+        "value": "CAR RENTING - On Demand Value Added Service - PRICE ON REQUEST.",
+        "required": false
+      }
+    ]
+  ],
+  "/Co-Living_Space.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "count",
+        "required": true,
+        "options": [
+          "Number of Room",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "7",
+          "10+"
+        ]
+      },
+      {
+        "type": "date",
+        "name": "sdate",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "pagename",
+        "value": "CO-LIVING SPACE- Shared Living Space - Starting at INR 29,000 + GST.",
+        "required": false
+      }
+    ]
+  ],
+  "/Co-Working_Goa.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "category",
+        "required": true,
+        "options": [
+          "No of Desks",
+          "1-10 Desks",
+          "10-25 Desks ",
+          "25-50 Desks ",
+          "50-100 Desks ",
+          "100+ Desks"
+        ]
+      },
+      {
+        "type": "hidden",
+        "name": "pagename",
+        "value": "CO - WORKING landing page",
+        "required": false
+      }
+    ]
+  ],
+  "/Co-Working_Space.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "count",
+        "required": true,
+        "options": [
+          "Number of Desk",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "7",
+          "10+"
+        ]
+      },
+      {
+        "type": "date",
+        "name": "sdate",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "pagename",
+        "value": "Co-Working - Shared Workspace - Starting at INR 8,500 + GST.",
+        "required": false
+      }
+    ]
+  ],
+  "/Exclusive_Campus.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "count",
+        "required": true,
+        "options": [
+          "Number of Rooms",
+          "10",
+          "15",
+          "20",
+          "25",
+          "30+"
+        ]
+      },
+      {
+        "type": "date",
+        "name": "sdate",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "pagename",
+        "value": "EXCLUSIVE CAMPUS - Private Company Campus - Boutique Resort - Starting at INR 74,000 + GST.",
+        "required": false
+      }
+    ]
+  ],
+  "/Exclusive_Workations.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "count",
+        "required": true,
+        "options": [
+          "Number of People",
+          "10",
+          "15",
+          "20",
+          "25",
+          "30+"
+        ]
+      },
+      {
+        "type": "date",
+        "name": "sdate",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "pagename",
+        "value": "EXCLUSIVE WORKATIONS - Private & Exclusive Company Workations - Starting at INR 7,400 + GST.",
+        "required": false
+      }
+    ]
+  ],
+  "/Managed_Workspace.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "count",
+        "required": true,
+        "options": [
+          "Number of Desk",
+          "20+",
+          "30+",
+          "40+",
+          "50+"
+        ]
+      },
+      {
+        "type": "date",
+        "name": "sdate",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "pagename",
+        "value": "MANAGED WORKSPACE - On Demand Exclusive Workspace - PRICE ON REQUEST.",
+        "required": false
+      }
+    ]
+  ],
+  "/Meetingrooms_Goa.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "category",
+        "required": true,
+        "options": [
+          "No of Seats",
+          "Less then 5 Seats",
+          "Less then 10 Seats",
+          "Less then 15 Seats",
+          "Less then 20 Seats",
+          "Less then 50 Seats"
+        ]
+      },
+      {
+        "type": "hidden",
+        "name": "pagename",
+        "value": "MEETING ROOMS landing page",
+        "required": false
+      }
+    ]
+  ],
+  "/Meetings&Conferences.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "count",
+        "required": true,
+        "options": [
+          "Number of People",
+          "4",
+          "6",
+          "7",
+          "10",
+          "15",
+          "20+"
+        ]
+      },
+      {
+        "type": "date",
+        "name": "sdate",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "pagename",
+        "value": "MEETING & BOARD ROOMS - Dedicated Meeting & Board Rooms - Starting at INR 700 + GST.",
+        "required": false
+      }
+    ]
+  ],
+  "/Private_Apartments_Villas.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "count",
+        "required": true,
+        "options": [
+          "Number of Rooms",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "10+"
+        ]
+      },
+      {
+        "type": "date",
+        "name": "sdate",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "pagename",
+        "value": "APARTMENTS / VILLA - Private Living Space - Apartment or Villa - Starting at INR 39,000 + GST.",
+        "required": false
+      }
+    ]
+  ],
+  "/Private_Workspace.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "count",
+        "required": true,
+        "options": [
+          "Number of Desk",
+          "6",
+          "10",
+          "20+"
+        ]
+      },
+      {
+        "type": "date",
+        "name": "sdate",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "pagename",
+        "value": "PRIVATE WORKSPACE- Private Workspace in Shared Space - Starting at INR 9,900 + GST..",
+        "required": false
+      }
+    ]
+  ],
+  "/Trainings&Events.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "count",
+        "required": true,
+        "options": [
+          "Number of Peoples",
+          "10",
+          "20",
+          "30",
+          "40",
+          "50",
+          "70",
+          "100+"
+        ]
+      },
+      {
+        "type": "date",
+        "name": "sdate",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "pagename",
+        "value": "TRAINING & EVENTS - Dedicated Training & Events Zone - Starting at INR 4,900 + GST.",
+        "required": false
+      }
+    ]
+  ],
+  "/Virtual_Office.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "sdate",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "pagename",
+        "value": "VIRTUAL OFFICE - Corrospondance & Registration Address - Starting from INR 1,900 + GST.",
+        "required": false
+      }
+    ]
+  ],
+  "/Virtualoffice_Goa.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "category",
+        "required": true,
+        "options": [
+          "Select Virtual office",
+          "Simple Virtual Office ",
+          "Compliance Virtual Office ",
+          "Managed Virtual Office"
+        ]
+      },
+      {
+        "type": "hidden",
+        "name": "pagename",
+        "value": "VIRTUAL OFFICE landing page",
+        "required": false
+      }
+    ]
+  ],
+  "/Workation_Goa.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "category",
+        "required": true,
+        "options": [
+          "No of People",
+          "Less then 10 People",
+          "10-25 People",
+          "20-50 People",
+          "50-100 People",
+          "More then 100 People"
+        ]
+      },
+      {
+        "type": "hidden",
+        "name": "pagename",
+        "value": "WORKATION landing page",
+        "required": false
+      }
+    ]
+  ],
+  "/Yatch_Renting.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "sdate",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "pagename",
+        "value": "YATCH RENTING - On Demand Value Added Service - PRICE ON REQUEST.",
+        "required": false
+      }
+    ]
+  ],
+  "/career_ApplyNow.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "dob",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "location",
+        "required": false,
+        "options": [
+          "",
+          "Andhra Pradesh\t",
+          "Arunachal Pradesh\t",
+          "Assam\t",
+          "Bihar\t",
+          "Chhattisgarh\t",
+          "Goa\t",
+          "Gujarat\t",
+          "Haryana\t",
+          "Himachal \t",
+          "Jharkhand\t",
+          "Karnataka\t",
+          "Kerala\t",
+          "Madhya Pradesh\t",
+          "Maharashtra\t",
+          "Manipur\t",
+          "Meghalaya\t",
+          "Mizoram\t",
+          "Nagaland\t",
+          "Odisha\t",
+          "Punjab\t",
+          "Rajasthan\t",
+          "Sikkim\t",
+          "Tamil Nadu\t",
+          "Telangana\t",
+          "Tripura\t",
+          "Uttar Pradesh\t",
+          "Uttarakhand\t",
+          "West Bengal\t",
+          "Other\t"
+        ]
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "experience",
+        "required": true
+      },
+      {
+        "type": "text",
+        "name": "linkedin",
+        "required": true
+      },
+      {
+        "type": "file",
+        "name": "resume",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "currentmonthlysalary",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "expectedsalary",
+        "required": true
+      },
+      {
+        "name": "canjoin",
+        "required": false,
+        "options": [
+          "",
+          "15 Days",
+          "30 Days",
+          "45 Days",
+          "60 Days",
+          "60 Days and above"
+        ]
+      },
+      {
+        "name": "relocategoa",
+        "required": false,
+        "options": [
+          "",
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "name": "personality",
+        "required": true
+      },
+      {
+        "name": "skills",
+        "required": true
+      },
+      {
+        "name": "specialexperience",
+        "required": true
+      },
+      {
+        "name": "willing",
+        "required": true
+      },
+      {
+        "name": "message",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "job_position",
+        "value": "OPEN JOB APPLICATION",
+        "required": false
+      }
+    ]
+  ],
+  "/career_Asst_Manager_Civil_Maintanance.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "dob",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "location",
+        "required": false,
+        "options": [
+          "",
+          "Andhra Pradesh\t",
+          "Arunachal Pradesh\t",
+          "Assam\t",
+          "Bihar\t",
+          "Chhattisgarh\t",
+          "Goa\t",
+          "Gujarat\t",
+          "Haryana\t",
+          "Himachal \t",
+          "Jharkhand\t",
+          "Karnataka\t",
+          "Kerala\t",
+          "Madhya Pradesh\t",
+          "Maharashtra\t",
+          "Manipur\t",
+          "Meghalaya\t",
+          "Mizoram\t",
+          "Nagaland\t",
+          "Odisha\t",
+          "Punjab\t",
+          "Rajasthan\t",
+          "Sikkim\t",
+          "Tamil Nadu\t",
+          "Telangana\t",
+          "Tripura\t",
+          "Uttar Pradesh\t",
+          "Uttarakhand\t",
+          "West Bengal\t",
+          "Other\t"
+        ]
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "experience",
+        "required": true
+      },
+      {
+        "type": "text",
+        "name": "linkedin",
+        "required": true
+      },
+      {
+        "type": "file",
+        "name": "resume",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "currentmonthlysalary",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "expectedsalary",
+        "required": true
+      },
+      {
+        "name": "canjoin",
+        "required": false,
+        "options": [
+          "",
+          "15 Days",
+          "30 Days",
+          "45 Days",
+          "60 Days",
+          "60 Days and above"
+        ]
+      },
+      {
+        "name": "relocategoa",
+        "required": false,
+        "options": [
+          "",
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "name": "personality",
+        "required": true
+      },
+      {
+        "name": "skills",
+        "required": true
+      },
+      {
+        "name": "specialexperience",
+        "required": true
+      },
+      {
+        "name": "willing",
+        "required": true
+      },
+      {
+        "name": "message",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "job_position",
+        "value": "Asst Manager Civil & Maintanance",
+        "required": false
+      }
+    ]
+  ],
+  "/career_Executive_Assistant_to_CEO.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "dob",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "location",
+        "required": false,
+        "options": [
+          "",
+          "Andhra Pradesh\t",
+          "Arunachal Pradesh\t",
+          "Assam\t",
+          "Bihar\t",
+          "Chhattisgarh\t",
+          "Goa\t",
+          "Gujarat\t",
+          "Haryana\t",
+          "Himachal \t",
+          "Jharkhand\t",
+          "Karnataka\t",
+          "Kerala\t",
+          "Madhya Pradesh\t",
+          "Maharashtra\t",
+          "Manipur\t",
+          "Meghalaya\t",
+          "Mizoram\t",
+          "Nagaland\t",
+          "Odisha\t",
+          "Punjab\t",
+          "Rajasthan\t",
+          "Sikkim\t",
+          "Tamil Nadu\t",
+          "Telangana\t",
+          "Tripura\t",
+          "Uttar Pradesh\t",
+          "Uttarakhand\t",
+          "West Bengal\t",
+          "Other\t"
+        ]
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "experience",
+        "required": true
+      },
+      {
+        "type": "text",
+        "name": "linkedin",
+        "required": true
+      },
+      {
+        "type": "file",
+        "name": "resume",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "currentmonthlysalary",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "expectedsalary",
+        "required": true
+      },
+      {
+        "name": "canjoin",
+        "required": false,
+        "options": [
+          "",
+          "15 Days",
+          "30 Days",
+          "45 Days",
+          "60 Days",
+          "60 Days and above"
+        ]
+      },
+      {
+        "name": "relocategoa",
+        "required": false,
+        "options": [
+          "",
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "name": "personality",
+        "required": true
+      },
+      {
+        "name": "skills",
+        "required": true
+      },
+      {
+        "name": "specialexperience",
+        "required": true
+      },
+      {
+        "name": "willing",
+        "required": true
+      },
+      {
+        "name": "message",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "job_position",
+        "value": "Executive Assistant to CEO",
+        "required": false
+      }
+    ]
+  ],
+  "/career_Finance_Intern.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "dob",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "location",
+        "required": false,
+        "options": [
+          "",
+          "Andhra Pradesh\t",
+          "Arunachal Pradesh\t",
+          "Assam\t",
+          "Bihar\t",
+          "Chhattisgarh\t",
+          "Goa\t",
+          "Gujarat\t",
+          "Haryana\t",
+          "Himachal \t",
+          "Jharkhand\t",
+          "Karnataka\t",
+          "Kerala\t",
+          "Madhya Pradesh\t",
+          "Maharashtra\t",
+          "Manipur\t",
+          "Meghalaya\t",
+          "Mizoram\t",
+          "Nagaland\t",
+          "Odisha\t",
+          "Punjab\t",
+          "Rajasthan\t",
+          "Sikkim\t",
+          "Tamil Nadu\t",
+          "Telangana\t",
+          "Tripura\t",
+          "Uttar Pradesh\t",
+          "Uttarakhand\t",
+          "West Bengal\t",
+          "Other\t"
+        ]
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "experience",
+        "required": true
+      },
+      {
+        "type": "text",
+        "name": "linkedin",
+        "required": true
+      },
+      {
+        "type": "file",
+        "name": "resume",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "currentmonthlysalary",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "expectedsalary",
+        "required": true
+      },
+      {
+        "name": "canjoin",
+        "required": false,
+        "options": [
+          "",
+          "15 Days",
+          "30 Days",
+          "45 Days",
+          "60 Days",
+          "60 Days and above"
+        ]
+      },
+      {
+        "name": "relocategoa",
+        "required": false,
+        "options": [
+          "",
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "name": "personality",
+        "required": true
+      },
+      {
+        "name": "skills",
+        "required": true
+      },
+      {
+        "name": "specialexperience",
+        "required": true
+      },
+      {
+        "name": "willing",
+        "required": true
+      },
+      {
+        "name": "message",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "job_position",
+        "value": "Finance Intern",
+        "required": false
+      }
+    ]
+  ],
+  "/career_FullStack_React _Developer.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "dob",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "location",
+        "required": false,
+        "options": [
+          "",
+          "Andhra Pradesh\t",
+          "Arunachal Pradesh\t",
+          "Assam\t",
+          "Bihar\t",
+          "Chhattisgarh\t",
+          "Goa\t",
+          "Gujarat\t",
+          "Haryana\t",
+          "Himachal \t",
+          "Jharkhand\t",
+          "Karnataka\t",
+          "Kerala\t",
+          "Madhya Pradesh\t",
+          "Maharashtra\t",
+          "Manipur\t",
+          "Meghalaya\t",
+          "Mizoram\t",
+          "Nagaland\t",
+          "Odisha\t",
+          "Punjab\t",
+          "Rajasthan\t",
+          "Sikkim\t",
+          "Tamil Nadu\t",
+          "Telangana\t",
+          "Tripura\t",
+          "Uttar Pradesh\t",
+          "Uttarakhand\t",
+          "West Bengal\t",
+          "Other\t"
+        ]
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "experience",
+        "required": true
+      },
+      {
+        "type": "text",
+        "name": "linkedin",
+        "required": true
+      },
+      {
+        "type": "file",
+        "name": "resume",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "currentmonthlysalary",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "expectedsalary",
+        "required": true
+      },
+      {
+        "name": "canjoin",
+        "required": false,
+        "options": [
+          "",
+          "15 Days",
+          "30 Days",
+          "45 Days",
+          "60 Days",
+          "60 Days and above"
+        ]
+      },
+      {
+        "name": "relocategoa",
+        "required": false,
+        "options": [
+          "",
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "name": "personality",
+        "required": true
+      },
+      {
+        "name": "skills",
+        "required": true
+      },
+      {
+        "name": "specialexperience",
+        "required": true
+      },
+      {
+        "name": "willing",
+        "required": true
+      },
+      {
+        "name": "message",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "job_position",
+        "value": "Full Stack React Developer ",
+        "required": false
+      }
+    ]
+  ],
+  "/career_HR_Generalist.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "dob",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "location",
+        "required": false,
+        "options": [
+          "",
+          "Andhra Pradesh\t",
+          "Arunachal Pradesh\t",
+          "Assam\t",
+          "Bihar\t",
+          "Chhattisgarh\t",
+          "Goa\t",
+          "Gujarat\t",
+          "Haryana\t",
+          "Himachal \t",
+          "Jharkhand\t",
+          "Karnataka\t",
+          "Kerala\t",
+          "Madhya Pradesh\t",
+          "Maharashtra\t",
+          "Manipur\t",
+          "Meghalaya\t",
+          "Mizoram\t",
+          "Nagaland\t",
+          "Odisha\t",
+          "Punjab\t",
+          "Rajasthan\t",
+          "Sikkim\t",
+          "Tamil Nadu\t",
+          "Telangana\t",
+          "Tripura\t",
+          "Uttar Pradesh\t",
+          "Uttarakhand\t",
+          "West Bengal\t",
+          "Other\t"
+        ]
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "experience",
+        "required": true
+      },
+      {
+        "type": "text",
+        "name": "linkedin",
+        "required": true
+      },
+      {
+        "type": "file",
+        "name": "resume",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "currentmonthlysalary",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "expectedsalary",
+        "required": true
+      },
+      {
+        "name": "canjoin",
+        "required": false,
+        "options": [
+          "",
+          "15 Days",
+          "30 Days",
+          "45 Days",
+          "60 Days",
+          "60 Days and above"
+        ]
+      },
+      {
+        "name": "relocategoa",
+        "required": false,
+        "options": [
+          "",
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "name": "personality",
+        "required": true
+      },
+      {
+        "name": "skills",
+        "required": true
+      },
+      {
+        "name": "specialexperience",
+        "required": true
+      },
+      {
+        "name": "willing",
+        "required": true
+      },
+      {
+        "name": "message",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "job_position",
+        "value": "HR Generalist",
+        "required": false
+      }
+    ]
+  ],
+  "/career_Interiors_Civil_Engineer.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "dob",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "location",
+        "required": false,
+        "options": [
+          "",
+          "Andhra Pradesh\t",
+          "Arunachal Pradesh\t",
+          "Assam\t",
+          "Bihar\t",
+          "Chhattisgarh\t",
+          "Goa\t",
+          "Gujarat\t",
+          "Haryana\t",
+          "Himachal \t",
+          "Jharkhand\t",
+          "Karnataka\t",
+          "Kerala\t",
+          "Madhya Pradesh\t",
+          "Maharashtra\t",
+          "Manipur\t",
+          "Meghalaya\t",
+          "Mizoram\t",
+          "Nagaland\t",
+          "Odisha\t",
+          "Punjab\t",
+          "Rajasthan\t",
+          "Sikkim\t",
+          "Tamil Nadu\t",
+          "Telangana\t",
+          "Tripura\t",
+          "Uttar Pradesh\t",
+          "Uttarakhand\t",
+          "West Bengal\t",
+          "Other\t"
+        ]
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "experience",
+        "required": true
+      },
+      {
+        "type": "text",
+        "name": "linkedin",
+        "required": true
+      },
+      {
+        "type": "file",
+        "name": "resume",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "currentmonthlysalary",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "expectedsalary",
+        "required": true
+      },
+      {
+        "name": "canjoin",
+        "required": false,
+        "options": [
+          "",
+          "15 Days",
+          "30 Days",
+          "45 Days",
+          "60 Days",
+          "60 Days and above"
+        ]
+      },
+      {
+        "name": "relocategoa",
+        "required": false,
+        "options": [
+          "",
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "name": "personality",
+        "required": true
+      },
+      {
+        "name": "skills",
+        "required": true
+      },
+      {
+        "name": "specialexperience",
+        "required": true
+      },
+      {
+        "name": "willing",
+        "required": true
+      },
+      {
+        "name": "message",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "job_position",
+        "value": "Interiors & Civil Engineer",
+        "required": false
+      }
+    ]
+  ],
+  "/career_Jr_Executive_Receptionist.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "dob",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "location",
+        "required": false,
+        "options": [
+          "",
+          "Andhra Pradesh\t",
+          "Arunachal Pradesh\t",
+          "Assam\t",
+          "Bihar\t",
+          "Chhattisgarh\t",
+          "Goa\t",
+          "Gujarat\t",
+          "Haryana\t",
+          "Himachal \t",
+          "Jharkhand\t",
+          "Karnataka\t",
+          "Kerala\t",
+          "Madhya Pradesh\t",
+          "Maharashtra\t",
+          "Manipur\t",
+          "Meghalaya\t",
+          "Mizoram\t",
+          "Nagaland\t",
+          "Odisha\t",
+          "Punjab\t",
+          "Rajasthan\t",
+          "Sikkim\t",
+          "Tamil Nadu\t",
+          "Telangana\t",
+          "Tripura\t",
+          "Uttar Pradesh\t",
+          "Uttarakhand\t",
+          "West Bengal\t",
+          "Other\t"
+        ]
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "experience",
+        "required": true
+      },
+      {
+        "type": "text",
+        "name": "linkedin",
+        "required": true
+      },
+      {
+        "type": "file",
+        "name": "resume",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "currentmonthlysalary",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "expectedsalary",
+        "required": true
+      },
+      {
+        "name": "canjoin",
+        "required": false,
+        "options": [
+          "",
+          "15 Days",
+          "30 Days",
+          "45 Days",
+          "60 Days",
+          "60 Days and above"
+        ]
+      },
+      {
+        "name": "relocategoa",
+        "required": false,
+        "options": [
+          "",
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "name": "personality",
+        "required": true
+      },
+      {
+        "name": "skills",
+        "required": true
+      },
+      {
+        "name": "specialexperience",
+        "required": true
+      },
+      {
+        "name": "willing",
+        "required": true
+      },
+      {
+        "name": "message",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "job_position",
+        "value": "Jr. Executive Receptionist",
+        "required": false
+      }
+    ]
+  ],
+  "/career_Jr_Network_Engineer.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "dob",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "location",
+        "required": false,
+        "options": [
+          "",
+          "Andhra Pradesh\t",
+          "Arunachal Pradesh\t",
+          "Assam\t",
+          "Bihar\t",
+          "Chhattisgarh\t",
+          "Goa\t",
+          "Gujarat\t",
+          "Haryana\t",
+          "Himachal \t",
+          "Jharkhand\t",
+          "Karnataka\t",
+          "Kerala\t",
+          "Madhya Pradesh\t",
+          "Maharashtra\t",
+          "Manipur\t",
+          "Meghalaya\t",
+          "Mizoram\t",
+          "Nagaland\t",
+          "Odisha\t",
+          "Punjab\t",
+          "Rajasthan\t",
+          "Sikkim\t",
+          "Tamil Nadu\t",
+          "Telangana\t",
+          "Tripura\t",
+          "Uttar Pradesh\t",
+          "Uttarakhand\t",
+          "West Bengal\t",
+          "Other\t"
+        ]
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "experience",
+        "required": true
+      },
+      {
+        "type": "text",
+        "name": "linkedin",
+        "required": true
+      },
+      {
+        "type": "file",
+        "name": "resume",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "currentmonthlysalary",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "expectedsalary",
+        "required": true
+      },
+      {
+        "name": "canjoin",
+        "required": false,
+        "options": [
+          "",
+          "15 Days",
+          "30 Days",
+          "45 Days",
+          "60 Days",
+          "60 Days and above"
+        ]
+      },
+      {
+        "name": "relocategoa",
+        "required": false,
+        "options": [
+          "",
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "name": "personality",
+        "required": true
+      },
+      {
+        "name": "skills",
+        "required": true
+      },
+      {
+        "name": "specialexperience",
+        "required": true
+      },
+      {
+        "name": "willing",
+        "required": true
+      },
+      {
+        "name": "message",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "job_position",
+        "value": "Jr. Network Engineer",
+        "required": false
+      }
+    ]
+  ],
+  "/career_Jr_UI_UX_Developer.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "dob",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "location",
+        "required": false,
+        "options": [
+          "",
+          "Andhra Pradesh\t",
+          "Arunachal Pradesh\t",
+          "Assam\t",
+          "Bihar\t",
+          "Chhattisgarh\t",
+          "Goa\t",
+          "Gujarat\t",
+          "Haryana\t",
+          "Himachal \t",
+          "Jharkhand\t",
+          "Karnataka\t",
+          "Kerala\t",
+          "Madhya Pradesh\t",
+          "Maharashtra\t",
+          "Manipur\t",
+          "Meghalaya\t",
+          "Mizoram\t",
+          "Nagaland\t",
+          "Odisha\t",
+          "Punjab\t",
+          "Rajasthan\t",
+          "Sikkim\t",
+          "Tamil Nadu\t",
+          "Telangana\t",
+          "Tripura\t",
+          "Uttar Pradesh\t",
+          "Uttarakhand\t",
+          "West Bengal\t",
+          "Other\t"
+        ]
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "experience",
+        "required": true
+      },
+      {
+        "type": "text",
+        "name": "linkedin",
+        "required": true
+      },
+      {
+        "type": "file",
+        "name": "resume",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "currentmonthlysalary",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "expectedsalary",
+        "required": true
+      },
+      {
+        "name": "canjoin",
+        "required": false,
+        "options": [
+          "",
+          "15 Days",
+          "30 Days",
+          "45 Days",
+          "60 Days",
+          "60 Days and above"
+        ]
+      },
+      {
+        "name": "relocategoa",
+        "required": false,
+        "options": [
+          "",
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "name": "personality",
+        "required": true
+      },
+      {
+        "name": "skills",
+        "required": true
+      },
+      {
+        "name": "specialexperience",
+        "required": true
+      },
+      {
+        "name": "willing",
+        "required": true
+      },
+      {
+        "name": "message",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "job_position",
+        "value": "Jr.UI/UX Developer",
+        "required": false
+      }
+    ]
+  ],
+  "/career_Legal_Associate.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "dob",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "location",
+        "required": false,
+        "options": [
+          "",
+          "Andhra Pradesh\t",
+          "Arunachal Pradesh\t",
+          "Assam\t",
+          "Bihar\t",
+          "Chhattisgarh\t",
+          "Goa\t",
+          "Gujarat\t",
+          "Haryana\t",
+          "Himachal \t",
+          "Jharkhand\t",
+          "Karnataka\t",
+          "Kerala\t",
+          "Madhya Pradesh\t",
+          "Maharashtra\t",
+          "Manipur\t",
+          "Meghalaya\t",
+          "Mizoram\t",
+          "Nagaland\t",
+          "Odisha\t",
+          "Punjab\t",
+          "Rajasthan\t",
+          "Sikkim\t",
+          "Tamil Nadu\t",
+          "Telangana\t",
+          "Tripura\t",
+          "Uttar Pradesh\t",
+          "Uttarakhand\t",
+          "West Bengal\t",
+          "Other\t"
+        ]
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "experience",
+        "required": true
+      },
+      {
+        "type": "text",
+        "name": "linkedin",
+        "required": true
+      },
+      {
+        "type": "file",
+        "name": "resume",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "currentmonthlysalary",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "expectedsalary",
+        "required": true
+      },
+      {
+        "name": "canjoin",
+        "required": false,
+        "options": [
+          "",
+          "15 Days",
+          "30 Days",
+          "45 Days",
+          "60 Days",
+          "60 Days and above"
+        ]
+      },
+      {
+        "name": "relocategoa",
+        "required": false,
+        "options": [
+          "",
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "name": "personality",
+        "required": true
+      },
+      {
+        "name": "skills",
+        "required": true
+      },
+      {
+        "name": "specialexperience",
+        "required": true
+      },
+      {
+        "name": "willing",
+        "required": true
+      },
+      {
+        "name": "message",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "job_position",
+        "value": "Legal Associate ",
+        "required": false
+      }
+    ]
+  ],
+  "/career_Maintenance_Executive.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "dob",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "location",
+        "required": false,
+        "options": [
+          "",
+          "Andhra Pradesh\t",
+          "Arunachal Pradesh\t",
+          "Assam\t",
+          "Bihar\t",
+          "Chhattisgarh\t",
+          "Goa\t",
+          "Gujarat\t",
+          "Haryana\t",
+          "Himachal \t",
+          "Jharkhand\t",
+          "Karnataka\t",
+          "Kerala\t",
+          "Madhya Pradesh\t",
+          "Maharashtra\t",
+          "Manipur\t",
+          "Meghalaya\t",
+          "Mizoram\t",
+          "Nagaland\t",
+          "Odisha\t",
+          "Punjab\t",
+          "Rajasthan\t",
+          "Sikkim\t",
+          "Tamil Nadu\t",
+          "Telangana\t",
+          "Tripura\t",
+          "Uttar Pradesh\t",
+          "Uttarakhand\t",
+          "West Bengal\t",
+          "Other\t"
+        ]
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "experience",
+        "required": true
+      },
+      {
+        "type": "text",
+        "name": "linkedin",
+        "required": true
+      },
+      {
+        "type": "file",
+        "name": "resume",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "currentmonthlysalary",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "expectedsalary",
+        "required": true
+      },
+      {
+        "name": "canjoin",
+        "required": false,
+        "options": [
+          "",
+          "15 Days",
+          "30 Days",
+          "45 Days",
+          "60 Days",
+          "60 Days and above"
+        ]
+      },
+      {
+        "name": "relocategoa",
+        "required": false,
+        "options": [
+          "",
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "name": "personality",
+        "required": true
+      },
+      {
+        "name": "skills",
+        "required": true
+      },
+      {
+        "name": "specialexperience",
+        "required": true
+      },
+      {
+        "name": "willing",
+        "required": true
+      },
+      {
+        "name": "message",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "job_position",
+        "value": "Maintenance Executive",
+        "required": false
+      }
+    ]
+  ],
+  "/career_Marketing_Analytics.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "dob",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "location",
+        "required": false,
+        "options": [
+          "",
+          "Andhra Pradesh\t",
+          "Arunachal Pradesh\t",
+          "Assam\t",
+          "Bihar\t",
+          "Chhattisgarh\t",
+          "Goa\t",
+          "Gujarat\t",
+          "Haryana\t",
+          "Himachal \t",
+          "Jharkhand\t",
+          "Karnataka\t",
+          "Kerala\t",
+          "Madhya Pradesh\t",
+          "Maharashtra\t",
+          "Manipur\t",
+          "Meghalaya\t",
+          "Mizoram\t",
+          "Nagaland\t",
+          "Odisha\t",
+          "Punjab\t",
+          "Rajasthan\t",
+          "Sikkim\t",
+          "Tamil Nadu\t",
+          "Telangana\t",
+          "Tripura\t",
+          "Uttar Pradesh\t",
+          "Uttarakhand\t",
+          "West Bengal\t",
+          "Other\t"
+        ]
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "experience",
+        "required": true
+      },
+      {
+        "type": "text",
+        "name": "linkedin",
+        "required": true
+      },
+      {
+        "type": "file",
+        "name": "resume",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "currentmonthlysalary",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "expectedsalary",
+        "required": true
+      },
+      {
+        "name": "canjoin",
+        "required": false,
+        "options": [
+          "",
+          "15 Days",
+          "30 Days",
+          "45 Days",
+          "60 Days",
+          "60 Days and above"
+        ]
+      },
+      {
+        "name": "relocategoa",
+        "required": false,
+        "options": [
+          "",
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "name": "personality",
+        "required": true
+      },
+      {
+        "name": "skills",
+        "required": true
+      },
+      {
+        "name": "specialexperience",
+        "required": true
+      },
+      {
+        "name": "willing",
+        "required": true
+      },
+      {
+        "name": "message",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "job_position",
+        "value": "Marketing Analytics",
+        "required": false
+      }
+    ]
+  ],
+  "/career_PHP_Developer.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "dob",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "location",
+        "required": false,
+        "options": [
+          "",
+          "Andhra Pradesh\t",
+          "Arunachal Pradesh\t",
+          "Assam\t",
+          "Bihar\t",
+          "Chhattisgarh\t",
+          "Goa\t",
+          "Gujarat\t",
+          "Haryana\t",
+          "Himachal \t",
+          "Jharkhand\t",
+          "Karnataka\t",
+          "Kerala\t",
+          "Madhya Pradesh\t",
+          "Maharashtra\t",
+          "Manipur\t",
+          "Meghalaya\t",
+          "Mizoram\t",
+          "Nagaland\t",
+          "Odisha\t",
+          "Punjab\t",
+          "Rajasthan\t",
+          "Sikkim\t",
+          "Tamil Nadu\t",
+          "Telangana\t",
+          "Tripura\t",
+          "Uttar Pradesh\t",
+          "Uttarakhand\t",
+          "West Bengal\t",
+          "Other\t"
+        ]
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "experience",
+        "required": true
+      },
+      {
+        "type": "text",
+        "name": "linkedin",
+        "required": true
+      },
+      {
+        "type": "file",
+        "name": "resume",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "currentmonthlysalary",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "expectedsalary",
+        "required": true
+      },
+      {
+        "name": "canjoin",
+        "required": false,
+        "options": [
+          "",
+          "15 Days",
+          "30 Days",
+          "45 Days",
+          "60 Days",
+          "60 Days and above"
+        ]
+      },
+      {
+        "name": "relocategoa",
+        "required": false,
+        "options": [
+          "",
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "name": "personality",
+        "required": true
+      },
+      {
+        "name": "skills",
+        "required": true
+      },
+      {
+        "name": "specialexperience",
+        "required": true
+      },
+      {
+        "name": "willing",
+        "required": true
+      },
+      {
+        "name": "message",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "job_position",
+        "value": "Php Developer",
+        "required": false
+      }
+    ]
+  ],
+  "/career_Receptionist_Admin_Associate.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "dob",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "location",
+        "required": false,
+        "options": [
+          "",
+          "Andhra Pradesh\t",
+          "Arunachal Pradesh\t",
+          "Assam\t",
+          "Bihar\t",
+          "Chhattisgarh\t",
+          "Goa\t",
+          "Gujarat\t",
+          "Haryana\t",
+          "Himachal \t",
+          "Jharkhand\t",
+          "Karnataka\t",
+          "Kerala\t",
+          "Madhya Pradesh\t",
+          "Maharashtra\t",
+          "Manipur\t",
+          "Meghalaya\t",
+          "Mizoram\t",
+          "Nagaland\t",
+          "Odisha\t",
+          "Punjab\t",
+          "Rajasthan\t",
+          "Sikkim\t",
+          "Tamil Nadu\t",
+          "Telangana\t",
+          "Tripura\t",
+          "Uttar Pradesh\t",
+          "Uttarakhand\t",
+          "West Bengal\t",
+          "Other\t"
+        ]
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "experience",
+        "required": true
+      },
+      {
+        "type": "text",
+        "name": "linkedin",
+        "required": true
+      },
+      {
+        "type": "file",
+        "name": "resume",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "currentmonthlysalary",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "expectedsalary",
+        "required": true
+      },
+      {
+        "name": "canjoin",
+        "required": false,
+        "options": [
+          "",
+          "15 Days",
+          "30 Days",
+          "45 Days",
+          "60 Days",
+          "60 Days and above"
+        ]
+      },
+      {
+        "name": "relocategoa",
+        "required": false,
+        "options": [
+          "",
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "name": "personality",
+        "required": true
+      },
+      {
+        "name": "skills",
+        "required": true
+      },
+      {
+        "name": "specialexperience",
+        "required": true
+      },
+      {
+        "name": "willing",
+        "required": true
+      },
+      {
+        "name": "message",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "job_position",
+        "value": "Receptionist / Admin Associate",
+        "required": false
+      }
+    ]
+  ],
+  "/career_Social_Media_Marketing.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "dob",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "location",
+        "required": false,
+        "options": [
+          "",
+          "Andhra Pradesh\t",
+          "Arunachal Pradesh\t",
+          "Assam\t",
+          "Bihar\t",
+          "Chhattisgarh\t",
+          "Goa\t",
+          "Gujarat\t",
+          "Haryana\t",
+          "Himachal \t",
+          "Jharkhand\t",
+          "Karnataka\t",
+          "Kerala\t",
+          "Madhya Pradesh\t",
+          "Maharashtra\t",
+          "Manipur\t",
+          "Meghalaya\t",
+          "Mizoram\t",
+          "Nagaland\t",
+          "Odisha\t",
+          "Punjab\t",
+          "Rajasthan\t",
+          "Sikkim\t",
+          "Tamil Nadu\t",
+          "Telangana\t",
+          "Tripura\t",
+          "Uttar Pradesh\t",
+          "Uttarakhand\t",
+          "West Bengal\t",
+          "Other\t"
+        ]
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "experience",
+        "required": true
+      },
+      {
+        "type": "text",
+        "name": "linkedin",
+        "required": true
+      },
+      {
+        "type": "file",
+        "name": "resume",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "currentmonthlysalary",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "expectedsalary",
+        "required": true
+      },
+      {
+        "name": "canjoin",
+        "required": false,
+        "options": [
+          "",
+          "15 Days",
+          "30 Days",
+          "45 Days",
+          "60 Days",
+          "60 Days and above"
+        ]
+      },
+      {
+        "name": "relocategoa",
+        "required": false,
+        "options": [
+          "",
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "name": "personality",
+        "required": true
+      },
+      {
+        "name": "skills",
+        "required": true
+      },
+      {
+        "name": "specialexperience",
+        "required": true
+      },
+      {
+        "name": "willing",
+        "required": true
+      },
+      {
+        "name": "message",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "job_position",
+        "value": "Social Media Marketing",
+        "required": false
+      }
+    ]
+  ],
+  "/career_Sr._Manager_Sales_&_Business_Development.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "dob",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "location",
+        "required": false,
+        "options": [
+          "",
+          "Andhra Pradesh\t",
+          "Arunachal Pradesh\t",
+          "Assam\t",
+          "Bihar\t",
+          "Chhattisgarh\t",
+          "Goa\t",
+          "Gujarat\t",
+          "Haryana\t",
+          "Himachal \t",
+          "Jharkhand\t",
+          "Karnataka\t",
+          "Kerala\t",
+          "Madhya Pradesh\t",
+          "Maharashtra\t",
+          "Manipur\t",
+          "Meghalaya\t",
+          "Mizoram\t",
+          "Nagaland\t",
+          "Odisha\t",
+          "Punjab\t",
+          "Rajasthan\t",
+          "Sikkim\t",
+          "Tamil Nadu\t",
+          "Telangana\t",
+          "Tripura\t",
+          "Uttar Pradesh\t",
+          "Uttarakhand\t",
+          "West Bengal\t",
+          "Other\t"
+        ]
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "experience",
+        "required": true
+      },
+      {
+        "type": "text",
+        "name": "linkedin",
+        "required": true
+      },
+      {
+        "type": "file",
+        "name": "resume",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "currentmonthlysalary",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "expectedsalary",
+        "required": true
+      },
+      {
+        "name": "canjoin",
+        "required": false,
+        "options": [
+          "",
+          "15 Days",
+          "30 Days",
+          "45 Days",
+          "60 Days",
+          "60 Days and above"
+        ]
+      },
+      {
+        "name": "relocategoa",
+        "required": false,
+        "options": [
+          "",
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "name": "personality",
+        "required": true
+      },
+      {
+        "name": "skills",
+        "required": true
+      },
+      {
+        "name": "specialexperience",
+        "required": true
+      },
+      {
+        "name": "willing",
+        "required": true
+      },
+      {
+        "name": "message",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "job_position",
+        "value": "Sr.Manager Sales & Business Development",
+        "required": false
+      }
+    ]
+  ],
+  "/career_Sr_IT_Manager.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "dob",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "location",
+        "required": false,
+        "options": [
+          "",
+          "Andhra Pradesh\t",
+          "Arunachal Pradesh\t",
+          "Assam\t",
+          "Bihar\t",
+          "Chhattisgarh\t",
+          "Goa\t",
+          "Gujarat\t",
+          "Haryana\t",
+          "Himachal \t",
+          "Jharkhand\t",
+          "Karnataka\t",
+          "Kerala\t",
+          "Madhya Pradesh\t",
+          "Maharashtra\t",
+          "Manipur\t",
+          "Meghalaya\t",
+          "Mizoram\t",
+          "Nagaland\t",
+          "Odisha\t",
+          "Punjab\t",
+          "Rajasthan\t",
+          "Sikkim\t",
+          "Tamil Nadu\t",
+          "Telangana\t",
+          "Tripura\t",
+          "Uttar Pradesh\t",
+          "Uttarakhand\t",
+          "West Bengal\t",
+          "Other\t"
+        ]
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "experience",
+        "required": true
+      },
+      {
+        "type": "text",
+        "name": "linkedin",
+        "required": true
+      },
+      {
+        "type": "file",
+        "name": "resume",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "currentmonthlysalary",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "expectedsalary",
+        "required": true
+      },
+      {
+        "name": "canjoin",
+        "required": false,
+        "options": [
+          "",
+          "15 Days",
+          "30 Days",
+          "45 Days",
+          "60 Days",
+          "60 Days and above"
+        ]
+      },
+      {
+        "name": "relocategoa",
+        "required": false,
+        "options": [
+          "",
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "name": "personality",
+        "required": true
+      },
+      {
+        "name": "skills",
+        "required": true
+      },
+      {
+        "name": "specialexperience",
+        "required": true
+      },
+      {
+        "name": "willing",
+        "required": true
+      },
+      {
+        "name": "message",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "job_position",
+        "value": "Sr. IT Manager",
+        "required": false
+      }
+    ]
+  ],
+  "/career_Web_Developer_Intern.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "date",
+        "name": "dob",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "location",
+        "required": false,
+        "options": [
+          "",
+          "Andhra Pradesh\t",
+          "Arunachal Pradesh\t",
+          "Assam\t",
+          "Bihar\t",
+          "Chhattisgarh\t",
+          "Goa\t",
+          "Gujarat\t",
+          "Haryana\t",
+          "Himachal \t",
+          "Jharkhand\t",
+          "Karnataka\t",
+          "Kerala\t",
+          "Madhya Pradesh\t",
+          "Maharashtra\t",
+          "Manipur\t",
+          "Meghalaya\t",
+          "Mizoram\t",
+          "Nagaland\t",
+          "Odisha\t",
+          "Punjab\t",
+          "Rajasthan\t",
+          "Sikkim\t",
+          "Tamil Nadu\t",
+          "Telangana\t",
+          "Tripura\t",
+          "Uttar Pradesh\t",
+          "Uttarakhand\t",
+          "West Bengal\t",
+          "Other\t"
+        ]
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "experience",
+        "required": true
+      },
+      {
+        "type": "text",
+        "name": "linkedin",
+        "required": true
+      },
+      {
+        "type": "file",
+        "name": "resume",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "currentmonthlysalary",
+        "required": true
+      },
+      {
+        "type": "number",
+        "min": "0",
+        "name": "expectedsalary",
+        "required": true
+      },
+      {
+        "name": "canjoin",
+        "required": false,
+        "options": [
+          "",
+          "15 Days",
+          "30 Days",
+          "45 Days",
+          "60 Days",
+          "60 Days and above"
+        ]
+      },
+      {
+        "name": "relocategoa",
+        "required": false,
+        "options": [
+          "",
+          "Yes",
+          "No"
+        ]
+      },
+      {
+        "name": "personality",
+        "required": true
+      },
+      {
+        "name": "skills",
+        "required": true
+      },
+      {
+        "name": "specialexperience",
+        "required": true
+      },
+      {
+        "name": "willing",
+        "required": true
+      },
+      {
+        "name": "message",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "job_position",
+        "value": "Web Developer Intern",
+        "required": false
+      }
+    ]
+  ],
+  "/partner.html": [
+    [
+      {
+        "type": "text",
+        "name": "name",
+        "required": true
+      },
+      {
+        "type": "email",
+        "name": "email",
+        "required": true
+      },
+      {
+        "type": "tel",
+        "name": "mobile",
+        "required": true
+      },
+      {
+        "name": "message",
+        "required": true
+      },
+      {
+        "type": "hidden",
+        "name": "pagename",
+        "value": "Partner",
+        "required": false
+      }
+    ]
+  ]
+}
