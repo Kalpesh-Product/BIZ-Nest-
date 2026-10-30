@@ -5,6 +5,7 @@
 @import "../public/assets/vendor/bootstrap-icons/bootstrap-icons.css" layer(utilities);
 @import "../public/assets/vendor/fontawesome-free/css/all.min.css" layer(utilities);
 @import "../public/assets/vendor/swiper/swiper-bundle.min.css" layer(utilities);
+@import "sweetalert2/dist/sweetalert2.min.css" layer(utilities);
 @import "tailwindcss/theme.css" layer(theme) prefix(tw);
 @import "./tailwind-exceptions.css";
 @import "./tailwind-variants.css";
