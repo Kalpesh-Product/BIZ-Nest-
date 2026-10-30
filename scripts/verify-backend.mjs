@@ -10,12 +10,14 @@ import { collectionForSource, collectionNames, ensureFormIndexes } from '../lib/
 import { migrateFormCollections } from '../lib/migrate-form-collections.mjs';
 import { flattenFormDocuments } from '../lib/flatten-form-documents.mjs';
 import { flatSubmission } from '../lib/submission-document.mjs';
+import { getDatabaseConfig } from '../lib/server-config.mjs';
 
-nextEnv.loadEnvConfig(process.cwd());
+nextEnv.loadEnvConfig(process.cwd(), process.env.NODE_ENV !== 'production');
 const dbName = `biznest_test_${randomUUID().replaceAll('-', '')}`;
 const port = Number(process.env.BACKEND_TEST_PORT || 3013);
 const base = `http://127.0.0.1:${port}`;
-const client = new MongoClient(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017', { serverSelectionTimeoutMS: 5000 });
+const databaseConfig = getDatabaseConfig();
+const client = new MongoClient(databaseConfig.uri, databaseConfig.options);
 const db = client.db(dbName);
 const contracts = JSON.parse(await readFile('content/form-contracts.json', 'utf8'));
 let notifications = 0;
@@ -49,10 +51,12 @@ async function post(data, headers = {}) {
   // Drain every response, including negative tests, before reusing its socket.
   return new Response(await response.arrayBuffer(), { status: response.status, headers: response.headers });
 }
-async function startServer(uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017') {
+async function startServer(uri = databaseConfig.uri) {
   output = '';
-  server = spawn(process.execPath, ['node_modules/next/dist/bin/next', 'start', '--port', String(port)], {
-    env: { ...process.env, MONGODB_URI: uri, MONGODB_DB: dbName, INQUIRY_WEBHOOK_URL: `http://127.0.0.1:${receiver.address().port}`, INQUIRY_WEBHOOK_TOKEN: '' },
+  server = spawn(process.execPath, ['scripts/serve.mjs', 'start'], {
+    env: { ...process.env, PORT: String(port), MONGODB_URI: uri, MONGODB_DB: dbName,
+      MAX_REQUEST_BYTES: '6000000', MAX_RESUME_BYTES: '5000000', INQUIRY_RATE_LIMIT_MAX: '10', INQUIRY_RATE_LIMIT_WINDOW_MS: '900000',
+      INQUIRY_WEBHOOK_URL: `http://127.0.0.1:${receiver.address().port}`, INQUIRY_WEBHOOK_TOKEN: '', INQUIRY_WEBHOOK_TIMEOUT_MS: '15000' },
     stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true,
   });
   server.stdout.on('data', chunk => { output += chunk; });

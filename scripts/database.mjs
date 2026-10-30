@@ -4,12 +4,14 @@ import { writeFile } from 'node:fs/promises';
 import { formCollections, collectionNames, ensureFormIndexes } from '../lib/form-collections.mjs';
 import { migrateFormCollections } from '../lib/migrate-form-collections.mjs';
 import { flattenFormDocuments } from '../lib/flatten-form-documents.mjs';
+import { getDatabaseConfig } from '../lib/server-config.mjs';
 
-nextEnv.loadEnvConfig(process.cwd());
-const client = new MongoClient(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017', { serverSelectionTimeoutMS: 5000 });
+nextEnv.loadEnvConfig(process.cwd(), process.env.NODE_ENV !== 'production');
+const config = getDatabaseConfig();
+const client = new MongoClient(config.uri, config.options);
 try {
   await client.connect();
-  const db = client.db(process.env.MONGODB_DB || 'biznest');
+  const db = client.db(config.name);
   const command = process.argv[2] || 'check';
   if (command === 'setup') {
     await Promise.all(collectionNames.map(name => ensureFormIndexes(db, name)));
@@ -50,6 +52,6 @@ try {
     console.log('Resume exported to the requested path.');
   } else throw new Error('Unknown database command.');
 } catch {
-  console.error('Database command failed. Check MongoDB on port 27017, environment variables, command arguments, and output permissions.');
+  console.error('Database command failed. Check MongoDB environment settings, command arguments, and output permissions.');
   process.exitCode = 1;
 } finally { await client.close(); }

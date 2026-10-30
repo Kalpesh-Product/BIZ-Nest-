@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { getSiteUrl } from '@/lib/server-config.mjs';
 export default function robots(): MetadataRoute.Robots {
-  return { rules: { userAgent: '*', allow: '/', disallow: '/api/' }, sitemap: `${process.env.SITE_URL || 'https://biznest.co.in'}/sitemap.xml` };
+  return { rules: { userAgent: '*', allow: '/', disallow: '/api/' }, sitemap: `${getSiteUrl()}/sitemap.xml` };
 }

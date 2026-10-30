@@ -1,5 +1,6 @@
 import 'server-only';
 import contracts from '@/content/form-contracts.json';
+import { getInquiryConfig } from './server-config.mjs';
 
 type Field = { name: string; type?: string; value?: string; required: boolean; min?: string; max?: string; options?: string[] };
 const pages = contracts as Record<string, Field[][]>;
@@ -24,7 +25,8 @@ export async function validateInquiry(data: FormData) {
         if (field.required) throw new InvalidInquiry('Please upload your resume.');
         continue;
       }
-      if (raw.size > 5_000_000 || !/\.(pdf|docx?)$/i.test(raw.name)) throw new InvalidInquiry('Please upload a PDF or Word resume under 5 MB.');
+      const { resumeMaxBytes } = getInquiryConfig();
+      if (raw.size > resumeMaxBytes || !/\.(pdf|docx?)$/i.test(raw.name)) throw new InvalidInquiry(`Please upload a PDF or Word resume under ${resumeMaxBytes / 1_000_000} MB.`);
       const bytes = Buffer.from(await raw.arrayBuffer());
       const extension = raw.name.split('.').pop()?.toLowerCase();
       const matches = extension === 'pdf' ? bytes.subarray(0, 5).toString() === '%PDF-'

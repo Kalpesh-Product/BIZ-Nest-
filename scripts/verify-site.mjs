@@ -1,8 +1,11 @@
 import assert from 'node:assert/strict';
 import { readFile, access } from 'node:fs/promises';
 import path from 'node:path';
+import nextEnv from '@next/env';
+import { getPort } from '../lib/server-config.mjs';
 
-const base = process.argv[2] || 'http://localhost:3011';
+nextEnv.loadEnvConfig(process.cwd(), process.env.NODE_ENV !== 'production');
+const base = process.argv[2] || `http://localhost:${getPort()}`;
 const manifest = JSON.parse(await readFile('content/manifest.json', 'utf8'));
 const routes = ['/', ...Object.keys(manifest).map(name => `/${encodeURIComponent(name)}`), '/robots.txt', '/sitemap.xml'];
 const localAssets = new Set();

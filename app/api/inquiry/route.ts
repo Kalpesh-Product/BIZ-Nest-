@@ -4,13 +4,14 @@ import { database } from '@/lib/mongodb';
 import { InvalidInquiry, validateInquiry } from '@/lib/inquiry-validation';
 import { collectionForSource, ensureFormIndexes } from '@/lib/form-collections.mjs';
 import { businessFieldsFor } from '@/lib/submission-document.mjs';
+import { getInquiryConfig } from '@/lib/server-config.mjs';
 
-const MAX_BODY = 6_000_000;
+const settings = getInquiryConfig();
 const reply = (message: string, status = 200, id?: string) => Response.json({ message, ...(id ? { id } : {}) }, { status, headers: { 'Cache-Control': 'no-store' } });
 const accepted = (id: string) => reply('Thank you! Your inquiry has been received.', 200, id);
 
 async function readForm(request: Request) {
-  if (Number(request.headers.get('content-length') || 0) > MAX_BODY) throw new RangeError();
+  if (Number(request.headers.get('content-length') || 0) > settings.requestMaxBytes) throw new RangeError();
   if (!request.headers.get('content-type')?.startsWith('multipart/form-data')) throw new InvalidInquiry('Invalid form data.');
   const reader = request.body?.getReader();
   if (!reader) throw new InvalidInquiry('Invalid form data.');
@@ -21,7 +22,7 @@ async function readForm(request: Request) {
       const next = await reader.read();
       if (next.done) break;
       size += next.value.byteLength;
-      if (size > MAX_BODY) { await reader.cancel(); throw new RangeError(); }
+      if (size > settings.requestMaxBytes) { await reader.cancel(); throw new RangeError(); }
       chunks.push(next.value);
     }
     return await new Response(Buffer.concat(chunks), { headers: { 'Content-Type': request.headers.get('content-type')! } }).formData();
@@ -37,7 +38,7 @@ export async function POST(request: Request) {
   let inquiry: Awaited<ReturnType<typeof validateInquiry>>;
   try { data = await readForm(request); inquiry = await validateInquiry(data); }
   catch (error) {
-    if (error instanceof RangeError) return reply('Please keep attachments under 5 MB.', 413);
+    if (error instanceof RangeError) return reply(`Please keep attachments under ${settings.resumeMaxBytes / 1_000_000} MB.`, 413);
     return reply(error instanceof InvalidInquiry ? error.message : 'Invalid form data.', 400);
   }
   try {
@@ -54,13 +55,13 @@ export async function POST(request: Request) {
     if (key) { const previous = await replay(); if (previous) return previous; }
     const now = new Date();
     // Atomic shared limit; temporary records contain an email hash, not its value.
-    const bucket = Math.floor(now.getTime() / 900_000);
+    const bucket = Math.floor(now.getTime() / settings.rateLimitWindowMs);
     const limitKey = createHash('sha256').update(`${inquiry.fields.email.toLowerCase()}:${bucket}`).digest('hex');
     const limit = await db.collection<{ _id: string; count: number; expiresAt: Date }>('submission_limits').findOneAndUpdate({ _id: limitKey }, {
-      $inc: { count: 1 }, $setOnInsert: { expiresAt: new Date((bucket + 2) * 900_000) },
+      $inc: { count: 1 }, $setOnInsert: { expiresAt: new Date((bucket + 2) * settings.rateLimitWindowMs) },
     }, { upsert: true, returnDocument: 'after' });
-    if (limit && limit.count > 10) return reply('Too many submissions. Please try again in 15 minutes.', 429);
-    const webhook = process.env.INQUIRY_WEBHOOK_URL;
+    if (limit && limit.count > settings.rateLimitMax) return reply(`Too many submissions. Please try again in ${Math.ceil(settings.rateLimitWindowMs / 60000)} minutes.`, 429);
+    const webhook = settings.webhookUrl;
     let id: string;
     try {
       const { resume, source, kind, fields } = inquiry;
@@ -80,8 +81,8 @@ export async function POST(request: Request) {
       let status = 'failed';
       try {
         for (const [name, value] of Object.entries(inquiry.fields)) data.set(name, value);
-        const response = await fetch(webhook, { method: 'POST', body: data, signal: AbortSignal.timeout(15_000),
-          headers: { 'Idempotency-Key': id, ...(process.env.INQUIRY_WEBHOOK_TOKEN ? { Authorization: `Bearer ${process.env.INQUIRY_WEBHOOK_TOKEN}` } : {}) } });
+        const response = await fetch(webhook, { method: 'POST', body: data, signal: AbortSignal.timeout(settings.webhookTimeoutMs),
+          headers: { 'Idempotency-Key': id, ...(settings.webhookToken ? { Authorization: `Bearer ${settings.webhookToken}` } : {}) } });
         if (response.ok) status = 'delivered';
         await response.body?.cancel();
       } catch { /* Stored separately for operator review. */ }

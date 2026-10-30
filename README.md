@@ -62,27 +62,27 @@ Open [http://localhost:3011](http://localhost:3011).
 
 `npm ci` installs the versions recorded in the lockfile. Use `npm install` when intentionally changing dependencies, and include the resulting lockfile changes in your commit.
 
-Environment configuration is optional for browsing locally. To configure form delivery or sitemap URLs, copy `.env.example` to `.env.local` using your editor or one of these commands:
+Environment configuration is optional for browsing locally. To configure form delivery or sitemap URLs, copy `.env.example` to `.env` using your editor or one of these commands:
 
 ```sh
 # Git Bash, macOS, or Linux
-cp .env.example .env.local
+cp .env.example .env
 ```
 
 ```powershell
 # PowerShell
-Copy-Item .env.example .env.local
+Copy-Item .env.example .env
 ```
 
-Do not commit `.env.local` or credentials. `.gitignore` excludes environment files while retaining `.env.example`.
+Do not overwrite an existing env file when copying the template. Keep `.env` and optional `.env.local` private; do not commit either file or credentials. `.gitignore` excludes environment files while retaining `.env.example`.
 
 ## Commands and ports
 
 | Command | Purpose |
 | --- | --- |
-| `npm run dev` | Start the development server on port **3011** |
+| `npm run dev` | Start the development server on `PORT` from the env configuration (default **3011**) |
 | `npm run build` | Compile, type-check, and generate the production build |
-| `npm start` | Serve the existing production build on port **3011** |
+| `npm start` | Serve the existing production build on `PORT` from the env configuration (default **3011**) |
 | `npm run lint` | Run ESLint |
 | `npm run styles:sync` | Synchronize complete Tailwind candidates from parsed page JSON |
 | `node scripts/verify-site.mjs` | Audit a running site, defaulting to `http://localhost:3011` |
@@ -324,7 +324,7 @@ Existing form -> POST /api/inquiry -> server validation -> MongoDB -> optional n
 ### Local setup
 
 1. Run MongoDB Community Server on `127.0.0.1:27017` (the default port).
-2. Copy `.env.example` to `.env.local` if that file does not already exist. Keep existing environment settings.
+2. Copy `.env.example` to `.env` if that file does not already exist. Keep existing `.env.local` overrides and credentials.
 3. Run `npm install`, then `npm run db:setup` and `npm run db:check`.
 4. Run `npm run dev` and submit an existing form at `http://localhost:3011`.
 
@@ -395,19 +395,38 @@ The test covers every form page against real MongoDB, three-way purpose separati
 
 ## Environment variables
 
-Use [.env.example](.env.example) as the template.
+Use [.env.example](.env.example) as the committed template and `.env` for local values. An existing `.env.local` is preserved as a higher-priority private override. All env files except `.env.example` are ignored by Git. Hosting-injected environment variables take priority over files; production secrets should be configured in the host's secret/environment settings.
 
-| Variable | Purpose | Behavior when unset |
+Configuration is validated centrally in `lib/server-config.mjs`, shared by server handlers and CLI tools. Invalid settings report the variable name without printing its contents. Missing or empty optional settings use the defaults below.
+
+| Variable | Purpose | Default |
 | --- | --- | --- |
-| `SITE_URL` | Production origin used by sitemap and robots generation; omit a trailing slash | Falls back to `https://biznest.co.in` |
-| `MONGODB_URI` | Server-only MongoDB connection string | `mongodb://127.0.0.1:27017` |
+| `PORT` | Development/production listener port | `3011` |
+| `SITE_URL` | Canonical HTTP(S) origin used by sitemap and robots; no path/query/fragment | `https://biznest.co.in` |
+| `MONGODB_URI` | Server-only database connection string, including credentials when needed | `mongodb://127.0.0.1:27017` |
 | `MONGODB_DB` | Database name | `biznest` |
-| `INQUIRY_WEBHOOK_URL` | Optional server-side notification endpoint | Submissions are saved locally without notification |
-| `INQUIRY_WEBHOOK_TOKEN` | Optional server-side bearer token for the receiver | No authorization header is added |
+| `MONGODB_MAX_POOL_SIZE` | Maximum connections in the shared pool | `10` |
+| `MONGODB_CONNECT_TIMEOUT_MS` | Connection timeout | `5000` |
+| `MONGODB_SERVER_SELECTION_TIMEOUT_MS` | Server selection timeout | `5000` |
+| `MAX_REQUEST_BYTES` | Actual multipart body limit, including attachments and form fields | `6000000` |
+| `MAX_RESUME_BYTES` | Resume attachment limit | `5000000` |
+| `INQUIRY_RATE_LIMIT_MAX` | New submissions per normalized email per window | `10` |
+| `INQUIRY_RATE_LIMIT_WINDOW_MS` | Fixed rate-limit window | `900000` (15 minutes) |
+| `INQUIRY_WEBHOOK_URL` | Optional HTTP(S) notification endpoint | Empty: storage only |
+| `INQUIRY_WEBHOOK_TOKEN` | Optional server-only bearer token | Empty |
+| `INQUIRY_WEBHOOK_TIMEOUT_MS` | Notification timeout | `15000` |
+| `BACKEND_TEST_PORT` | Optional isolated integration-test listener | `3013` |
+| `NEXT_DIST_DIR` | Optional build-output override for tooling | `.next` in development; `.next-production` in production |
 
-Set `SITE_URL` before building. Restart after changing server environment settings; rebuild when changing settings used by generated output.
+The request limit must exceed the resume limit by at least 65,536 bytes for multipart metadata and other fields. Uploads are capped at 10 MB and request bodies at 12 MB to retain room under MongoDB's document limit. Form schema rules, collection names, text, styles and animation durations remain application code/content rather than deployment settings.
 
-Webhook settings are read only by server code. Do not prefix these secrets with `NEXT_PUBLIC_`, expose them in page JSON, or commit real values. Port 3011 is set by the npm scripts, separately from these settings.
+`npm run dev` and `npm start` load env files through `scripts/serve.mjs` before invoking the installed Next.js CLI in the same process, so `PORT` in `.env` works on Windows and Unix. There is no custom HTTP server. Direct `next dev` / `next start` commands need `--port` or a shell `PORT` setting because Next opens its listener before loading app env files.
+
+Next.js resolves settings in this order: existing process environment, `.env.$NODE_ENV.local`, `.env.local` (except test mode), `.env.$NODE_ENV`, then `.env`. The launcher selects development for `npm run dev` and production for `npm start`. Database/audit tools load development files by default; set `NODE_ENV=production` when running them against production settings. Do not put `NODE_ENV` in the env template.
+
+All database, upload/rate-limit and webhook settings are server-only. No `NEXT_PUBLIC_` secrets or `next.config.env` exports are used. Never expose credentials in client components, page JSON, logs, or Git. Never put credentials in `SITE_URL` or the webhook URL; use `INQUIRY_WEBHOOK_TOKEN` for notification authentication.
+
+Restart after changing runtime settings. Set `SITE_URL` before building and rebuild when it changes, since metadata is generated during the build. Run `npm run test:config` to verify defaults, overrides, validation, and secret-safe diagnostics. Backend integration tests force default operational limits inside their disposable server so local tuning does not change the test expectations.
 
 ## Caching and builds
 
