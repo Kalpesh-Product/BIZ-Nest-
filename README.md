@@ -336,12 +336,12 @@ Connect MongoDB Compass to `mongodb://127.0.0.1:27017`, then open database `bizn
 
 | Collection | Contents |
 | --- | --- |
-| `inquiries` | All product/service inquiries; source page, selected product, dates and other original form fields distinguish requests |
-| `jobApplications` | All career applications, including job position, applicant details, answers and embedded resume bytes |
-| `partnerships` | Partnership contact details and message |
+| `inquiries` | Every form submission: `source`, `kind`, nested `fields`, status, timestamps, retry metadata, notification state, and optional resume |
 | `submission_limits` | Temporary email hash and 15-minute bucket counter; TTL index removes expired counters |
 
-There are exactly three form-data collections, grouped by purpose rather than by page. All product pages use `inquiries`, all career forms use `jobApplications`, and the partner form uses `partnerships`. Business properties such as `name`, `email`, `mobile`, `pagename`, and job application answers are stored directly at the document root using explicit allowlists for each collection. Documents retain their `source`, `kind`, status, timestamps and retry metadata. `notification` and `resume` remain nested groups. The database does not store a generic `fields` wrapper. Run `npm run db:collections` for the complete page-to-collection mapping. `submission_limits` is a separate temporary anti-spam collection and does not store form submissions.
+All form submissions share one `inquiries` collection. Submitted answers such as name, email, preferred date and job application details are grouped in `fields`; system metadata stays at the document root. `kind` distinguishes `product`, `application` and `partnership`, while `source` identifies the original page and hidden page/job identifiers remain inside `fields`. `notification` and `resume` remain nested groups. `submission_limits` is a separate temporary anti-spam collection, not a form-submission collection.
+
+For example, filter product inquiries by `{ kind: "product" }`, applications by `{ kind: "application" }`, or email by `{ "fields.email": "person@example.com" }`. Index specific nested properties if future query patterns need them. Run `npm run db:collections` for the page-to-collection mapping.
 
 Resume metadata and BSON binary bytes are embedded in the inquiry document, so application details and its attachment are saved atomically on standalone local MongoDB. Resumes are limited to 5,000,000 bytes, comfortably below MongoDB's document limit. They are never placed in `public/` or exposed through an unauthenticated download API.
 
@@ -350,20 +350,18 @@ Operator commands run locally with database access:
 ```bash
 npm run db:collections
 npm run db:inquiries
-npm run db:inquiries -- partnerships
+npm run db:inquiries -- inquiries
 npm run db:inquiries -- INQUIRY_ID
 npm run db:resume -- INQUIRY_ID ./resume.pdf
 ```
 
-The list command returns the newest 20 records across form collections (or just a selected collection), including its collection name and excluding binary bytes and internal retry fields. Resume export creates a new file and refuses to overwrite existing files. These commands reveal personal information; use them only in a trusted terminal. Database backup and retention follow your MongoDB operations policy; this application does not automatically delete inquiry records.
+The list command returns the newest 20 records from the shared inquiries collection, including its collection name and excluding binary bytes and internal retry fields. Resume export creates a new file and refuses to overwrite existing files. These commands reveal personal information; use them only in a trusted terminal. Database backup and retention follow your MongoDB operations policy; this application does not automatically delete inquiry records.
 
 ### Migrating existing submissions
 
-Run `npm run db:setup` to create the three form-data collections and indexes. Then run `npm run db:migrate` to consolidate older page-specific `forms_*` collections, the previous legacy backup, and any misplaced records in the three target collections. Stop old server versions that still use the earlier storage layout before migrating.
+Run `npm run db:setup` to create the shared `inquiries` collection and indexes. Then run `npm run db:migrate` to consolidate records from `jobApplications`, `partnerships`, older page-specific collections and the former legacy backup. The command also moves known top-level form answers into `fields` on existing inquiries. Stop old server versions using an earlier storage layout before migrating.
 
-The migration validates source pages, writes a BSON-aware Extended JSON backup under ignored `.reference/mongodb-backups/`, and verifies document IDs, fields, dates, retry keys, notification status and resume bytes after copying. Once verified, obsolete page collections and the database backup collection are removed; any misplaced originals in the target collections are removed only after their copies are verified. The backup file remains outside MongoDB so the database does not accumulate extra form collections. Keep that file private: it contains complete submissions and resume data.
-
-Conflicting copies or unknown sources stop consolidation without removing their originals. Completed consolidation is safe to rerun. The same command then migrates existing nested `fields` into explicit top-level properties in all three collections, with a separate BSON-aware backup under `.reference/mongodb-backups/`. It rejects unknown business properties and conflicting existing top-level values instead of overwriting them. IDs, dates, field values and types, resume bytes, notification state, and retry fingerprints are preserved. Already flat records are skipped. New submissions use the flat schemas directly.
+Before mutation, the migration validates records and exports a BSON-aware Extended JSON backup to ignored `.reference/mongodb-backups/`. It preserves IDs, original field values/types, kind/source, timestamps, retry fingerprints, notification state and resume bytes, verifies every copy, and then removes obsolete collections. Conflicting nested/top-level values, unknown sources or inconsistent duplicate IDs stop migration rather than overwriting data. Already nested inquiries are unchanged, and a completed migration is safe to rerun. Keep backup files private: they contain complete submissions and resumes.
 
 ### Validation, retries, and notifications
 
@@ -373,7 +371,7 @@ Conflicting copies or unknown sources stop consolidation without removing their 
 
 The request body is bounded to 6,000,000 bytes even without `Content-Length`. Resume extension and initial PDF/Word/ZIP signatures are checked; these checks are not a malware scan or full document validation. Same-origin checks reject mismatching supplied origins. A database-backed limit permits 10 new submissions per normalized email per 15-minute bucket. This is basic abuse mitigation, not a complete public-site spam defense; apply infrastructure-level limits when deploying publicly.
 
-Each collection has a unique partial index on `source` and `idempotencyKey`, preventing duplicate retries of one form while allowing different pages to submit independently into the same collection. Reusing the same key with changed data returns `409`. No public GET/list/download endpoint exposes submissions.
+The shared collection has a unique partial index on `source` and `idempotencyKey`, preventing duplicate retries of one form while allowing different pages to submit independently into the same collection. Reusing the same key with changed data returns `409`. No public GET/list/download endpoint exposes submissions.
 
 `INQUIRY_WEBHOOK_URL` is optional. If configured, a multipart notification is attempted only after the database insert, with a 15-second timeout and inquiry ID as its idempotency key. An optional bearer token is supported. Notification status is stored as `disabled`, `pending`, `delivered`, or `failed`. Notification failures do not discard data or turn a saved submission into a failed response. There is no automatic notification retry worker; review failed/pending notifications in MongoDB. With no webhook, local storage works fully and no email is sent.
 
@@ -391,7 +389,7 @@ Each collection has a unique partial index on `source` and `idempotencyKey`, pre
 
 After `npm run build`, run `npm run test:backend`. It starts an isolated production server on port 3013, creates a randomly named `biznest_test_*` database, and removes that test database and server afterward. Your normal database and port 3011 are untouched. Set `BACKEND_TEST_PORT` if 3013 is occupied.
 
-The test covers every form page against real MongoDB, three-way purpose separation, explicit flat schemas, verified consolidation/flattening and file-backup preservation, compatibility with existing retry keys, resume bytes, canonical job/product metadata, concurrent retries, failed notifications, invalid fields and files, bounded chunked requests, origin checks, privacy, and persistent rate limiting. `npm run db:check` is the lightweight connection check for normal operation.
+The test covers every form page against real MongoDB, one shared collection with nested answers, verified consolidation/nesting and file-backup preservation, compatibility with existing retry keys, resume bytes, canonical job/product metadata, concurrent retries, failed notifications, invalid fields and files, bounded chunked requests, origin checks, privacy, and persistent rate limiting. `npm run db:check` is the lightweight connection check for normal operation.
 
 ## Environment variables
 

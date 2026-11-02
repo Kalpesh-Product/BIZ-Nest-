@@ -3,7 +3,6 @@ import { MongoClient, ObjectId } from 'mongodb';
 import { writeFile } from 'node:fs/promises';
 import { formCollections, collectionNames, ensureFormIndexes } from '../lib/form-collections.mjs';
 import { migrateFormCollections } from '../lib/migrate-form-collections.mjs';
-import { flattenFormDocuments } from '../lib/flatten-form-documents.mjs';
 import { getDatabaseConfig } from '../lib/server-config.mjs';
 
 nextEnv.loadEnvConfig(process.cwd(), process.env.NODE_ENV !== 'production');
@@ -20,9 +19,7 @@ try {
     const result = await migrateFormCollections(db);
     console.log(`Consolidated ${result.migrated} records; removed ${result.removed} obsolete collections.`);
     if (result.backup) console.log(`Verified migration backup: ${result.backup}`);
-    const flat = await flattenFormDocuments(db);
-    console.log(`Flattened ${flat.flattened} existing submissions.`);
-    if (flat.backup) console.log(`Original document backup: ${flat.backup}`);
+    console.log(`Restored nested fields on ${result.nested} submissions.`);
   } else if (command === 'collections') {
     console.log(JSON.stringify(formCollections, null, 2));
   } else if (command === 'check') {

@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { Binary, MongoServerError, ObjectId } from 'mongodb';
 import { database } from '@/lib/mongodb';
 import { InvalidInquiry, validateInquiry } from '@/lib/inquiry-validation';
-import { collectionForSource, ensureFormIndexes } from '@/lib/form-collections.mjs';
+import { collectionForSource, ensureFormIndexes, purposeForSource } from '@/lib/form-collections.mjs';
 import { businessFieldsFor } from '@/lib/submission-document.mjs';
 import { getInquiryConfig } from '@/lib/server-config.mjs';
 
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
     let id: string;
     try {
       const { resume, source, kind, fields } = inquiry;
-      const result = await inquiries.insertOne({ ...businessFieldsFor(collectionName, fields), source, kind,
+      const result = await inquiries.insertOne({ source, kind, fields: businessFieldsFor(purposeForSource(source), fields),
         ...(resume ? { resume: { ...resume, bytes: new Binary(resume.bytes) } } : {}),
         ...(key ? { idempotencyKey: key } : {}), fingerprint, status: 'new', createdAt: now, updatedAt: now,
         notification: { status: webhook ? 'pending' : 'disabled' },
