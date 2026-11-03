@@ -50,7 +50,9 @@ function renderNode(node: ContentNode, key: number): ReactNode {
     let destination = pathname.slice(1);
     try { destination = decodeURIComponent(destination); } catch { /* Keep unknown URLs native. */ }
     if (pathname === '/' || Object.hasOwn(entries, destination)) {
-      return createElement(SiteLink, { ...props, href: attrs.href }, ...renderedChildren);
+      // Use the dedicated home route rather than its legacy dynamic-route alias.
+      const href = pathname === '/index.html' ? `/${attrs.href.slice(pathname.length)}` : attrs.href;
+      return createElement(SiteLink, { ...props, href }, ...renderedChildren);
     }
   }
   if (tag === 'form') {
