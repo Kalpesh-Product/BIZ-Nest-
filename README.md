@@ -371,7 +371,7 @@ Before mutation, the migration validates records and exports a BSON-aware Extend
 
 The request body is bounded to 6,000,000 bytes even without `Content-Length`. Resume extension and initial PDF/Word/ZIP signatures are checked; these checks are not a malware scan or full document validation. Same-origin checks reject mismatching supplied origins. A database-backed limit permits 10 new submissions per normalized email per 15-minute bucket. This is basic abuse mitigation, not a complete public-site spam defense; apply infrastructure-level limits when deploying publicly.
 
-The shared collection has a unique partial index on `source` and `idempotencyKey`, preventing duplicate retries of one form while allowing different pages to submit independently into the same collection. Reusing the same key with changed data returns `409`. No public GET/list/download endpoint exposes submissions.
+The shared collection has a unique partial index on `source` and `idempotencyKey`, preventing duplicate retries of one form while allowing different pages to submit independently into the same collection. Reusing the same key with changed data returns `409`. No anonymous listing or resume download endpoint exposes submissions. The protected read API is documented below.
 
 `INQUIRY_WEBHOOK_URL` is optional. If configured, a multipart notification is attempted only after the database insert, with a 15-second timeout and inquiry ID as its idempotency key. An optional bearer token is supported. Notification status is stored as `disabled`, `pending`, `delivered`, or `failed`. Notification failures do not discard data or turn a saved submission into a failed response. There is no automatic notification retry worker; review failed/pending notifications in MongoDB. With no webhook, local storage works fully and no email is sent.
 
@@ -390,6 +390,10 @@ The shared collection has a unique partial index on `source` and `idempotencyKey
 After `npm run build`, run `npm run test:backend`. It starts an isolated production server on port 3013, creates a randomly named `biznest_test_*` database, and removes that test database and server afterward. Your normal database and port 3011 are untouched. Set `BACKEND_TEST_PORT` if 3013 is occupied.
 
 The test covers every form page against real MongoDB, one shared collection with nested answers, verified consolidation/nesting and file-backup preservation, compatibility with existing retry keys, resume bytes, canonical job/product metadata, concurrent retries, failed notifications, invalid fields and files, bounded chunked requests, origin checks, privacy, and persistent rate limiting. `npm run db:check` is the lightweight connection check for normal operation.
+
+## External submissions read API
+
+Use `GET /api/submissions` with `Authorization: Bearer <SUBMISSIONS_API_KEY>` to read submissions for external tables. Responses contain consistent, flattened rows, column definitions and pagination; MongoDB storage remains nested. Filtering, search, sorting and an optional DataTables server-side response are supported. The key is private and belongs in the external project's backend, not its browser bundle. See [the complete API and table integration guide](docs/submissions-api.md).
 
 ## Environment variables
 
@@ -413,6 +417,8 @@ Configuration is validated centrally in `lib/server-config.mjs`, shared by serve
 | `INQUIRY_WEBHOOK_URL` | Optional HTTP(S) notification endpoint | Empty: storage only |
 | `INQUIRY_WEBHOOK_TOKEN` | Optional server-only bearer token | Empty |
 | `INQUIRY_WEBHOOK_TIMEOUT_MS` | Notification timeout | `15000` |
+| `SUBMISSIONS_API_KEY` | Private bearer credential for the submissions read API (32+ non-whitespace characters) | Empty: reads disabled |
+| `SUBMISSIONS_ALLOWED_ORIGINS` | Optional comma-separated browser origins for the read API | Empty: no cross-origin browser access |
 | `BACKEND_TEST_PORT` | Optional isolated integration-test listener | `3013` |
 | `NEXT_DIST_DIR` | Optional build-output override for tooling | `.next` in development; `.next-production` in production |
 

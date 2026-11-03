@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
-import { getPort, getSiteUrl, getDatabaseConfig, getInquiryConfig } from '../lib/server-config.mjs';
+import { getPort, getSiteUrl, getDatabaseConfig, getInquiryConfig, getSubmissionsApiConfig } from '../lib/server-config.mjs';
 
-const names = ['PORT', 'SITE_URL', 'MONGODB_URI', 'MONGODB_DB', 'MONGODB_MAX_POOL_SIZE', 'MONGODB_CONNECT_TIMEOUT_MS', 'MONGODB_SERVER_SELECTION_TIMEOUT_MS', 'MAX_REQUEST_BYTES', 'MAX_RESUME_BYTES', 'INQUIRY_RATE_LIMIT_MAX', 'INQUIRY_RATE_LIMIT_WINDOW_MS', 'INQUIRY_WEBHOOK_URL', 'INQUIRY_WEBHOOK_TOKEN', 'INQUIRY_WEBHOOK_TIMEOUT_MS'];
+const names = ['SUBMISSIONS_API_KEY', 'SUBMISSIONS_ALLOWED_ORIGINS', 'PORT', 'SITE_URL', 'MONGODB_URI', 'MONGODB_DB', 'MONGODB_MAX_POOL_SIZE', 'MONGODB_CONNECT_TIMEOUT_MS', 'MONGODB_SERVER_SELECTION_TIMEOUT_MS', 'MAX_REQUEST_BYTES', 'MAX_RESUME_BYTES', 'INQUIRY_RATE_LIMIT_MAX', 'INQUIRY_RATE_LIMIT_WINDOW_MS', 'INQUIRY_WEBHOOK_URL', 'INQUIRY_WEBHOOK_TOKEN', 'INQUIRY_WEBHOOK_TIMEOUT_MS'];
 const original = Object.fromEntries(names.map(name => [name, process.env[name]]));
 try {
   for (const name of names) delete process.env[name];
@@ -24,6 +24,12 @@ try {
   process.env.INQUIRY_WEBHOOK_URL = 'https://user:private-secret@example.test';
   assert.throws(getInquiryConfig, error => error.message.includes('INQUIRY_WEBHOOK_URL') && !error.message.includes('private-secret'));
   process.env.INQUIRY_WEBHOOK_URL = ''; assert.equal(getInquiryConfig().webhookUrl, '');
+  assert.equal(getSubmissionsApiConfig().key, '');
+  process.env.SUBMISSIONS_API_KEY = 'short'; assert.throws(getSubmissionsApiConfig, /SUBMISSIONS_API_KEY/);
+  process.env.SUBMISSIONS_API_KEY = 'x'.repeat(32);
+  process.env.SUBMISSIONS_ALLOWED_ORIGINS = 'http://localhost:4200,https://tables.example.test';
+  assert.equal(getSubmissionsApiConfig().origins.length, 2);
+  process.env.SUBMISSIONS_ALLOWED_ORIGINS = '*'; assert.throws(getSubmissionsApiConfig, /SUBMISSIONS_ALLOWED_ORIGINS/);
   console.log('PASS: defaults, environment overrides, port/origin/database validation, operational limits, and secret-safe diagnostics.');
 } finally {
   for (const [name, value] of Object.entries(original)) {
