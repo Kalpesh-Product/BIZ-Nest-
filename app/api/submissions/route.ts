@@ -2,6 +2,7 @@ import { createHash, timingSafeEqual } from 'node:crypto';
 import { database } from '@/lib/mongodb';
 import { getSubmissionsApiConfig } from '@/lib/server-config.mjs';
 import { InvalidTableQuery, tableColumns, tableProjection, tableQuery, tableRow } from '@/lib/submissions-table';
+import { collectionNames } from '@/lib/form-collections.mjs';
 
 function access(request: Request) {
   const config = getSubmissionsApiConfig();
@@ -35,12 +36,27 @@ export async function GET(request: Request) {
   }
   try {
     const query = tableQuery(new URL(request.url).searchParams);
-    const collection = (await database()).collection('inquiries');
-    const [total, filteredTotal, documents] = await Promise.all([
-      collection.countDocuments({}, { maxTimeMS: 5000 }),
-      collection.countDocuments(query.filter, { maxTimeMS: 5000 }),
-      collection.find(query.filter, { projection: tableProjection, maxTimeMS: 5000 }).sort(query.sort).skip(query.offset).limit(query.pageSize).toArray(),
+    const db = await database();
+    const kinds = query.filter.kind === 'application' ? ['career'] : query.filter.kind === 'partnership' ? ['partner'] : query.filter.kind === 'product' ? ['product'] : collectionNames;
+    const collections = kinds.map(name => db.collection(name));
+    const [counts, filteredCounts, pages] = await Promise.all([
+      Promise.all(collections.map(collection => collection.countDocuments({}, { maxTimeMS: 5000 }))),
+      Promise.all(collections.map(collection => collection.countDocuments(query.filter, { maxTimeMS: 5000 }))),
+      Promise.all(collections.map(collection => collection.find(query.filter, { projection: tableProjection, maxTimeMS: 5000 })
+        .sort(query.sort).limit(query.offset + query.pageSize).toArray())),
     ]);
+    const total = kinds.length === collectionNames.length ? counts.reduce((sum, count) => sum + count, 0)
+      : (await Promise.all(collectionNames.map(name => db.collection(name).countDocuments({}, { maxTimeMS: 5000 }))))
+        .reduce((sum, count) => sum + count, 0);
+    const filteredTotal = filteredCounts.reduce((sum, count) => sum + count, 0);
+    const [[sortField, direction], [tieField]] = Object.entries(query.sort);
+    const documents = pages.flat().sort((a, b) => {
+      const left = sortField.split('.').reduce((value, key) => value?.[key], a);
+      const right = sortField.split('.').reduce((value, key) => value?.[key], b);
+      if (left !== right) return (left == null ? -1 : right == null ? 1 : left > right ? 1 : -1) * direction;
+      if (!tieField) return 0;
+      return String(a._id).localeCompare(String(b._id)) * direction;
+    }).slice(query.offset, query.offset + query.pageSize);
     const data = documents.map(tableRow);
     return Response.json(query.dataTables
       ? { draw: query.draw, recordsTotal: total, recordsFiltered: filteredTotal, data }

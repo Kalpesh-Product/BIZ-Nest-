@@ -69,7 +69,7 @@ export async function POST(request: Request) {
     try {
       const { resume, source, kind, fields } = inquiry;
       if (resume) resumeLink = await uploadAttachment(id, resume.filename, resume.contentType, resume.bytes);
-      await inquiries.insertOne({ _id, source, kind, fields: businessFieldsFor(purposeForSource(source), fields),
+      await inquiries.insertOne({ _id, source, kind, sourceCompany: 'BIZ Nest', ...businessFieldsFor(purposeForSource(source), fields),
         ...(resume && resumeLink ? { resumeLink, resume: { filename: resume.filename, contentType: resume.contentType, size: resume.size } } : {}),
         ...(key ? { idempotencyKey: key } : {}), fingerprint, status: 'new', createdAt: now, updatedAt: now,
         notification: { status: webhook ? 'pending' : 'disabled' },

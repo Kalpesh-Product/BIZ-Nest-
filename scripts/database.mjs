@@ -20,7 +20,7 @@ try {
     const result = await migrateFormCollections(db);
     console.log(`Consolidated ${result.migrated} records; removed ${result.removed} obsolete collections.`);
     if (result.backup) console.log(`Verified migration backup: ${result.backup}`);
-    console.log(`Restored nested fields on ${result.nested} submissions.`);
+    console.log(`Flattened fields on ${result.nested} submissions.`);
   } else if (command === 'collections') {
     console.log(JSON.stringify(formCollections, null, 2));
   } else if (command === 'check') {
@@ -39,7 +39,7 @@ try {
     console.log(JSON.stringify(records, null, 2));
   } else if (command === 'migrate-resumes') {
     const apply = process.argv.includes('--apply');
-    const inquiries = db.collection('inquiries');
+    const inquiries = db.collection('career');
     const filter = { 'resume.bytes': { $type: 'binData' }, resumeLink: { $exists: false } };
     if (!apply) {
       console.log(`${await inquiries.countDocuments(filter)} resumes eligible for S3 migration. Add --apply to migrate.`);

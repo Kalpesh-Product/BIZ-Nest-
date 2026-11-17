@@ -7,7 +7,7 @@ import { randomUUID, createHash } from 'node:crypto';
 import nextEnv from '@next/env';
 import { MongoClient, ObjectId, Binary, BSON } from 'mongodb';
 import { collectionForSource, collectionNames, ensureFormIndexes } from '../lib/form-collections.mjs';
-import { migrateFormCollections } from '../lib/migrate-form-collections.mjs';
+import { flatSubmission, migrateFormCollections } from '../lib/migrate-form-collections.mjs';
 import { nestedSubmission } from '../lib/submission-document.mjs';
 import { getDatabaseConfig } from '../lib/server-config.mjs';
 
@@ -88,7 +88,7 @@ try {
   await new Promise(resolve => receiver.listen(0, '127.0.0.1', resolve));
   await new Promise(resolve => s3.listen(0, '127.0.0.1', resolve));
   // Seed all prior storage layouts; verify one collection and nested answers.
-  await ensureFormIndexes(db, 'inquiries');
+  for (const name of collectionNames) await ensureFormIndexes(db, name);
   const legacyRecord = { _id: new ObjectId(), source: '/partner.html', kind: 'partnership', name: 'Migration fixture', idempotencyKey: randomUUID(), resume: { bytes: new Binary(Buffer.from('fixture')) }, createdAt: new Date() };
   const legacyJob = { ...legacyRecord, _id: new ObjectId(), source: '/career_ApplyNow.html', kind: 'application' };
   await db.collection('partnerships').insertOne(legacyRecord);
@@ -107,11 +107,11 @@ try {
   await db.collection('inquiries').insertOne(retryRecord);
   const migration = await migrateFormCollections(db);
   migrationBackup = migration.backup;
-  assert.equal(migration.migrated, 3);
-  assert.equal(migration.nested, 3);
-  assert.equal(migration.removed, 5);
+  assert.equal(migration.migrated, 4);
+  assert.equal(migration.nested, 1);
+  assert.equal(migration.removed, 6);
   for (const original of [legacyRecord, legacyJob, olderRecord, retryRecord]) {
-    assert.deepEqual(await db.collection('inquiries').findOne({ _id: original._id }), nestedSubmission(original));
+    assert.deepEqual(await db.collection(collectionForSource(original.source)).findOne({ _id: original._id }), flatSubmission(original));
   }
   const backupRows = (await readFile(migrationBackup, 'utf8')).trim().split('\n').map(line => BSON.EJSON.parse(line));
   assert.ok(backupRows.some(row => row.document?._id.equals(legacyJob._id) && row.document.name === 'Migration fixture' && row.document.resume.bytes.buffer.toString() === 'fixture'));
@@ -129,10 +129,11 @@ try {
     const { id } = await response.json();
     const stored = await db.collection(collectionForSource(source)).findOne({ _id: new ObjectId(id) });
     assert.equal(stored.source, source);
-    assert.equal(Object.hasOwn(stored, 'name'), false);
-    assert.ok(stored.fields);
-    assert.equal(stored.fields.name, 'Test name');
-    assert.ok(stored.fields.email.endsWith('@example.test'));
+    assert.equal(Object.hasOwn(stored, 'name'), true);
+    assert.equal(stored.fields, undefined);
+    assert.equal(stored.name, 'Test name');
+    assert.ok(stored.email.endsWith('@example.test'));
+    assert.equal(stored.sourceCompany, 'BIZ Nest');
     assert.equal(stored.status, 'new');
     assert.equal(stored.notification.status, 'failed');
     if (source.startsWith('/career_')) {
@@ -143,12 +144,12 @@ try {
       assert.equal(uploaded.get('/wonov-aws-s3-storage' + key)?.toString(), '%PDF-1.4\nTest resume\n%%EOF');
     }
   }
-  assert.deepEqual(collectionNames, ['inquiries']);
+  assert.deepEqual(collectionNames, ['partner', 'product', 'career']);
   assert.deepEqual((await db.listCollections({}, { nameOnly: true }).toArray()).map(row => row.name).sort(), [...collectionNames, 'submission_limits'].sort());
   for (const name of collectionNames) {
     for await (const record of db.collection(name).find({}, { projection: { source: 1 } })) assert.equal(collectionForSource(record.source), name, 'Collections must group submissions by purpose');
   }
-  console.log('PASS: unified inquiries collection with nested fields, verified migration/backups, retry compatibility, and resume bytes.');
+  console.log('PASS: three flat form collections, verified migration/backups, retry compatibility, and S3 resume links.');
   const source = '/partner.html';
   const key = randomUUID();
   const data = payload(source);
@@ -157,7 +158,7 @@ try {
   const ids = await Promise.all(responses.map(async response => { assert.equal(response.status, 200); return (await response.json()).id; }));
   assert.equal(ids[0], ids[1]);
   assert.equal(await db.collection(collectionForSource(source)).countDocuments({ idempotencyKey: key }), 1);
-  assert.equal((await db.collection(collectionForSource(source)).findOne({ _id: new ObjectId(ids[0]) })).fields.pagename, 'Partner');
+  assert.equal((await db.collection(collectionForSource(source)).findOne({ _id: new ObjectId(ids[0]) })).pagename, 'Partner');
   const sent = notifications;
   assert.equal((await post(data, { 'Idempotency-Key': key })).status, 200);
   assert.equal(notifications, sent, 'A replay must not resend notifications');

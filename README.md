@@ -336,32 +336,34 @@ Connect MongoDB Compass to `mongodb://127.0.0.1:27017`, then open database `bizn
 
 | Collection | Contents |
 | --- | --- |
-| `inquiries` | Every form submission: `source`, `kind`, nested `fields`, status, timestamps, retry metadata, notification state, and optional resume |
+| `partner` | Partner form submissions |
+| `product` | All product form submissions |
+| `career` | All career form submissions |
 | `submission_limits` | Temporary email hash and 15-minute bucket counter; TTL index removes expired counters |
 
-All form submissions share one `inquiries` collection. Submitted answers such as name, email, preferred date and job application details are grouped in `fields`; system metadata stays at the document root. `kind` distinguishes `product`, `application` and `partnership`, while `source` identifies the original page and hidden page/job identifiers remain inside `fields`. `notification` and `resume` remain nested groups. `submission_limits` is a separate temporary anti-spam collection, not a form-submission collection.
+Each form group has its own collection. Answers, `source`, `kind`, and `sourceCompany` are top-level fields. `source` identifies the exact form page. `notification` and resume metadata remain nested. `submission_limits` holds temporary anti-spam counters.
 
-For example, filter product inquiries by `{ kind: "product" }`, applications by `{ kind: "application" }`, or email by `{ "fields.email": "person@example.com" }`. Index specific nested properties if future query patterns need them. Run `npm run db:collections` for the page-to-collection mapping.
+For example, query `db.product.find({ source: "/Private_Workspace.html" })` or `db.career.find({ email: "person@example.com" })`. Run `npm run db:collections` for the page-to-collection mapping.
 
-Resume metadata and BSON binary bytes are embedded in the inquiry document, so application details and its attachment are saved atomically on standalone local MongoDB. Resumes are limited to 5,000,000 bytes, comfortably below MongoDB's document limit. They are never placed in `public/` or exposed through an unauthenticated download API.
+New resumes are stored in S3 under `wono/BizNest/New BIZ Nest Website/Resumes/`. Career records hold `resumeLink` and file metadata. Legacy embedded files remain available until the S3 migration runs.
 
 Operator commands run locally with database access:
 
 ```bash
 npm run db:collections
 npm run db:inquiries
-npm run db:inquiries -- inquiries
+npm run db:inquiries -- career
 npm run db:inquiries -- INQUIRY_ID
 npm run db:resume -- INQUIRY_ID ./resume.pdf
 ```
 
-The list command returns the newest 20 records from the shared inquiries collection, including its collection name and excluding binary bytes and internal retry fields. Resume export creates a new file and refuses to overwrite existing files. These commands reveal personal information; use them only in a trusted terminal. Database backup and retention follow your MongoDB operations policy; this application does not automatically delete inquiry records.
+The list command returns the newest 20 records across the three form collections, including each collection name and excluding binary bytes and internal retry fields. Resume export creates a new file and refuses to overwrite existing files. These commands reveal personal information; use them only in a trusted terminal. Database backup and retention follow your MongoDB operations policy; this application does not automatically delete form records.
 
 ### Migrating existing submissions
 
-Run `npm run db:setup` to create the shared `inquiries` collection and indexes. Then run `npm run db:migrate` to consolidate records from `jobApplications`, `partnerships`, older page-specific collections and the former legacy backup. The command also moves known top-level form answers into `fields` on existing inquiries. Stop old server versions using an earlier storage layout before migrating.
+Run `npm run db:setup` to create the three form collections and indexes. Then run `npm run db:migrate` to move existing records into `partner`, `product`, and `career`, flatten answers, and store `sourceCompany`. Stop old server versions using an earlier storage layout before migrating.
 
-Before mutation, the migration validates records and exports a BSON-aware Extended JSON backup to ignored `.reference/mongodb-backups/`. It preserves IDs, original field values/types, kind/source, timestamps, retry fingerprints, notification state and resume bytes, verifies every copy, and then removes obsolete collections. Conflicting nested/top-level values, unknown sources or inconsistent duplicate IDs stop migration rather than overwriting data. Already nested inquiries are unchanged, and a completed migration is safe to rerun. Keep backup files private: they contain complete submissions and resumes.
+Before mutation, the migration validates records and exports a BSON-aware Extended JSON backup to ignored `.reference/mongodb-backups/`. It preserves IDs, original field values/types, kind/source, timestamps, retry fingerprints, notification state and resume bytes, verifies every copy, and then removes obsolete collections. Conflicting answer and top-level values, unknown sources or inconsistent duplicate IDs stop migration rather than overwriting data. A completed migration is safe to rerun. Keep backup files private: they contain complete submissions and resumes.
 
 ### Validation, retries, and notifications
 
@@ -371,7 +373,7 @@ Before mutation, the migration validates records and exports a BSON-aware Extend
 
 The request body is bounded to 6,000,000 bytes even without `Content-Length`. Resume extension and initial PDF/Word/ZIP signatures are checked; these checks are not a malware scan or full document validation. Same-origin checks reject mismatching supplied origins. A database-backed limit permits 10 new submissions per normalized email per 15-minute bucket. This is basic abuse mitigation, not a complete public-site spam defense; apply infrastructure-level limits when deploying publicly.
 
-The shared collection has a unique partial index on `source` and `idempotencyKey`, preventing duplicate retries of one form while allowing different pages to submit independently into the same collection. Reusing the same key with changed data returns `409`. No anonymous listing or resume download endpoint exposes submissions. The protected read API is documented below.
+Each form collection has a unique partial index on `source` and `idempotencyKey`, preventing duplicate retries of one form while allowing different pages to submit independently. Reusing the same key with changed data returns `409`. No anonymous listing or resume download endpoint exposes submissions. The protected read API is documented below.
 
 `INQUIRY_WEBHOOK_URL` is optional. If configured, a multipart notification is attempted only after the database insert, with a 15-second timeout and inquiry ID as its idempotency key. An optional bearer token is supported. Notification status is stored as `disabled`, `pending`, `delivered`, or `failed`. Notification failures do not discard data or turn a saved submission into a failed response. There is no automatic notification retry worker; review failed/pending notifications in MongoDB. With no webhook, local storage works fully and no email is sent.
 
@@ -389,11 +391,11 @@ The shared collection has a unique partial index on `source` and `idempotencyKey
 
 After `npm run build`, run `npm run test:backend`. It starts an isolated production server on port 3013, creates a randomly named `biznest_test_*` database, and removes that test database and server afterward. Your normal database and port 3011 are untouched. Set `BACKEND_TEST_PORT` if 3013 is occupied.
 
-The test covers every form page against real MongoDB, one shared collection with nested answers, verified consolidation/nesting and file-backup preservation, compatibility with existing retry keys, resume bytes, canonical job/product metadata, concurrent retries, failed notifications, invalid fields and files, bounded chunked requests, origin checks, privacy, and persistent rate limiting. `npm run db:check` is the lightweight connection check for normal operation.
+The test covers all 37 form pages against real MongoDB, three flat collections, verified migration and backups, retry keys, S3 resume links, validation, notification failures, protected reads, and rate limiting.
 
 ## External submissions read API
 
-Use `GET /api/submissions` with `Authorization: Bearer <SUBMISSIONS_API_KEY>` to read submissions for external tables. Responses contain consistent, flattened rows, column definitions and pagination; MongoDB storage remains nested. Filtering, search, sorting and an optional DataTables server-side response are supported. The key is private and belongs in the external project's backend, not its browser bundle. See [the complete API and table integration guide](docs/submissions-api.md).
+Use `GET /api/submissions` with `Authorization: Bearer <SUBMISSIONS_API_KEY>` to read submissions for external tables. Responses contain consistent, flattened rows, column definitions and pagination; MongoDB stores submitted answers as top-level fields. Filtering, search, sorting and an optional DataTables server-side response are supported. The key is private and belongs in the external project's backend, not its browser bundle. See [the complete API and table integration guide](docs/submissions-api.md).
 
 ## Environment variables
 

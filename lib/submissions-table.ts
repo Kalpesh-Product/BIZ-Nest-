@@ -71,7 +71,7 @@ export const tableColumns = [
 );
 const sortable: Record<string, string> = Object.fromEntries([
   ['id', '_id'], ...['kind', 'source', 'status', 'createdAt', 'updatedAt'].map(key => [key, key]),
-  ...answerNames.map(key => [key, `fields.${key}`]), ['notificationStatus', 'notification.status'], ['resumeLink', 'resumeLink'], ['resumeFilename', 'resume.filename'],
+  ...answerNames.map(key => [key, key]), ['notificationStatus', 'notification.status'], ['resumeLink', 'resumeLink'], ['resumeFilename', 'resume.filename'],
 ]);
 export class InvalidTableQuery extends Error {}
 function number(value: string | null, fallback: number, min: number, max: number) {
@@ -128,7 +128,7 @@ export function tableQuery(params: URLSearchParams) {
   if (dataTables && params.get('search[regex]') === 'true') throw new InvalidTableQuery('Regex search is not supported.');
   if (search.trim()) {
     const escaped = search.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    filter.$or = ['name', 'email', 'mobile', 'pagename', 'category', 'job_position', 'location', 'message'].map(key => ({ [`fields.${key}`]: { $regex: escaped, $options: 'i' } }));
+    filter.$or = ['name', 'email', 'mobile', 'pagename', 'category', 'job_position', 'location', 'message'].map(key => ({ [key]: { $regex: escaped, $options: 'i' } }));
   }
   let sortBy = params.get('sortBy') || 'createdAt';
   let sortOrder = params.get('sortOrder') || 'desc';
@@ -147,8 +147,8 @@ export function tableQuery(params: URLSearchParams) {
 // Inclusion projection prevents attachments, retry keys and future private
 // metadata from accidentally leaking through the read API.
 export const tableProjection = Object.fromEntries([
-  ...['_id', 'kind', 'source', 'status', 'createdAt', 'updatedAt', 'notification.status', 'resume.filename', 'resumeLink'].map(key => [key, 1]),
-  ...answerNames.map(key => [`fields.${key}`, 1]),
+  ...['_id', 'kind', 'source', 'status', 'createdAt', 'updatedAt', 'sourceCompany', 'notification.status', 'resume.filename', 'resumeLink'].map(key => [key, 1]),
+  ...answerNames.map(key => [key, 1]),
 ]);
 export function tableRow(doc: Document) {
   const scalar = (value: unknown) => typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' ? value : null;
@@ -156,9 +156,9 @@ export function tableRow(doc: Document) {
   return {
     id: String(doc._id), kind: scalar(doc.kind), source: scalar(doc.source), status: scalar(doc.status),
     createdAt: iso(doc.createdAt), updatedAt: iso(doc.updatedAt),
-    ...Object.fromEntries(answerNames.map(key => [key, scalar(doc.fields?.[key])])),
+    ...Object.fromEntries(answerNames.map(key => [key, scalar(doc[key])])),
     notificationStatus: scalar(doc.notification?.status), hasResume: !!doc.resume,
     resumeLink: scalar(doc.resumeLink),
-    sourceCompany: 'BIZ Nest',
+    sourceCompany: scalar(doc.sourceCompany),
   };
 }
