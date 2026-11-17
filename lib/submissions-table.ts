@@ -1,6 +1,55 @@
 import type { Document, Filter } from 'mongodb';
 import { businessFieldNames } from './submission-document.mjs';
 
+const subscriptionSources = {
+  'work-from-cafe': '/Cafe.html',
+  'car-renting': '/Car_Renting.html',
+  'co-living-space': '/Co-Living_Space.html',
+  'co-working-space': '/Co-Working_Space.html',
+  'exclusive-campus': '/Exclusive_Campus.html',
+  'exclusive-workations': '/Exclusive_Workations.html',
+  'managed-workspace': '/Managed_Workspace.html',
+  'meetings-and-conferences': '/Meetings&Conferences.html',
+  'private-apartments-villas': '/Private_Apartments_Villas.html',
+  'private-workspace': '/Private_Workspace.html',
+  'training-and-events': '/Trainings&Events.html',
+  'virtual-office': '/Virtual_Office.html',
+  'yacht-renting': '/Yatch_Renting.html',
+};
+const productSources = {
+  'co-working-goa': '/Co-Working_Goa.html',
+  'meeting-rooms-goa': '/Meetingrooms_Goa.html',
+  'virtual-office-goa': '/Virtualoffice_Goa.html',
+  'workation-goa': '/Workation_Goa.html',
+};
+const applicationSources = {
+  'open-job-application': '/career_ApplyNow.html',
+  'assistant-manager-civil-maintenance': '/career_Asst_Manager_Civil_Maintanance.html',
+  'executive-assistant-to-ceo': '/career_Executive_Assistant_to_CEO.html',
+  'finance-intern': '/career_Finance_Intern.html',
+  'full-stack-react-developer': '/career_FullStack_React _Developer.html',
+  'hr-generalist': '/career_HR_Generalist.html',
+  'interiors-civil-engineer': '/career_Interiors_Civil_Engineer.html',
+  'junior-executive-receptionist': '/career_Jr_Executive_Receptionist.html',
+  'junior-network-engineer': '/career_Jr_Network_Engineer.html',
+  'junior-ui-ux-developer': '/career_Jr_UI_UX_Developer.html',
+  'legal-associate': '/career_Legal_Associate.html',
+  'maintenance-executive': '/career_Maintenance_Executive.html',
+  'marketing-analytics': '/career_Marketing_Analytics.html',
+  'php-developer': '/career_PHP_Developer.html',
+  'receptionist-admin-associate': '/career_Receptionist_Admin_Associate.html',
+  'social-media-marketing': '/career_Social_Media_Marketing.html',
+  'senior-manager-sales-business-development': '/career_Sr._Manager_Sales_&_Business_Development.html',
+  'senior-it-manager': '/career_Sr_IT_Manager.html',
+  'web-developer-intern': '/career_Web_Developer_Intern.html',
+};
+const formSources = new Map<string, { kind: 'product' | 'application'; source: string }>([
+  ...Object.entries({ ...subscriptionSources, ...productSources }).map(([key, source]) =>
+    [key, { kind: 'product', source }] as const),
+  ...Object.entries(applicationSources).map(([key, source]) =>
+    [key, { kind: 'application', source }] as const),
+]);
+
 const answerNames = [...new Set(Object.values(businessFieldNames).flat())];
 const labels: Record<string, string> = {
   name: 'Name', email: 'Email', mobile: 'Mobile', count: 'People Count', sdate: 'Preferred Start Date',
@@ -46,8 +95,18 @@ export function tableQuery(params: URLSearchParams) {
   const filter: Filter<Document> = {};
   const kind = params.get('kind');
   if (kind) {
-    if (!['product', 'application', 'partnership'].includes(kind)) throw new InvalidTableQuery('Invalid kind.');
-    filter.kind = kind;
+    const form = formSources.get(kind);
+    if (form) {
+      filter.kind = form.kind;
+      filter.$and = [{ source: form.source }];
+    } else if (kind === 'book-your-subscription') {
+      filter.kind = 'product';
+      filter.$and = [{ source: { $in: Object.values(subscriptionSources) } }];
+    } else if (['product', 'application', 'partnership'].includes(kind)) {
+      filter.kind = kind;
+    } else {
+      throw new InvalidTableQuery('Invalid kind.');
+    }
   }
   for (const key of ['source', 'status']) {
     const value = params.get(key);

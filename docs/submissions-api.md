@@ -39,7 +39,7 @@ const totalRows = result.pagination.filteredTotal;
 | --- | --- | --- |
 | `page` | `1` | One-based page number |
 | `pageSize` | `25` | 1–100 rows per request |
-| `kind` | All | `product`, `application`, or `partnership` |
+| `kind` | All | `product`, `application`, `partnership`, or a [form filter](#form-filters) |
 | `source` | All | Exact original pathname, e.g. `/Co-Working_Space.html` |
 | `status` | All | Exact submission status, e.g. `new` |
 | `search` | Empty | Literal case-insensitive search across name, email, mobile, product/form, category, job position, location and message |
@@ -53,6 +53,7 @@ Examples:
 ```text
 /api/submissions?page=1&pageSize=25
 /api/submissions?kind=application&sortBy=createdAt&sortOrder=desc
+/api/submissions?kind=private-workspace
 /api/submissions?kind=partnership&search=example
 /api/submissions?from=2026-11-01&to=2026-11-30
 ```
@@ -122,3 +123,61 @@ Server-to-server requests need no CORS setting. Browser requests from other orig
 | `503` | Key not configured, database unavailable, or query timeout |
 
 Errors return `{ "message": "..." }`. All responses use `Cache-Control: private, no-store`. Database reads have a five-second query time limit. Search uses escaped literal text, not caller-provided regular expressions or database operators.
+
+## Form filters
+
+Append one query below to `GET /api/submissions`. Returned rows keep their original submission type in `data[].kind`.
+
+### Book Your Subscription
+
+| Form | Query |
+| --- | --- |
+| All Book Your Subscription listings | `?kind=book-your-subscription` |
+| Work from Café | `?kind=work-from-cafe` |
+| Car Renting | `?kind=car-renting` |
+| Co-Living Space | `?kind=co-living-space` |
+| Co-Working Space | `?kind=co-working-space` |
+| Exclusive Campus | `?kind=exclusive-campus` |
+| Exclusive Workations | `?kind=exclusive-workations` |
+| Managed Workspace | `?kind=managed-workspace` |
+| Meeting & Board Rooms | `?kind=meetings-and-conferences` |
+| Private Apartments / Villas | `?kind=private-apartments-villas` |
+| Private Workspace | `?kind=private-workspace` |
+| Training & Events | `?kind=training-and-events` |
+| Virtual Office listing | `?kind=virtual-office` |
+| Yacht Renting | `?kind=yacht-renting` |
+
+### Product landing page forms
+
+| Form | Query |
+| --- | --- |
+| Co-Working Goa | `?kind=co-working-goa` |
+| Meeting Rooms Goa | `?kind=meeting-rooms-goa` |
+| Virtual Office Goa | `?kind=virtual-office-goa` |
+| Workation Goa | `?kind=workation-goa` |
+
+### Partnership and career forms
+
+| Form | Query |
+| --- | --- |
+| Partner form | `?kind=partnership` |
+| All job application forms | `?kind=application` |
+| Open Job Application | `?kind=open-job-application` |
+| Assistant Manager, Civil & Maintenance | `?kind=assistant-manager-civil-maintenance` |
+| Executive Assistant to CEO | `?kind=executive-assistant-to-ceo` |
+| Finance Intern | `?kind=finance-intern` |
+| Full Stack React Developer | `?kind=full-stack-react-developer` |
+| HR Generalist | `?kind=hr-generalist` |
+| Interiors & Civil Engineer | `?kind=interiors-civil-engineer` |
+| Junior Executive Receptionist | `?kind=junior-executive-receptionist` |
+| Junior Network Engineer | `?kind=junior-network-engineer` |
+| Junior UI/UX Developer | `?kind=junior-ui-ux-developer` |
+| Legal Associate | `?kind=legal-associate` |
+| Maintenance Executive | `?kind=maintenance-executive` |
+| Marketing Analytics | `?kind=marketing-analytics` |
+| PHP Developer | `?kind=php-developer` |
+| Receptionist / Admin Associate | `?kind=receptionist-admin-associate` |
+| Social Media Marketing | `?kind=social-media-marketing` |
+| Senior Manager, Sales & Business Development | `?kind=senior-manager-sales-business-development` |
+| Senior IT Manager | `?kind=senior-it-manager` |
+| Web Developer Intern | `?kind=web-developer-intern` |
