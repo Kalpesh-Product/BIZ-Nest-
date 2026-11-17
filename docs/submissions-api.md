@@ -84,7 +84,7 @@ The column list above is abbreviated. `total` counts all submissions; `filteredT
 - Metadata: `id` (MongoDB ID as a string), `kind`, `source`, `status`, `createdAt`, `updatedAt` (ISO timestamps).
 - Common/product fields: `name`, `email`, `mobile`, `count`, `sdate`, `pagename`, `category`.
 - Application/partner fields: `dob`, `location`, `experience`, `linkedin`, `currentmonthlysalary`, `expectedsalary`, `canjoin`, `relocategoa`, `personality`, `skills`, `specialexperience`, `willing`, `message`, `job_position`.
-- Additional metadata: `notificationStatus`, `hasResume`, `resumeFilename`.
+- Additional metadata: `notificationStatus`, `hasResume`, `resumeFilename`, and `sourceCompany` (always `"BIZ Nest"`).
 
 The stored `fields` object is flattened into the response row. Original answer types are preserved, so salary/experience remain strings as submitted; `count` may contain values such as `10+`. Resume binary contents, fingerprint, retry key and arbitrary extra document properties are excluded with an inclusion projection. Resume download is not part of this endpoint.
 

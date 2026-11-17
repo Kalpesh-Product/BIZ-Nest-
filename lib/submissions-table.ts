@@ -17,7 +17,9 @@ export const tableColumns = [
   ...answerNames.map(field => ({ field, headerName: labels[field] || field })),
   { field: 'notificationStatus', headerName: 'Notification Status' },
   { field: 'hasResume', headerName: 'Has Resume' }, { field: 'resumeFilename', headerName: 'Resume Filename' },
-].map(column => ({ ...column, sortable: column.field !== 'hasResume' }));
+].map(column => ({ ...column, sortable: column.field !== 'hasResume' })).concat(
+  { field: 'sourceCompany', headerName: 'Source Company', sortable: false },
+);
 const sortable: Record<string, string> = Object.fromEntries([
   ['id', '_id'], ...['kind', 'source', 'status', 'createdAt', 'updatedAt'].map(key => [key, key]),
   ...answerNames.map(key => [key, `fields.${key}`]), ['notificationStatus', 'notification.status'], ['resumeFilename', 'resume.filename'],
@@ -98,5 +100,6 @@ export function tableRow(doc: Document) {
     ...Object.fromEntries(answerNames.map(key => [key, scalar(doc.fields?.[key])])),
     notificationStatus: scalar(doc.notification?.status), hasResume: !!doc.resume,
     resumeFilename: scalar(doc.resume?.filename),
+    sourceCompany: 'BIZ Nest',
   };
 }
