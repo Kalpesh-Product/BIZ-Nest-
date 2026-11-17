@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
-import { Binary, MongoServerError, ObjectId } from 'mongodb';
+import { MongoServerError, ObjectId } from 'mongodb';
+import { deleteAttachment, uploadAttachment } from '@/lib/s3-attachments.mjs';
 import { database } from '@/lib/mongodb';
 import { InvalidInquiry, validateInquiry } from '@/lib/inquiry-validation';
 import { collectionForSource, ensureFormIndexes, purposeForSource } from '@/lib/form-collections.mjs';
@@ -62,16 +63,23 @@ export async function POST(request: Request) {
     }, { upsert: true, returnDocument: 'after' });
     if (limit && limit.count > settings.rateLimitMax) return reply(`Too many submissions. Please try again in ${Math.ceil(settings.rateLimitWindowMs / 60000)} minutes.`, 429);
     const webhook = settings.webhookUrl;
-    let id: string;
+    const _id = new ObjectId();
+    const id = _id.toHexString();
+    let resumeLink: string | undefined;
     try {
       const { resume, source, kind, fields } = inquiry;
-      const result = await inquiries.insertOne({ source, kind, fields: businessFieldsFor(purposeForSource(source), fields),
-        ...(resume ? { resume: { ...resume, bytes: new Binary(resume.bytes) } } : {}),
+      if (resume) resumeLink = await uploadAttachment(id, resume.filename, resume.contentType, resume.bytes);
+      await inquiries.insertOne({ _id, source, kind, fields: businessFieldsFor(purposeForSource(source), fields),
+        ...(resume && resumeLink ? { resumeLink, resume: { filename: resume.filename, contentType: resume.contentType, size: resume.size } } : {}),
         ...(key ? { idempotencyKey: key } : {}), fingerprint, status: 'new', createdAt: now, updatedAt: now,
         notification: { status: webhook ? 'pending' : 'disabled' },
       });
-      id = result.insertedId.toHexString();
     } catch (error) {
+      if (resumeLink) {
+        try {
+          if (!await inquiries.findOne({ _id }, { projection: { _id: 1 } })) await deleteAttachment(resumeLink);
+        } catch { /* Keep the object if the database write cannot be confirmed. */ }
+      }
       if (key && error instanceof MongoServerError && error.code === 11000) { const previous = await replay(); if (previous) return previous; }
       throw error;
     }
@@ -91,7 +99,7 @@ export async function POST(request: Request) {
     }
     return accepted(id);
   } catch {
-    console.error('Inquiry database operation failed. Check MongoDB availability and configuration.');
+    console.error('Inquiry storage failed. Check MongoDB and S3 configuration.');
     return reply('We could not save your inquiry. Please try again or email response@biznest.co.in.', 503);
   }
 }

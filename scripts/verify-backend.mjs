@@ -26,6 +26,21 @@ const receiver = createServer(async (req, res) => {
   notifications++;
   res.writeHead(503).end(); // Persistence must succeed even when notifications fail.
 });
+const uploaded = new Map();
+const s3 = createServer(async (req, res) => {
+  const chunks = [];
+  for await (const chunk of req) chunks.push(chunk);
+  const key = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
+  if (req.method === 'PUT') {
+    uploaded.set(key, Buffer.concat(chunks));
+    res.writeHead(200, { ETag: '"fixture"' }).end();
+  } else if (req.method === 'DELETE') {
+    uploaded.delete(key);
+    res.writeHead(204).end();
+  } else {
+    res.writeHead(405).end();
+  }
+});
 let server;
 let output = '';
 let migrationBackup;
@@ -54,6 +69,7 @@ async function startServer(uri = databaseConfig.uri) {
   output = '';
   server = spawn(process.execPath, ['scripts/serve.mjs', 'start'], {
     env: { ...process.env, PORT: String(port), MONGODB_URI: uri, MONGODB_DB: dbName, SUBMISSIONS_API_KEY: readKey, SUBMISSIONS_ALLOWED_ORIGINS: 'http://localhost:4200',
+      AWS_ENDPOINT_URL_S3: `http://127.0.0.1:${s3.address().port}`, AWS_ACCESS_KEY_ID: 'test', AWS_SECRET_ACCESS_KEY: 'test', AWS_SESSION_TOKEN: '',
       MAX_REQUEST_BYTES: '6000000', MAX_RESUME_BYTES: '5000000', INQUIRY_RATE_LIMIT_MAX: '10', INQUIRY_RATE_LIMIT_WINDOW_MS: '900000',
       INQUIRY_WEBHOOK_URL: `http://127.0.0.1:${receiver.address().port}`, INQUIRY_WEBHOOK_TOKEN: '', INQUIRY_WEBHOOK_TIMEOUT_MS: '15000' },
     stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true,
@@ -70,6 +86,7 @@ async function startServer(uri = databaseConfig.uri) {
 try {
   await client.connect();
   await new Promise(resolve => receiver.listen(0, '127.0.0.1', resolve));
+  await new Promise(resolve => s3.listen(0, '127.0.0.1', resolve));
   // Seed all prior storage layouts; verify one collection and nested answers.
   await ensureFormIndexes(db, 'inquiries');
   const legacyRecord = { _id: new ObjectId(), source: '/partner.html', kind: 'partnership', name: 'Migration fixture', idempotencyKey: randomUUID(), resume: { bytes: new Binary(Buffer.from('fixture')) }, createdAt: new Date() };
@@ -120,7 +137,10 @@ try {
     assert.equal(stored.notification.status, 'failed');
     if (source.startsWith('/career_')) {
       assert.equal(stored.kind, 'application');
-      assert.equal(stored.resume.bytes.buffer.toString(), '%PDF-1.4\nTest resume\n%%EOF');
+      assert.equal(stored.resume.bytes, undefined);
+      const key = decodeURIComponent(new URL(stored.resumeLink).pathname);
+      assert.equal(key, `/wono/BizNest/New BIZ Nest Website/Resumes/${id}/file.pdf`);
+      assert.equal(uploaded.get('/wonov-aws-s3-storage' + key)?.toString(), '%PDF-1.4\nTest resume\n%%EOF');
     }
   }
   assert.deepEqual(collectionNames, ['inquiries']);
@@ -190,8 +210,9 @@ try {
     for(const key of ['fields','resume','fingerprint','idempotencyKey'])assert.equal(Object.hasOwn(row,key),false);
     assert.equal(typeof row.id,'string');
   }
-  const career=table.data.find(row=>row.kind==='application' && row.resumeFilename==='resume.pdf');
-  assert.equal(career.resumeFilename,'resume.pdf');
+  const career=table.data.find(row=>row.kind==='application' && row.resumeLink);
+  assert.match(career.resumeLink,/\/file\.pdf$/);
+  assert.equal(career.resumeFilename, undefined);
   assert.equal(career.pagename,null);
   const filtered=await (await fetch(base+api+'?kind=partnership&search=fixture&pageSize=1', {headers:auth})).json();
   assert.equal(filtered.data.length,1);
@@ -216,6 +237,8 @@ try {
   if (server && server.exitCode === null) { const stopped = once(server, 'exit'); server.kill(); await stopped; }
   receiver.closeAllConnections();
   await new Promise(resolve => receiver.close(resolve));
+  s3.closeAllConnections();
+  await new Promise(resolve => s3.close(resolve));
   // This randomly named database is owned exclusively by this test run.
   assert.match(dbName, /^biznest_test_[a-f0-9]{32}$/);
   await db.dropDatabase();

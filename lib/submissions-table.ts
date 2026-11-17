@@ -65,13 +65,13 @@ export const tableColumns = [
   { field: 'createdAt', headerName: 'Submitted At' }, { field: 'updatedAt', headerName: 'Updated At' },
   ...answerNames.map(field => ({ field, headerName: labels[field] || field })),
   { field: 'notificationStatus', headerName: 'Notification Status' },
-  { field: 'hasResume', headerName: 'Has Resume' }, { field: 'resumeFilename', headerName: 'Resume Filename' },
+  { field: 'hasResume', headerName: 'Has Resume' }, { field: 'resumeLink', headerName: 'Resume Link' },
 ].map(column => ({ ...column, sortable: column.field !== 'hasResume' })).concat(
   { field: 'sourceCompany', headerName: 'Source Company', sortable: false },
 );
 const sortable: Record<string, string> = Object.fromEntries([
   ['id', '_id'], ...['kind', 'source', 'status', 'createdAt', 'updatedAt'].map(key => [key, key]),
-  ...answerNames.map(key => [key, `fields.${key}`]), ['notificationStatus', 'notification.status'], ['resumeFilename', 'resume.filename'],
+  ...answerNames.map(key => [key, `fields.${key}`]), ['notificationStatus', 'notification.status'], ['resumeLink', 'resumeLink'], ['resumeFilename', 'resume.filename'],
 ]);
 export class InvalidTableQuery extends Error {}
 function number(value: string | null, fallback: number, min: number, max: number) {
@@ -147,7 +147,7 @@ export function tableQuery(params: URLSearchParams) {
 // Inclusion projection prevents attachments, retry keys and future private
 // metadata from accidentally leaking through the read API.
 export const tableProjection = Object.fromEntries([
-  ...['_id', 'kind', 'source', 'status', 'createdAt', 'updatedAt', 'notification.status', 'resume.filename'].map(key => [key, 1]),
+  ...['_id', 'kind', 'source', 'status', 'createdAt', 'updatedAt', 'notification.status', 'resume.filename', 'resumeLink'].map(key => [key, 1]),
   ...answerNames.map(key => [`fields.${key}`, 1]),
 ]);
 export function tableRow(doc: Document) {
@@ -158,7 +158,7 @@ export function tableRow(doc: Document) {
     createdAt: iso(doc.createdAt), updatedAt: iso(doc.updatedAt),
     ...Object.fromEntries(answerNames.map(key => [key, scalar(doc.fields?.[key])])),
     notificationStatus: scalar(doc.notification?.status), hasResume: !!doc.resume,
-    resumeFilename: scalar(doc.resume?.filename),
+    resumeLink: scalar(doc.resumeLink),
     sourceCompany: 'BIZ Nest',
   };
 }

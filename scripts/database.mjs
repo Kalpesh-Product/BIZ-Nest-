@@ -4,6 +4,7 @@ import { writeFile } from 'node:fs/promises';
 import { formCollections, collectionNames, ensureFormIndexes } from '../lib/form-collections.mjs';
 import { migrateFormCollections } from '../lib/migrate-form-collections.mjs';
 import { getDatabaseConfig } from '../lib/server-config.mjs';
+import { ensureAttachmentPrefix, readAttachment, uploadAttachment } from '../lib/s3-attachments.mjs';
 
 nextEnv.loadEnvConfig(process.cwd(), process.env.NODE_ENV !== 'production');
 const config = getDatabaseConfig();
@@ -36,16 +37,36 @@ try {
       return rows.map(record => ({ ...record, collection: name }));
     }))).flat().sort((a, b) => b.createdAt - a.createdAt).slice(0, 20);
     console.log(JSON.stringify(records, null, 2));
+  } else if (command === 'migrate-resumes') {
+    const apply = process.argv.includes('--apply');
+    const inquiries = db.collection('inquiries');
+    const filter = { 'resume.bytes': { $type: 'binData' }, resumeLink: { $exists: false } };
+    if (!apply) {
+      console.log(`${await inquiries.countDocuments(filter)} resumes eligible for S3 migration. Add --apply to migrate.`);
+    } else {
+      await ensureAttachmentPrefix();
+      let migrated = 0;
+      for await (const { _id, resume } of inquiries.find(filter, { projection: { resume: 1 } })) {
+        const link = await uploadAttachment(_id.toHexString(), resume.filename, resume.contentType, resume.bytes.value());
+        const result = await inquiries.updateOne({ _id, ...filter, 'resume.bytes': resume.bytes }, {
+          $set: { resumeLink: link },
+          $unset: { 'resume.bytes': '' },
+        });
+        migrated += result.modifiedCount;
+      }
+      console.log(`Migrated ${migrated} resumes to S3.`);
+    }
   } else if (command === 'resume') {
     const [id, output] = process.argv.slice(3);
     if (!ObjectId.isValid(id || '') || !output) throw new Error('Usage: npm run db:resume -- INQUIRY_ID OUTPUT_PATH');
     let record;
     for (const name of collectionNames) {
-      record = await db.collection(name).findOne({ _id: new ObjectId(id) }, { projection: { resume: 1 } });
+      record = await db.collection(name).findOne({ _id: new ObjectId(id) }, { projection: { resume: 1, resumeLink: 1 } });
       if (record) break;
     }
-    if (!record?.resume?.bytes) throw new Error('No resume found.');
-    await writeFile(output, record.resume.bytes.buffer, { flag: 'wx', mode: 0o600 });
+    const bytes = record?.resumeLink ? await readAttachment(record.resumeLink) : record?.resume?.bytes?.value();
+    if (!bytes) throw new Error('No resume found.');
+    await writeFile(output, bytes, { flag: 'wx', mode: 0o600 });
     console.log('Resume exported to the requested path.');
   } else throw new Error('Unknown database command.');
 } catch {

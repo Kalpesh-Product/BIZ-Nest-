@@ -85,9 +85,11 @@ The column list above is abbreviated. `total` counts all submissions; `filteredT
 - Metadata: `id` (MongoDB ID as a string), `kind`, `source`, `status`, `createdAt`, `updatedAt` (ISO timestamps).
 - Common/product fields: `name`, `email`, `mobile`, `count`, `sdate`, `pagename`, `category`.
 - Application/partner fields: `dob`, `location`, `experience`, `linkedin`, `currentmonthlysalary`, `expectedsalary`, `canjoin`, `relocategoa`, `personality`, `skills`, `specialexperience`, `willing`, `message`, `job_position`.
-- Additional metadata: `notificationStatus`, `hasResume`, `resumeFilename`, and `sourceCompany` (always `"BIZ Nest"`).
+- Additional metadata: `notificationStatus`, `hasResume`, `resumeLink`, and `sourceCompany` (always `"BIZ Nest"`). The link identifies a private S3 object and requires authorized AWS access. For legacy resumes, it is null until migrated.
 
-The stored `fields` object is flattened into the response row. Original answer types are preserved, so salary/experience remain strings as submitted; `count` may contain values such as `10+`. Resume binary contents, fingerprint, retry key and arbitrary extra document properties are excluded with an inclusion projection. Resume download is not part of this endpoint.
+The stored `fields` object is flattened into the response row. Original answer types are preserved, so salary/experience remain strings as submitted; `count` may contain values such as `10+`. Resume binary contents, fingerprint, retry key and arbitrary extra document properties are excluded with an inclusion projection.
+
+Set `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` in the server's `.env` for resume uploads. Use `AWS_SESSION_TOKEN` with temporary credentials. The storage prefix is `wono/BizNest/New BIZ Nest Website/Resumes/` in `wonov-aws-s3-storage`. Run `npm run db:migrate-resumes` to count legacy resumes and `npm run db:migrate-resumes -- --apply` to upload them. The migration replaces each MongoDB file payload with its S3 link after S3 accepts the upload. The `npm run db:resume` command can export both legacy and S3 resumes.
 
 Render user-submitted values as text, not raw HTML. DataTables supports `DataTable.render.text()`; use default text cells rather than unsafe HTML renderers in other grids.
 
