@@ -6,7 +6,7 @@ import { createServer } from 'node:http';
 import { randomUUID, createHash } from 'node:crypto';
 import nextEnv from '@next/env';
 import { MongoClient, ObjectId, Binary, BSON } from 'mongodb';
-import { collectionForSource, collectionNames, ensureFormIndexes } from '../lib/form-collections.mjs';
+import { collectionForSource, collectionNames, companyTypeForSource, ensureFormIndexes } from '../lib/form-collections.mjs';
 import { flatSubmission, migrateFormCollections } from '../lib/migrate-form-collections.mjs';
 import { nestedSubmission } from '../lib/submission-document.mjs';
 import { getDatabaseConfig } from '../lib/server-config.mjs';
@@ -134,6 +134,7 @@ try {
     assert.equal(stored.name, 'Test name');
     assert.ok(stored.email.endsWith('@example.test'));
     assert.equal(stored.sourceCompany, 'BIZ Nest');
+    assert.equal(stored.companyType, stored.kind === 'product' ? companyTypeForSource(source) : undefined);
     assert.equal(stored.status, 'new');
     assert.equal(stored.notification.status, 'failed');
     if (source.startsWith('/career_')) {
@@ -145,6 +146,9 @@ try {
     }
   }
   assert.deepEqual(collectionNames, ['partner', 'product', 'career']);
+  assert.equal(companyTypeForSource('/Co-Working_Goa.html'), 'Co-Working');
+  assert.equal(companyTypeForSource('/Meetingrooms_Goa.html'), 'Meeting Room');
+  assert.equal(companyTypeForSource('/Workation_Goa.html'), 'Workation');
   assert.deepEqual((await db.listCollections({}, { nameOnly: true }).toArray()).map(row => row.name).sort(), [...collectionNames, 'submission_limits'].sort());
   for (const name of collectionNames) {
     for await (const record of db.collection(name).find({}, { projection: { source: 1 } })) assert.equal(collectionForSource(record.source), name, 'Collections must group submissions by purpose');
@@ -210,6 +214,7 @@ try {
     assert.deepEqual(Object.keys(row).sort(),shape);
     for(const key of ['fields','resume','fingerprint','idempotencyKey'])assert.equal(Object.hasOwn(row,key),false);
     assert.equal(typeof row.id,'string');
+    assert.equal(row.companyType, row.kind === 'product' ? companyTypeForSource(row.source) : null);
   }
   const career=table.data.find(row=>row.kind==='application' && row.resumeLink);
   assert.match(career.resumeLink,/\/file\.pdf$/);

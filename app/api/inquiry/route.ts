@@ -3,7 +3,7 @@ import { MongoServerError, ObjectId } from 'mongodb';
 import { deleteAttachment, uploadAttachment } from '@/lib/s3-attachments.mjs';
 import { database } from '@/lib/mongodb';
 import { InvalidInquiry, validateInquiry } from '@/lib/inquiry-validation';
-import { collectionForSource, ensureFormIndexes, purposeForSource } from '@/lib/form-collections.mjs';
+import { collectionForSource, companyTypeForSource, ensureFormIndexes, purposeForSource } from '@/lib/form-collections.mjs';
 import { businessFieldsFor } from '@/lib/submission-document.mjs';
 import { getInquiryConfig } from '@/lib/server-config.mjs';
 
@@ -69,7 +69,9 @@ export async function POST(request: Request) {
     try {
       const { resume, source, kind, fields } = inquiry;
       if (resume) resumeLink = await uploadAttachment(id, resume.filename, resume.contentType, resume.bytes);
-      await inquiries.insertOne({ _id, source, kind, sourceCompany: 'BIZ Nest', ...businessFieldsFor(purposeForSource(source), fields),
+      await inquiries.insertOne({ _id, source, kind, sourceCompany: 'BIZ Nest',
+        ...(kind === 'product' ? { companyType: companyTypeForSource(source) } : {}),
+        ...businessFieldsFor(purposeForSource(source), fields),
         ...(resume && resumeLink ? { resumeLink, resume: { filename: resume.filename, contentType: resume.contentType, size: resume.size } } : {}),
         ...(key ? { idempotencyKey: key } : {}), fingerprint, status: 'new', createdAt: now, updatedAt: now,
         notification: { status: webhook ? 'pending' : 'disabled' },

@@ -62,6 +62,7 @@ const labels: Record<string, string> = {
 export const tableColumns = [
   { field: 'id', headerName: 'ID' }, { field: 'kind', headerName: 'Type' },
   { field: 'source', headerName: 'Source Page' }, { field: 'status', headerName: 'Status' },
+  { field: 'companyType', headerName: 'Company Type' },
   { field: 'createdAt', headerName: 'Submitted At' }, { field: 'updatedAt', headerName: 'Updated At' },
   ...answerNames.map(field => ({ field, headerName: labels[field] || field })),
   { field: 'notificationStatus', headerName: 'Notification Status' },
@@ -70,7 +71,7 @@ export const tableColumns = [
   { field: 'sourceCompany', headerName: 'Source Company', sortable: false },
 );
 const sortable: Record<string, string> = Object.fromEntries([
-  ['id', '_id'], ...['kind', 'source', 'status', 'createdAt', 'updatedAt'].map(key => [key, key]),
+  ['id', '_id'], ...['kind', 'source', 'status', 'companyType', 'createdAt', 'updatedAt'].map(key => [key, key]),
   ...answerNames.map(key => [key, key]), ['notificationStatus', 'notification.status'], ['resumeLink', 'resumeLink'], ['resumeFilename', 'resume.filename'],
 ]);
 export class InvalidTableQuery extends Error {}
@@ -128,7 +129,7 @@ export function tableQuery(params: URLSearchParams) {
   if (dataTables && params.get('search[regex]') === 'true') throw new InvalidTableQuery('Regex search is not supported.');
   if (search.trim()) {
     const escaped = search.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    filter.$or = ['name', 'email', 'mobile', 'pagename', 'category', 'job_position', 'location', 'message'].map(key => ({ [key]: { $regex: escaped, $options: 'i' } }));
+    filter.$or = ['name', 'email', 'mobile', 'pagename', 'category', 'companyType', 'job_position', 'location', 'message'].map(key => ({ [key]: { $regex: escaped, $options: 'i' } }));
   }
   let sortBy = params.get('sortBy') || 'createdAt';
   let sortOrder = params.get('sortOrder') || 'desc';
@@ -147,7 +148,7 @@ export function tableQuery(params: URLSearchParams) {
 // Inclusion projection prevents attachments, retry keys and future private
 // metadata from accidentally leaking through the read API.
 export const tableProjection = Object.fromEntries([
-  ...['_id', 'kind', 'source', 'status', 'createdAt', 'updatedAt', 'sourceCompany', 'notification.status', 'resume.filename', 'resumeLink'].map(key => [key, 1]),
+  ...['_id', 'kind', 'source', 'status', 'companyType', 'createdAt', 'updatedAt', 'sourceCompany', 'notification.status', 'resume.filename', 'resumeLink'].map(key => [key, 1]),
   ...answerNames.map(key => [key, 1]),
 ]);
 export function tableRow(doc: Document) {
@@ -155,6 +156,7 @@ export function tableRow(doc: Document) {
   const iso = (value: unknown) => value instanceof Date ? value.toISOString() : null;
   return {
     id: String(doc._id), kind: scalar(doc.kind), source: scalar(doc.source), status: scalar(doc.status),
+    companyType: scalar(doc.companyType),
     createdAt: iso(doc.createdAt), updatedAt: iso(doc.updatedAt),
     ...Object.fromEntries(answerNames.map(key => [key, scalar(doc[key])])),
     notificationStatus: scalar(doc.notification?.status), hasResume: !!doc.resume,

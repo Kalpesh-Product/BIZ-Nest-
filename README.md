@@ -341,7 +341,7 @@ Connect MongoDB Compass to `mongodb://127.0.0.1:27017`, then open database `bizn
 | `career` | All career form submissions |
 | `submission_limits` | Temporary email hash and 15-minute bucket counter; TTL index removes expired counters |
 
-Each form group has its own collection. Answers, `source`, `kind`, and `sourceCompany` are top-level fields. `source` identifies the exact form page. `notification` and resume metadata remain nested. `submission_limits` holds temporary anti-spam counters.
+Each form group has its own collection. Answers, `source`, `kind`, and `sourceCompany` are top-level fields. Product records also store a server-derived `companyType` such as `Co-Working`, `Meeting Room`, or `Workation`; `source` identifies the exact form page. `notification` and resume metadata remain nested. `submission_limits` holds temporary anti-spam counters.
 
 For example, query `db.product.find({ source: "/Private_Workspace.html" })` or `db.career.find({ email: "person@example.com" })`. Run `npm run db:collections` for the page-to-collection mapping.
 
@@ -362,6 +362,8 @@ The list command returns the newest 20 records across the three form collections
 ### Migrating existing submissions
 
 Run `npm run db:setup` to create the three form collections and indexes. Then run `npm run db:migrate` to move existing records into `partner`, `product`, and `career`, flatten answers, and store `sourceCompany`. Stop old server versions using an earlier storage layout before migrating.
+
+Run `npm run db:migrate` again after adding or updating the product type mapping. It backs up and fills `companyType` on existing product records, and is safe to rerun.
 
 Before mutation, the migration validates records and exports a BSON-aware Extended JSON backup to ignored `.reference/mongodb-backups/`. It preserves IDs, original field values/types, kind/source, timestamps, retry fingerprints, notification state and resume bytes, verifies every copy, and then removes obsolete collections. Conflicting answer and top-level values, unknown sources or inconsistent duplicate IDs stop migration rather than overwriting data. A completed migration is safe to rerun. Keep backup files private: they contain complete submissions and resumes.
 

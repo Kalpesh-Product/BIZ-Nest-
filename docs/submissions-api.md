@@ -42,7 +42,7 @@ const totalRows = result.pagination.filteredTotal;
 | `kind` | All | `product`, `application`, `partnership`, or a [form filter](#form-filters) |
 | `source` | All | Exact original pathname, e.g. `/Co-Working_Space.html` |
 | `status` | All | Exact submission status, e.g. `new` |
-| `search` | Empty | Literal case-insensitive search across name, email, mobile, product/form, category, job position, location and message |
+| `search` | Empty | Literal case-insensitive search across name, email, mobile, product/form, company type, category, job position, location and message |
 | `from`, `to` | Unbounded | Inclusive submission dates in `YYYY-MM-DD`, interpreted in UTC |
 | `sortBy` | `createdAt` | A sortable field from returned `columns` |
 | `sortOrder` | `desc` | `asc` or `desc`; ID is the stable tie-breaker |
@@ -83,11 +83,11 @@ To fetch the complete dataset, iterate pages until `pagination.hasNextPage` is f
 The column list above is abbreviated. `total` counts all submissions; `filteredTotal` counts matching submissions. Every row uses the same keys, with `null` for answers absent from that form:
 
 - Metadata: `id` (MongoDB ID as a string), `kind`, `source`, `status`, `createdAt`, `updatedAt` (ISO timestamps).
-- Common/product fields: `name`, `email`, `mobile`, `count`, `sdate`, `pagename`, `category`.
+- Common/product fields: `name`, `email`, `mobile`, `count`, `sdate`, `pagename`, `category`, `companyType`.
 - Application/partner fields: `dob`, `location`, `experience`, `linkedin`, `currentmonthlysalary`, `expectedsalary`, `canjoin`, `relocategoa`, `personality`, `skills`, `specialexperience`, `willing`, `message`, `job_position`.
 - Additional metadata: `notificationStatus`, `hasResume`, `resumeLink`, and `sourceCompany` (always `"BIZ Nest"`). The link identifies a private S3 object and requires authorized AWS access. For legacy resumes, it is null until migrated.
 
-Submitted answers are top-level fields in the `partner`, `product`, and `career` collections. Original answer types are preserved, so salary/experience remain strings as submitted; `count` may contain values such as `10+`. Resume binary contents, fingerprint, retry key and arbitrary extra document properties are excluded with an inclusion projection.
+Submitted answers are top-level fields in the `partner`, `product`, and `career` collections. `companyType` is derived from the product page by the server and is null for partner and career rows. Original answer types are preserved, so salary/experience remain strings as submitted; `count` may contain values such as `10+`. Resume binary contents, fingerprint, retry key and arbitrary extra document properties are excluded with an inclusion projection.
 
 Set `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` in the server's `.env` for resume uploads. Use `AWS_SESSION_TOKEN` with temporary credentials. The storage prefix is `wono/BizNest/New BIZ Nest Website/Resumes/` in `wonov-aws-s3-storage`. Run `npm run db:migrate-resumes` to count legacy resumes and `node scripts/database.mjs migrate-resumes --apply` to upload them. The migration replaces each MongoDB file payload with its S3 link after S3 accepts the upload. The `npm run db:resume` command can export both legacy and S3 resumes.
 
