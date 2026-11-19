@@ -1,209 +1,240 @@
 # BIZ Nest — Developer Documentation
 
-Next.js and Tailwind CSS implementation of the public [BIZ Nest website](https://biznest.co.in/), including the homepage and 48 linked inner pages. The migration preserves the original `.html` URLs, page content, photography, Belleza font, layouts, responsive conditions, and exact styling values.
+Next.js implementation of the public [BIZ Nest](https://biznest.co.in/) website: **49 pages** (homepage plus 48 legacy inner pages), **50 forms across 37 pages**, backed by MongoDB and private S3 storage for resumes.
 
-The reference capture was made on **21 October 2026**. Content is served from files in this repository; the application does not fetch the reference website during normal browsing.
+The site was migrated from the original PHP/HTML pages. It keeps the original `.html` URLs, copy, photography, Belleza brand font, layouts, responsive breakpoints and visual values. All page content is committed in this repository; the application never fetches the reference website at runtime.
 
-> **Architecture:** This project renders migrated page content from JSON through a shared React component. There is no separate `.tsx` component for every inner page. JSON-based pages are a project-specific migration choice, not a Next.js requirement.
+| Item | Value |
+| --- | --- |
+| Framework | Next.js 16.4.2 (App Router, Cache Components) |
+| UI | React 19.3.0, Tailwind CSS 4.3 |
+| Language | TypeScript 5 |
+| Database | MongoDB 6 driver |
+| File storage | Amazon S3 (`@aws-sdk/client-s3`) |
+| Local URL | <http://localhost:3011> |
+| Repository | `Kalpesh-Product/BIZ-Nest-` |
 
-> **Backend:** All 50 forms across 37 pages save to local MongoDB on port 27017, including job applications and resume attachments. An optional webhook can notify another service after storage.
+---
 
 ## Contents
 
+- [Architecture at a glance](#architecture-at-a-glance)
 - [Technology stack](#technology-stack)
 - [Requirements and setup](#requirements-and-setup)
-- [Commands and ports](#commands-and-ports)
+- [npm scripts](#npm-scripts)
 - [Project structure](#project-structure)
-- [Request and rendering flow](#request-and-rendering-flow)
-- [Routing and page metadata](#routing-and-page-metadata)
-- [Content format and editing](#content-format-and-editing)
-- [Styling and assets](#styling-and-assets)
-- [Interactive components](#interactive-components)
-- [Forms and backend integration](#forms-and-backend-integration)
+- [Rendering pipeline](#rendering-pipeline)
+- [Routing and metadata](#routing-and-metadata)
+- [Content model and editing](#content-model-and-editing)
+- [Styling](#styling)
+- [Client interactions and animations](#client-interactions-and-animations)
+- [Backend: forms, database and storage](#backend-forms-database-and-storage)
+- [Submissions read API](#submissions-read-api)
 - [Environment variables](#environment-variables)
-- [Caching and builds](#caching-and-builds)
-- [Verification](#verification)
-- [Deployment](#deployment)
-- [Source migration tools](#source-migration-tools)
+- [Database and operator commands](#database-and-operator-commands)
+- [Verification and tests](#verification-and-tests)
+- [Build and deployment](#build-and-deployment)
 - [Troubleshooting](#troubleshooting)
-- [Contributing and maintenance](#contributing-and-maintenance)
-- [Current limitations](#current-limitations)
+- [Contributing conventions](#contributing-conventions)
+- [Known limitations](#known-limitations)
+
+---
+
+## Architecture at a glance
+
+```text
+Browser
+  │
+  ├─ GET /Co-Working_Goa.html
+  │     proxy.ts ──► app/[slug]/page.tsx ──► ReferencePage
+  │                                            │ content/manifest.json  (valid page + metadata)
+  │                                            │ content/pages/*.json   (page tree)
+  │                                            ▼
+  │                                          React elements + client islands
+  │
+  └─ POST /api/inquiry (multipart)
+        route.ts ──► lib/inquiry-validation.ts ──► lib/mongodb.ts ──► MongoDB
+                     (form contract)               │
+                                                    ├─► S3 (resume)
+                                                    └─► optional webhook
+
+External table UI ──► GET /api/submissions (Bearer key) ──► partner | product | career
+```
+
+Key design decisions:
+
+- **One dynamic route renders all inner pages.** Page bodies are JSON trees produced by the migration and rendered by a single shared component. There is no `.tsx` file per inner page.
+- **The manifest is the source of truth for URLs and SEO metadata.** A page exists only if `content/manifest.json` has its filename.
+- **Server-rendered content, client-side islands.** Only interaction, animation and form components are Client Components.
+- **Forms write to MongoDB; resumes go to S3.** Email/webhook notification is optional and never gates a successful save.
 
 ## Technology stack
 
 | Technology | Role |
 | --- | --- |
-| Next.js 16.4.2 | App Router, server rendering, route handlers, metadata, caching, and builds |
-| React / React DOM 19.3.0 | Components and browser interaction |
-| TypeScript 5 | Type checking for application source |
-| Tailwind CSS 4 | Page, layout, typography, responsive, and state styling |
-| Tailwind PostCSS integration | Compiles the utility classes during development and production builds |
-| Bootstrap JavaScript | Existing collapse/carousel behavior; the Bootstrap layout stylesheet is removed |
-| Swiper | Sliders and testimonials |
-| JSON content files | Migrated page trees with Tailwind utility classes |
-| ESLint 9 | Source linting |
+| Next.js 16.4.2 | App Router, server rendering, route handlers, metadata, caching, `proxy.ts` |
+| React / React DOM 19.3.0 | Server-rendered page tree and client interactions |
+| TypeScript 5 | Application typing |
+| Tailwind CSS 4 | All layout, typography, responsive and state styling (prefixed `tw:`) |
+| `@tailwindcss/postcss` | Tailwind compilation during dev and build |
+| MongoDB driver 6.21 | Submission storage |
+| `@aws-sdk/client-s3` | Resume upload/download |
+| SweetAlert2 11.0.19 | Form result popups (same version as the original site) |
+| Swiper, Bootstrap JS, GLightbox | Sliders, collapse/carousel behavior, gallery dialogs |
+| ESLint 9 + `eslint-config-next` | Source linting |
 
-The website uses Tailwind utilities, prefixed with `tw:` to avoid collisions with retained behavior selectors. Original class names such as `container` and `form-control` remain as selector hooks; their visual declarations are now Tailwind utilities. Dependency versions are recorded in [package.json](package.json) and resolved in [package-lock.json](package-lock.json).
+Dependencies and exact versions: [`package.json`](package.json) and [`package-lock.json`](package-lock.json).
 
 ## Requirements and setup
 
-- Node.js **20.9.0 or newer**, as required by the installed Next.js package. The project has been run with Node.js 22.16.0.
+- Node.js **20.9.0 or newer** (developed on Node.js 22.16.0).
 - npm and Git.
-- Python is optional and only needed to refresh the original website capture.
-
-Clone this repository and open a terminal in its root directory, alongside `package.json`.
+- MongoDB Community Server on `127.0.0.1:27017` for form submissions.
+- Python is **optional** — only for the legacy capture/conversion and migration-audit scripts.
 
 ```sh
 npm ci
+cp .env.example .env      # PowerShell: Copy-Item .env.example .env
 npm run dev
 ```
 
-Open [http://localhost:3011](http://localhost:3011).
+Open <http://localhost:3011>. Browsing does not require a database; only form submissions do.
 
-`npm ci` installs the versions recorded in the lockfile. Use `npm install` when intentionally changing dependencies, and include the resulting lockfile changes in your commit.
+Do not commit `.env`, `.env.local` or credentials. `.gitignore` excludes all `.env*` files except `.env.example`. An existing `.env.local` takes precedence over `.env` and is preserved.
 
-Environment configuration is optional for browsing locally. To configure form delivery or sitemap URLs, copy `.env.example` to `.env` using your editor or one of these commands:
+Next.js loads configuration in this order: existing process environment → `.env.$NODE_ENV.local` → `.env.local` → `.env.$NODE_ENV` → `.env`. `scripts/serve.mjs` sets `NODE_ENV` (`development` for `dev`, `production` for `start`) and loads env files **before** starting Next, so `PORT` from `.env` works on Windows and Unix.
 
-```sh
-# Git Bash, macOS, or Linux
-cp .env.example .env
-```
+## npm scripts
 
-```powershell
-# PowerShell
-Copy-Item .env.example .env
-```
+| Script | Command | Purpose |
+| --- | --- | --- |
+| `npm run dev` | `node scripts/serve.mjs dev` | Development server on `PORT` (default 3011) |
+| `npm run build` | `next build` | Type-check and produce the production build |
+| `npm start` | `node scripts/serve.mjs start` | Serve the production build on `PORT` |
+| `npm run lint` | `eslint` | Lint the source |
+| `npm run forms:sync` | `node scripts/sync-form-contracts.mjs` | Regenerate `content/form-contracts.json` from page forms |
+| `npm run styles:sync` | `node scripts/sync-tailwind-candidates.mjs` | Regenerate `content/tailwind-candidates.txt` for Tailwind |
+| `npm run db:check` | `node scripts/database.mjs check` | Verify the MongoDB connection |
+| `npm run db:setup` | `node scripts/database.mjs setup` | Create collections and indexes |
+| `npm run db:collections` | `node scripts/database.mjs collections` | Print the page → collection mapping |
+| `npm run db:inquiries` | `node scripts/database.mjs inquiries` | Show the newest 20 submissions |
+| `npm run db:migrate` | `node scripts/database.mjs migrate` | Consolidate legacy records into the three form collections |
+| `npm run db:migrate-resumes` | `node scripts/database.mjs migrate-resumes` | Count resumes eligible for S3; add `--apply` to upload |
+| `npm run db:resume` | `node scripts/database.mjs resume` | Export a resume: `npm run db:resume -- <id> <path>` |
+| `npm run test:config` | `node scripts/verify-config.mjs` | Validate config defaults, overrides and safe errors |
+| `npm run test:backend` | `node scripts/verify-backend.mjs` | Integration test against a disposable MongoDB database |
 
-Do not overwrite an existing env file when copying the template. Keep `.env` and optional `.env.local` private; do not commit either file or credentials. `.gitignore` excludes environment files while retaining `.env.example`.
-
-## Commands and ports
-
-| Command | Purpose |
-| --- | --- |
-| `npm run dev` | Start the development server on `PORT` from the env configuration (default **3011**) |
-| `npm run build` | Compile, type-check, and generate the production build |
-| `npm start` | Serve the existing production build on `PORT` from the env configuration (default **3011**) |
-| `npm run lint` | Run ESLint |
-| `npm run styles:sync` | Synchronize complete Tailwind candidates from parsed page JSON |
-| `node scripts/verify-site.mjs` | Audit a running site, defaulting to `http://localhost:3011` |
-| `node scripts/verify-site.mjs http://localhost:3011` | Audit an explicitly selected local server |
-
-Development and production use the same port. **Stop one with Ctrl+C before starting the other.**
-
-To run the production version locally:
-
-```sh
-npm run build
-npm start
-```
-
-To change the default port, update both the `dev` and `start` scripts in `package.json`, the audit script's default URL, and the examples in this README. Root-relative page and asset links automatically follow the current origin and port.
+`forms:sync` and `styles:sync` run automatically via `predev` / `prebuild`. Development and production share port 3011 — stop one before starting the other. Both use the `.next` build directory, so do not build while a dev server is running.
 
 ## Project structure
 
 ```text
 app/
-  layout.tsx                   Root HTML document, shared stylesheet links, favicon
-  page.tsx                     Homepage entry point
-  [slug]/page.tsx               Dynamic route for legacy inner-page URLs
-  api/inquiry/route.ts          POST endpoint for inquiries and applications
-  globals.css                  Tailwind imports and source registration
-  tailwind-variants.css         Generated selector, state, and media variants
-  tailwind-exceptions.css       Necessary CSS-only font-face definition
-  not-found.tsx                Missing-page screen
-  robots.ts                    Generates /robots.txt
-  sitemap.ts                   Generates /sitemap.xml
+  layout.tsx                 Root document, font preload, shared classes, metadata defaults
+  page.tsx                   Homepage entry (renders index.html)
+  [slug]/page.tsx            Dynamic route for every legacy inner page
+  globals.css                Tailwind imports, vendor layers, content sources
+  tailwind-variants.css      Generated selector/state/media variants
+  tailwind-exceptions.css    Brand @font-face and CSS-only exceptions
+  not-found.tsx              404 screen
+  robots.ts                  /robots.txt
+  sitemap.ts                 /sitemap.xml from the manifest
+  api/inquiry/route.ts       POST form submissions
+  api/submissions/route.ts   GET protected submissions read API
 components/
-  reference-page.tsx           Reads JSON and renders server React elements
-  site-link.tsx                Prefetched Next.js page links and scroll intent
-  navigation-boundary.tsx      Resets page DOM without a layout wrapper
-  inquiry-form.tsx             Browser form submission and feedback
-  site-interactions.tsx        Menus, filtering, dialogs, galleries, and sliders
-  page-animations.tsx          Shared scroll entrances and statistic counters
+  reference-page.tsx         Manifest lookup, JSON read, node → React renderer
+  inquiry-form.tsx           Client form submission, retry key, pending state
+  submission-alerts.ts       SweetAlert2 result popups (lazy loaded)
+  site-link.tsx              Prefetched Next.js links with scroll handling
+  navigation-boundary.tsx    Recreates page DOM per pathname without extra markup
+  site-interactions.tsx      Mobile nav, galleries, dialogs, Swiper, FAQ
+  page-animations.tsx        Scroll entrances and statistic counters
+  animation-styles.ts        Shared reveal classes for first paint
 content/
-  manifest.json                Supported page names, titles, and descriptions
-  pages/*.json                 Individual migrated page trees with utility classes
-  tailwind-root.json           Shared HTML/body/skip-link utility classes
-  tailwind-candidates.txt      Generated complete class names for Tailwind scanning
-  tailwind-migration.json      Migration counts
-public/assets/
-  fonts/                       Local fonts
-  img/                         Local photographs, logos, and icons
-  vendor/                      Original vendor styles, scripts, and fonts
+  manifest.json              Valid page names, titles and descriptions
+  pages/*.json               49 migrated page trees with Tailwind utilities
+  form-contracts.json        Generated per-page form schemas (validation source)
+  tailwind-root.json         Shared html/body/skip-link classes
+  tailwind-candidates.txt    Generated raw class candidates for Tailwind
+  tailwind-migration.json    Migration statistics
+lib/
+  server-config.mjs          Central env parsing and validation (server/CLI only)
+  mongodb.ts                 Shared MongoDB connection pool
+  form-collections.mjs       Page → collection mapping, companyType, indexes
+  submission-document.mjs    Allowed business fields per collection
+  inquiry-validation.ts      FormData validation against the contracts
+  submissions-table.ts       Read API query parsing, projection and row shaping
+  s3-attachments.mjs         S3 upload, read and delete
+  migrate-form-collections.mjs  Legacy → three-collection migration
 scripts/
-  mirror-reference.py          Captures public source pages and assets
-  convert-reference.py         Converts captured pages into content JSON
-  verify-site.mjs              HTTP and content-integrity audit
-  sync-tailwind-candidates.mjs  Extracts Tailwind candidates without JSON escaping
-  migrate-to-tailwind.py        One-time conversion from the local legacy snapshot
-  verify-tailwind.py            Audits utility migration and compiled CSS coverage
-proxy.ts                       Ensures unknown legacy HTML URLs return HTTP 404
-next.config.ts                 Build directories, caching, headers, and Turbopack
-postcss.config.mjs             Official Tailwind PostCSS integration
-.env.example                   Documented environment settings
-AGENTS.md                      Repository instructions for coding agents
+  serve.mjs                  Env-aware launcher for the Next.js CLI
+  sync-form-contracts.mjs    Form contract generator
+  sync-tailwind-candidates.mjs  Tailwind candidate generator
+  database.mjs               Operator CLI (check/setup/migrate/inquiries/resume)
+  verify-config.mjs          Configuration tests
+  verify-backend.mjs         Backend integration test
+  verify-site.mjs            HTTP + content audit for a running server
+  mirror-reference.py        Legacy: capture the public site
+  convert-reference.py       Legacy: HTML capture → content JSON
+  migrate-to-tailwind.py     One-time Tailwind migration utility
+  verify-tailwind.py         Tailwind migration audit
+  verify-navigation-parity.py  Rendered-tree comparison between two servers
+  restore-reference-animations.py  Restore animation markers from the capture
+public/assets/
+  fonts/ img/ vendor/        Local fonts, photography, vendor CSS/JS
+proxy.ts                     404 handling for unknown legacy .html URLs
+next.config.ts               Response headers, Cache Components, partial prefetching
+postcss.config.mjs           Tailwind PostCSS integration
 ```
 
-Generated directories are ignored by Git:
+Ignored, generated directories: `.next/` (build output), `.reference/` (capture and backups), `node_modules/`, `.next-tailwind/`. Edit source files, never build output.
 
-- `.next/`: development output.
-- `.next-production/`: production output.
-- `.reference/`: downloaded source capture and inventory.
-- `node_modules/`: installed packages.
+## Rendering pipeline
 
-Edit source files rather than generated build output or installed dependencies.
+For `GET /contact.html`:
 
-## Request and rendering flow
+1. `proxy.ts` matches the path (it skips `/api`, `/_next` and `/assets`). If the URL ends in `.html` and is **not** a manifest key, it rewrites to `/_not-found` with status **404** before streaming starts.
+2. `app/[slug]/page.tsx` decodes the parameter (Next can supply percent-encoded values for names with spaces or `&`) and checks the manifest.
+3. `ReferencePage` reads `content/pages/<name>.json` with `node:fs/promises` from `process.cwd()`.
+4. `renderNode` converts the tree to React elements and:
+   - maps HTML attributes (`class` → `className`, `for` → `htmlFor`, `tabindex` → `tabIndex`, …);
+   - drops `on*` handlers, legacy presentation attributes and inline `style`;
+   - converts `input` values to `defaultValue` / `defaultChecked` and joins `textarea` text;
+   - wraps `<form>` nodes in `InquiryForm`;
+   - renders internal `.html` links through `SiteLink`;
+   - adds first-paint reveal state for animated nodes.
+5. `layout.tsx` provides the HTML document, favicon, font preload and shared root classes.
+6. `NavigationBoundary` re-keys the route subtree by pathname so the legacy document-scoped UI operates on one live page.
+7. `SiteInteractions` and `PageAnimations` attach browser behavior after hydration.
 
-For a request to `/contact.html`:
+`ReferencePage` is wrapped in `'use cache'` with `cacheLife('max')`, so page output is cached per page name. In development, edits to JSON may need a server restart because of that cache; in production, rebuild and restart after content changes.
 
-```text
-Browser requests /contact.html
-  -> proxy.ts checks the legacy URL
-  -> app/[slug]/page.tsx receives slug = "contact.html"
-  -> content/manifest.json confirms the page exists
-  -> ReferencePage reads content/pages/contact.json
-  -> renderNode converts the tree to React elements
-  -> app/layout.tsx supplies the outer HTML document and shared styles
-  -> browser displays the page and activates client interactions
-```
-
-The root URL `/` follows `app/page.tsx`, which calls `ReferencePage` with `index.html`. `/index.html` is also supported by the dynamic route.
-
-Most page rendering runs on the server. Only the interaction and form components declare `'use client'`, enabling browser state and event handling. Client Components can be prerendered initially; their JavaScript then attaches interactive behavior in the browser, a process called hydration.
-
-The renderer uses `React.createElement` to build the content tree and translates HTML attributes such as `class` and `for` into React's `className` and `htmlFor`. Form nodes become `InquiryForm` components.
-
-## Routing and page metadata
-
-[app/[slug]/page.tsx](app/%5Bslug%5D/page.tsx) handles a single URL segment. Examples include:
+## Routing and metadata
 
 | URL | Content file |
 | --- | --- |
-| `/` or `/index.html` | `content/pages/index.json` |
+| `/` | `content/pages/index.json` (via `app/page.tsx`) |
+| `/index.html` | `content/pages/index.json` (via `[slug]`, canonicalized to `/` by links) |
 | `/Co-Working_Goa.html` | `content/pages/Co-Working_Goa.json` |
-| `/subscription.html` | `content/pages/subscription.json` |
-| `/demos.html` | `content/pages/demos.json` |
-| `/partner.html` | `content/pages/partner.json` |
-| `/career.html` | `content/pages/career.json` |
-| `/contact.html` | `content/pages/contact.json` |
+| `/career_PHP_Developer.html` | `content/pages/career_PHP_Developer.json` |
+| `/Meetings&Conferences.html` | `content/pages/Meetings&Conferences.json` |
+| `/privacy_policy.html` | `content/pages/privacy_policy.json` |
 
-Preserve filename capitalization and spelling. Some original names include spaces or `&`; use correctly encoded URLs when sharing those links. The existing route is not a catch-all for nested paths such as `/products/example`.
+- `generateStaticParams()` enumerates every manifest key.
+- `generateMetadata()` uses the manifest title and description. The `title`/`description` fields inside page JSON are not used for head metadata; update the manifest when SEO text changes.
+- Unknown pages call `notFound()`; unknown `.html` URLs are real 404 responses.
+- The route matches a **single** segment only (not nested paths such as `/products/example`).
+- `sitemap.ts` emits `/`, every other manifest page, and uses `SITE_URL`; `robots.ts` allows public pages, disallows `/api/`, and points at the sitemap.
+- Filenames are case- and spelling-sensitive. Preserve spaces and `&` exactly; share encoded URLs.
 
-The manifest is the runtime authority for valid pages and their metadata. `generateStaticParams()` provides its page names for build-time rendering, and `generateMetadata()` uses its title and description. Unknown page names call `notFound()`. The proxy also sets a 404 status for unknown `.html` URLs before streaming begins.
+## Content model and editing
 
-The sitemap includes the homepage and inner pages from the manifest. `robots.ts` permits public pages and disallows `/api/`. Its directives guide crawlers; they do not provide access control.
-
-## Content format and editing
-
-### Page schema
-
-Each page JSON contains:
+Each page JSON has this shape:
 
 ```json
 {
   "title": "Example page | BIZ Nest",
-  "description": "Example page description",
+  "description": "Example description",
   "nodes": [
     {
       "tag": "main",
@@ -211,7 +242,7 @@ Each page JSON contains:
       "children": [
         {
           "tag": "h1",
-          "attrs": { "class": "tw:[color:#ffc732]" },
+          "attrs": { "class": "tw:[color:#ffc732] tw:text-[40px]" },
           "children": ["Welcome to BIZ Nest"]
         }
       ]
@@ -220,353 +251,333 @@ Each page JSON contains:
 }
 ```
 
-This is a structural example, not a complete branded page template.
+- `tag` — HTML element name.
+- `attrs` — attribute map; values are strings.
+- `children` — nested nodes or text strings.
 
-- `tag`: HTML element name.
-- `attrs`: attributes; values in generated content are strings.
-- `children`: nested node objects or text strings.
-- Page-specific CSS and inline `style` attributes have been removed. Styling lives in complete `tw:` utility tokens in `attrs.class`.
+### Edit an existing page
 
-Page-level JSON also retains the captured title and description. The renderer currently obtains browser metadata from **the manifest**, so update the manifest when changing a page's SEO title or description.
+1. Locate the JSON file using the routing table.
+2. Edit text, attributes, utility classes or children without breaking JSON syntax.
+3. Update `content/manifest.json` if the title or description changes.
+4. Run `npm run styles:sync` if you added Tailwind classes while the dev server is running (it also runs before `dev` and `build`).
+5. Rebuild/restart production, then verify the route.
 
-### Change an existing page
+Header, footer and navigation markup is duplicated inside every page tree. A global nav or footer change therefore requires updating multiple JSON files.
 
-1. Find its JSON file using the route-to-filename mapping above.
-2. Format the JSON in your editor before editing if needed; generated files are compact.
-3. Update the relevant text, attributes, utility classes, or child nodes without breaking JSON syntax.
-4. Update the manifest if the title or description changes.
-5. If utility classes changed while development is running, run `npm run styles:sync` so Tailwind sees the new candidates. This runs automatically before `npm run dev` and `npm run build`.
-6. Inspect the page locally and run the appropriate checks.
+### Add a page
 
-Header and footer markup currently exists inside each migrated page tree. A navigation or footer change may therefore require updating multiple JSON files. A shared renderer does not mean those content sections are shared React components.
+1. Create `content/pages/example.json` with the schema above.
+2. Add `"example.html"` with `title` and `description` to `content/manifest.json`.
+3. Link to `/example.html` from the relevant navigation/content.
+4. Include one main landmark with `id="main"` so the skip link and anchor work.
+5. Run `npm run forms:sync` if the page contains a form.
+6. Build and verify `/example.html`.
 
-Treat these JSON files as trusted application source. The migration removes scripts and inline event handlers, but the renderer is **not a general-purpose sanitizer for untrusted user HTML**. Implement interactions in the React components rather than adding scripts to content.
+No new route file is needed for a single-segment `.html` page. Use a dedicated App Router route for a different URL structure.
 
-### Add a page using the existing renderer
+> **Trust boundary:** page JSON is trusted application source. The renderer strips scripts and inline handlers, but it is not a sanitizer for untrusted HTML. Implement behavior in React components, not in content.
 
-1. Create `content/pages/example.json` with the page schema.
-2. Add `example.html` to `content/manifest.json` with its title and description.
-3. Add a link to `/example.html` in the relevant navigation or content.
-4. Include one main content landmark with `id="main"` so the skip link works.
-5. Rebuild for production and verify `/example.html`.
-
-No additional page route is required for a new single-segment `.html` page. For a new URL structure or a feature that needs dedicated JSX, create the appropriate App Router route and components instead.
-
-## Styling and assets
+## Styling
 
 | Location | Responsibility |
 | --- | --- |
 | Page JSON `attrs.class` | Exact-value Tailwind utilities for each migrated element |
-| [app/globals.css](app/globals.css) | Tailwind imports, explicit source configuration, and necessary vendor imports |
-| [app/tailwind-variants.css](app/tailwind-variants.css) | Ordered selector/state/media variants; no visual property declarations |
-| [app/tailwind-exceptions.css](app/tailwind-exceptions.css) | Local brand font-face, which requires CSS |
-| [content/tailwind-root.json](content/tailwind-root.json) | Shared root/document utilities |
-| Client components | Tailwind utilities for form feedback and gallery dialogs |
-| `public/assets/vendor/` | Necessary icon-font mappings and Swiper engine styles |
+| [`app/globals.css`](app/globals.css) | Layer order, vendor imports, Tailwind theme/utilities, content sources |
+| [`app/tailwind-variants.css`](app/tailwind-variants.css) | Generated ordered variants (selectors, states, media); no visual declarations |
+| [`app/tailwind-exceptions.css`](app/tailwind-exceptions.css) | Belleza `@font-face` and CSS-only exceptions |
+| `content/tailwind-root.json` | Shared `html` / `body` / skip-link classes |
+| `public/assets/vendor/` | Icon fonts, Swiper CSS, vendor styles |
 
-Tailwind Preflight is intentionally omitted because replacing the original normalization with a different reset would change the appearance. The original normalization and grid values were converted to utilities too. The original main stylesheet and Bootstrap layout stylesheet are no longer loaded.
+Important rules:
 
-Migrated tokens such as `tw:r005785:[font-family:logo-font]` combine a generated ordered variant with an exact-value utility. The variants preserve the original selector specificity, pseudo-elements, hover/checked/collapsed states, media conditions, and declaration order. Do not rename or reorder generated variants without repeating the comparison checks.
+- **Tailwind is prefixed with `tw:`** to avoid collisions with retained selectors such as `container`, `form-control` and `.swiper`.
+- **Preflight is intentionally not loaded.** The original browser normalization was converted to utilities; a different reset would change appearance.
+- Migrated tokens look like `tw:r005785:[font-family:logo-font]`, where the generated variant preserves original specificity, pseudo-elements, states, media conditions and declaration order. Do not rename or reorder them.
+- For new UI, use ordinary prefixed utilities: `tw:flex tw:items-center tw:p-[12px]`.
+- To adjust migrated styling, edit the existing utility rather than appending a conflicting lower-specificity class.
+- Tailwind scans `content/tailwind-candidates.txt` plus `components/` and `app/`, not the escaped JSON. `styles:sync` writes complete class names; never edit that file by hand.
+- Fractional grid percentages use small custom-property arithmetic so CSS optimizers cannot round them and shift subpixel geometry.
 
-For new components, use ordinary prefixed utilities such as `tw:flex tw:items-center tw:p-[12px]`. To adjust an existing migrated element, edit its applicable utility rather than appending a lower-specificity conflicting class. `tw:legacy-inline:[padding:12px]` provides the precedence used to migrate original inline styles when that precedence is intentional.
+Assets under `public` are served from the site root: `public/assets/img/example.webp` → `/assets/img/example.webp`. Use root-relative URLs and descriptive `alt` text. The brand font is `public/assets/fonts/Belleza-Regular.ttf`. Keep vendor license notices.
 
-Some repeating fractional grid percentages use arithmetic with small custom-property operands. This prevents CSS optimizers from rounding the original fractions and changing subpixel geometry.
+## Client interactions and animations
 
-`npm run styles:sync` parses the JSON and writes [content/tailwind-candidates.txt](content/tailwind-candidates.txt). Tailwind scans that raw token file plus application/components source, rather than escaped JSON text. Add complete utility names, and synchronize after class edits during a running development session. Do not edit the candidate file manually.
-
-Files under `public` are served from the site root:
-
-```text
-File: public/assets/img/example.webp
-URL:  /assets/img/example.webp
-```
-
-Use root-relative asset URLs, provide appropriate image alternative text, and avoid hardcoding a local hostname or port in page content. Preserve existing vendor license notices. The main local brand font is `public/assets/fonts/Belleza-Regular.ttf`.
-
-## Interactive components
-
-[components/site-interactions.tsx](components/site-interactions.tsx) handles:
+[`components/site-interactions.tsx`](components/site-interactions.tsx) owns:
 
 - Mobile navigation and product dropdowns.
 - Gallery category filtering and image/video dialogs.
-- Gallery keyboard navigation, focus handling, and Escape-to-close behavior.
-- Inquiry popups and scroll-to-top controls.
-- Swiper initialization, with reduced-motion preferences considered.
+- Dialog keyboard navigation, focus handling and Escape-to-close.
+- Inquiry popups and scroll-to-top.
+- Swiper initialization (reduced-motion aware, refreshed after fonts load).
 
-The component loads local Bootstrap and Swiper scripts through `next/script`. Native checkbox-and-label FAQ sections retain their HTML/CSS behavior.
+Testimonial carousels use the reference's 600 ms transition and 5000 ms autoplay, one card below 1200 px and two at 1200 px+, with runtime-generated pagination bullets styled through Tailwind.
 
-The testimonial carousels on Co-Working, Workation and Meeting Rooms use the reference's 600ms slide transition and 5000ms autoplay interval. They display one card below 1200px and two cards at 1200px and above, with 20px between cards. Pagination bullets are generated at runtime; their exact 12px size, gray background and dark active state are supplied through Tailwind in `renderBullet`, since runtime-created nodes are absent from the captured page JSON. Swiper observes parent layout changes and refreshes after fonts load.
+[`components/page-animations.tsx`](components/page-animations.tsx) restores captured entrance markers (`fade-up`, `fade`, `zoom-in`) at the original scroll offset and durations, plus the homepage statistic counters driven by `data-purecounter-*` attributes. The server adds `data-reveal-state="pending"` and shared reveal classes before first paint, so content is never shown and then hidden. Reduced-motion users and visitors without JavaScript see content immediately.
 
-[components/page-animations.tsx](components/page-animations.tsx) runs on every migrated page and restores all 431 captured entrance markers across 46 pages: `fade-up` (100px upward motion), `fade` (opacity only), and `zoom-in` (scale from 0.6). Entrances last 800ms, trigger once at the original 120px scroll offset, and retain the reference's supported 100ms delays. The reference stylesheet has no rule for its 10ms delay markers, so those retain its effective zero delay. Pages without captured entrance animations remain static. Appearance is controlled by Tailwind utilities. The two homepage `.purecounter` statistics count from 0 to 11 and 32 over one second when they enter view. Their start, end and duration come from `data-purecounter-*` attributes in [content/pages/index.json](content/pages/index.json). The component cleans up observers, listeners and animation frames on unmount. Reduced-motion users and visitors without JavaScript see the completed content immediately.
+Interactions rely on legacy hooks such as `.glightbox`, `.portfolio-item`, `.swiper` and `#popup-modal`. Renaming those selectors in content requires updating the interaction component.
 
-The server renderer adds the initial `data-reveal-state="pending"` and shared Tailwind classes from [components/animation-styles.ts](components/animation-styles.ts) before the first paint. The browser then transitions those elements into view; it does not first render visible content and hide it after hydration. Initial hiding applies only when scripting is enabled and reduced motion is not requested, preserving readable content without JavaScript.
+[`components/site-link.tsx`](components/site-link.tsx) renders internal links with `<Link prefetch={true}>`; external links, downloads, gallery controls and hash-only anchors keep native behavior. [`components/navigation-boundary.tsx`](components/navigation-boundary.tsx) re-creates the page DOM on pathname changes (including Back/Forward) via a keyed Fragment, preventing duplicate IDs while keeping prefetched route data.
 
-With the ignored `.reference/` capture available, run `python scripts/restore-reference-animations.py` to verify every page's animation markers against the original HTML. Add `--write` only when intentionally restoring those attributes; this script leaves the Tailwind classes, content and structure intact. The normal route verification also checks that each page's animation markers and pending first-paint states reach the server-rendered HTML.
+## Backend: forms, database and storage
 
-Many interactions identify elements through classes and IDs such as `.glightbox`, `.portfolio-item`, `.swiper`, and `#popup-modal`. Changing those selectors in content can break their behavior; update the interaction component alongside the markup.
+All 50 forms post multipart data to `POST /api/inquiry`, replacing the original `forms/*.php` endpoints.
 
-Internal page destinations render through [components/site-link.tsx](components/site-link.tsx), which uses Next.js `<Link prefetch={true}>`. Production builds prefetch visible links, including their cached URL-dependent content, and navigate without reloading the HTML document. External links, gallery controls, downloads and hash-only controls keep their native behavior. Ordinary page links start at the top; hash destinations use Next.js anchor scrolling.
+### Collections
 
-[components/navigation-boundary.tsx](components/navigation-boundary.tsx) keys a React Fragment by pathname around the route content. This preserves Next.js route-data caching while recreating the page DOM and its effects on page changes, including browser Back/Forward. No extra layout element, renamed IDs, scoped Bootstrap selectors or new page styling are introduced. The original document-scoped menus, tabs, FAQs, sliders, counters and entrance animations therefore operate on one current page rather than several hidden cached copies. Page-local state resets when changing pages; this deliberately retains the original full-document page behavior.
+| Collection | Contents | Business fields |
+| --- | --- | --- |
+| `partner` | `/partner.html` submissions | `name`, `email`, `mobile`, `message`, `pagename` |
+| `product` | All product/subscription forms | `name`, `email`, `mobile`, `count`, `sdate`, `pagename`, `category` |
+| `career` | All job applications | `name`, `email`, `dob`, `mobile`, `location`, `experience`, `linkedin`, `currentmonthlysalary`, `expectedsalary`, `canjoin`, `relocategoa`, `personality`, `skills`, `specialexperience`, `willing`, `message`, `job_position` |
+| `submission_limits` | Hashed email rate-limit buckets | `_id` (hash), `count`, `expiresAt` (TTL) |
 
-Prefetching is enabled in production, not development. For a representative speed check, stop the development server, run `npm run build`, then `npm start` (port 3011). The first request and uncached images can still require network time; existing entrance durations are preserved.
+Every record also stores `source`, `kind`, `sourceCompany` (`"BIZ Nest"`), `status`, `createdAt`, `updatedAt`, `notification`, `fingerprint`, optional `idempotencyKey`, and for product records a server-derived `companyType` (for example `Co-Working`, `Meeting Room`, `Workation`, `Virtual Office`).
 
-For a design regression check against a separately running unchanged build, run `python scripts/verify-navigation-parity.py BASELINE_URL OPTIMIZED_URL`. It compares every page's rendered body tree, text, attributes and Tailwind classes, ignoring framework scripts/resource hints and equivalent URL encoding. The normal route verifier checks all routes and their initial animation states.
+`lib/form-collections.mjs` maps each source page to its collection and company type; `lib/submission-document.mjs` whitelists the fields a client may write, so submitted answers cannot overwrite system metadata.
 
-## Forms and backend integration
+### Indexes
 
-The original website uses `forms/coworkinginquiry.php`, `forms/enquirymail.php`, `forms/partner.php`, and `forms/resume.php`. The local equivalent is `POST /api/inquiry`, using the existing forms and feedback area. All 50 original form field sets were compared with the local forms: product inquiries, partnership requests, and career applications. Static content, testimonials, pricing displays, and existing external login/booking links keep their existing behavior; no replacement account system or payment flow is introduced.
+Created by `db:setup` and lazily on the first submission:
+
+- Unique partial `{ source: 1, idempotencyKey: 1 }` per form collection.
+- `{ createdAt: -1 }` for listing.
+- TTL `{ expiresAt: 1 }` on `submission_limits`.
+
+### Request lifecycle
+
+1. Reject a mismatched `Origin` header (`403`).
+2. Validate the `Idempotency-Key` format when supplied.
+3. Enforce the body limit while streaming (even without `Content-Length`) and require `multipart/form-data`.
+4. Validate against `content/form-contracts.json`: known source page, known and non-duplicate fields, required fields, select options, dates, numeric min/max, length caps, email and 10-digit mobile (`[1-9]`).
+5. Hidden page/job identifiers come from the server contract, not the browser.
+6. Resume: PDF/Word/ZIP extension **and** magic-byte signature check, size cap.
+7. Compute a SHA-256 fingerprint of source + fields + resume bytes.
+8. If the `(source, idempotencyKey)` row exists: identical fingerprint → `200` with the original id; different data → `409`.
+9. Atomically increment the hashed-email bucket for the current window; above the cap → `429`.
+10. Upload the resume to S3 (career forms), then insert the record.
+11. If `INQUIRY_WEBHOOK_URL` is set, forward the multipart payload after the insert (15 s timeout, inquiry id as idempotency key, optional bearer token) and record `notification.status`.
+12. Return JSON `{ message, id }`.
+
+| Status | Meaning |
+| --- | --- |
+| `200` | Saved, or an identical retry |
+| `400` | Invalid field, source page, retry key or attachment |
+| `403` | Mismatching supplied origin |
+| `409` | Retry key reused with different data |
+| `413` | Body too large |
+| `429` | Submission limit exceeded |
+| `503` | Database/S3 unavailable; the message points to `response@biznest.co.in` |
+
+### Resumes in S3
+
+Resumes are uploaded to `wonov-aws-s3-storage` (region `ap-south-1`) under:
 
 ```text
-Existing form -> POST /api/inquiry -> server validation -> MongoDB -> optional notification -> existing feedback UI
+wono/BizNest/New BIZ Nest Website/Resumes/<mongo-id>/file.<ext>
 ```
 
-### Local setup
+Required server credentials: `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` (plus `AWS_SESSION_TOKEN` for temporary credentials). Career records store `resumeLink` and nested `{ filename, contentType, size }` metadata. A failed database insert triggers cleanup of the just-uploaded object.
 
-1. Run MongoDB Community Server on `127.0.0.1:27017` (the default port).
-2. Copy `.env.example` to `.env` if that file does not already exist. Keep existing `.env.local` overrides and credentials.
-3. Run `npm install`, then `npm run db:setup` and `npm run db:check`.
-4. Run `npm run dev` and submit an existing form at `http://localhost:3011`.
+Export a resume with `npm run db:resume -- <inquiry-id> <output-path>`; the command works for both S3 and legacy embedded files and refuses to overwrite an existing file.
 
-The defaults are `MONGODB_URI=mongodb://127.0.0.1:27017` and `MONGODB_DB=biznest`. `lib/mongodb.ts` maintains a shared connection pool and retries after connection failures. The application creates required indexes on first submission as well; setup lets you verify them in advance. Builds do not require a database connection.
+### Webhook notifications
 
-### Storage and operator access
+Optional. `notification.status` is `disabled` (no URL), `pending`, `delivered` or `failed`. Notification failures never discard data or turn a saved submission into an error. There is no retry worker; inspect failed notifications in MongoDB.
 
-Connect MongoDB Compass to `mongodb://127.0.0.1:27017`, then open database `biznest`:
+### Frontend behavior
 
-| Collection | Contents |
-| --- | --- |
-| `partner` | Partner form submissions |
-| `product` | All product form submissions |
-| `career` | All career form submissions |
-| `submission_limits` | Temporary email hash and 15-minute bucket counter; TTL index removes expired counters |
+`InquiryForm` keeps the original markup and pending state, sends `source` from the current pathname, and generates an `Idempotency-Key` that stays stable while the payload is unchanged. Success shows the original SweetAlert2 success popup and resets the form; errors keep the values and show a persistent error popup with an inline fallback.
 
-Each form group has its own collection. Answers, `source`, `kind`, and `sourceCompany` are top-level fields. Product records also store a server-derived `companyType` such as `Co-Working`, `Meeting Room`, or `Workation`; `source` identifies the exact form page. `notification` and resume metadata remain nested. `submission_limits` holds temporary anti-spam counters.
+### Privacy
 
-For example, query `db.product.find({ source: "/Private_Workspace.html" })` or `db.career.find({ email: "person@example.com" })`. Run `npm run db:collections` for the page-to-collection mapping.
+No anonymous endpoint lists submissions or downloads resumes. Operator commands print personal data — run them only in a trusted terminal. Backups and migration exports contain full submissions and resumes; keep them private.
 
-New resumes are stored in S3 under `wono/BizNest/New BIZ Nest Website/Resumes/`. Career records hold `resumeLink` and file metadata. Legacy embedded files remain available until the S3 migration runs.
+## Submissions read API
 
-Operator commands run locally with database access:
+`GET /api/submissions` exposes a read-only, paginated, uncached view for external tables.
 
-```bash
-npm run db:collections
-npm run db:inquiries
-npm run db:inquiries -- career
-npm run db:inquiries -- INQUIRY_ID
-npm run db:resume -- INQUIRY_ID ./resume.pdf
+```text
+Authorization: Bearer <SUBMISSIONS_API_KEY>
 ```
 
-The list command returns the newest 20 records across the three form collections, including each collection name and excluding binary bytes and internal retry fields. Resume export creates a new file and refuses to overwrite existing files. These commands reveal personal information; use them only in a trusted terminal. Database backup and retention follow your MongoDB operations policy; this application does not automatically delete form records.
+- The key must be at least 32 non-whitespace characters; an empty key disables reads (`503`).
+- Keys are compared in constant time; missing/incorrect credentials return `401`.
+- `format=table` (default) returns `{ data, pagination, columns }`; `format=datatables` returns the DataTables server-side shape.
+- Filters: `kind`, `source`, `status`, `search`, `from`/`to`, `sortBy`, `sortOrder`, `page`, `pageSize` (1–100).
+- Cross-origin browser access requires an explicit `SUBMISSIONS_ALLOWED_ORIGINS` allowlist; there is no wildcard and no cookie sharing.
+- Responses use `Cache-Control: private, no-store`; queries have a 5 s limit; search is escaped literal text.
 
-### Migrating existing submissions
-
-Run `npm run db:setup` to create the three form collections and indexes. Then run `npm run db:migrate` to move existing records into `partner`, `product`, and `career`, flatten answers, and store `sourceCompany`. Stop old server versions using an earlier storage layout before migrating.
-
-Run `npm run db:migrate` again after adding or updating the product type mapping. It backs up and fills `companyType` on existing product records, and is safe to rerun.
-
-Before mutation, the migration validates records and exports a BSON-aware Extended JSON backup to ignored `.reference/mongodb-backups/`. It preserves IDs, original field values/types, kind/source, timestamps, retry fingerprints, notification state and resume bytes, verifies every copy, and then removes obsolete collections. Conflicting answer and top-level values, unknown sources or inconsistent duplicate IDs stop migration rather than overwriting data. A completed migration is safe to rerun. Keep backup files private: they contain complete submissions and resumes.
-
-### Validation, retries, and notifications
-
-`components/inquiry-form.tsx` keeps the same form markup, styling, and pending state. All forms use SweetAlert2 11.0.19 (the original site version) for submission results. The library is loaded on submission; its vendor stylesheet is imported into the utilities layer. Successful saves show the centered green-check popup and timer bar: 3 seconds for partnerships and 10 seconds for inquiries/applications, with relevant messages. Errors show a persistent red-icon popup with an OK button and preserve form values. Native browser validation still handles incomplete fields before submission. Reduced-motion preferences are respected, and the existing inline feedback remains a fallback if popup code cannot load. It submits multipart data, adds `source`, and sends an `Idempotency-Key` that remains stable for retries of the same payload. A successful submission resets the form. Failed database writes show an error and retain the form values.
-
-`content/form-contracts.json` is generated from the actual page forms by `npm run forms:sync`, also run before development and production builds. Required fields, allowed select options, dates, numeric minimums, and known field names are validated on the server. Hidden page/job identifiers are taken from the server contract rather than trusting the browser. Names, email addresses, mobile numbers, duplicate fields, and unknown source pages are checked. Mobile numbers retain the existing 10-digit rule, starting with 1–9.
-
-The request body is bounded to 6,000,000 bytes even without `Content-Length`. Resume extension and initial PDF/Word/ZIP signatures are checked; these checks are not a malware scan or full document validation. Same-origin checks reject mismatching supplied origins. A database-backed limit permits 10 new submissions per normalized email per 15-minute bucket. This is basic abuse mitigation, not a complete public-site spam defense; apply infrastructure-level limits when deploying publicly.
-
-Each form collection has a unique partial index on `source` and `idempotencyKey`, preventing duplicate retries of one form while allowing different pages to submit independently. Reusing the same key with changed data returns `409`. No anonymous listing or resume download endpoint exposes submissions. The protected read API is documented below.
-
-`INQUIRY_WEBHOOK_URL` is optional. If configured, a multipart notification is attempted only after the database insert, with a 15-second timeout and inquiry ID as its idempotency key. An optional bearer token is supported. Notification status is stored as `disabled`, `pending`, `delivered`, or `failed`. Notification failures do not discard data or turn a saved submission into a failed response. There is no automatic notification retry worker; review failed/pending notifications in MongoDB. With no webhook, local storage works fully and no email is sent.
-
-| HTTP status | Meaning |
-| --- | --- |
-| `200` | Saved, or an identical retry of a saved submission; JSON includes `message` and `id` |
-| `400` | Invalid fields, source page, retry key, or attachment |
-| `403` | Mismatching supplied origin |
-| `409` | Retry key reused for different data |
-| `413` | Request exceeds body limit |
-| `429` | Submission limit exceeded |
-| `503` | Database unavailable or write failed; retry or use the existing email fallback |
-
-### Backend verification
-
-After `npm run build`, run `npm run test:backend`. It starts an isolated production server on port 3013, creates a randomly named `biznest_test_*` database, and removes that test database and server afterward. Your normal database and port 3011 are untouched. Set `BACKEND_TEST_PORT` if 3013 is occupied.
-
-The test covers all 37 form pages against real MongoDB, three flat collections, verified migration and backups, retry keys, S3 resume links, validation, notification failures, protected reads, and rate limiting.
-
-## External submissions read API
-
-Use `GET /api/submissions` with `Authorization: Bearer <SUBMISSIONS_API_KEY>` to read submissions for external tables. Responses contain consistent, flattened rows, column definitions and pagination; MongoDB stores submitted answers as top-level fields. Filtering, search, sorting and an optional DataTables server-side response are supported. The key is private and belongs in the external project's backend, not its browser bundle. See [the complete API and table integration guide](docs/submissions-api.md).
+Prefer calling this API from an external project's protected backend so the shared key never reaches a browser bundle. Full parameter, row-shape, DataTables and per-form filter documentation: [`docs/submissions-api.md`](docs/submissions-api.md).
 
 ## Environment variables
 
-Use [.env.example](.env.example) as the committed template and `.env` for local values. An existing `.env.local` is preserved as a higher-priority private override. All env files except `.env.example` are ignored by Git. Hosting-injected environment variables take priority over files; production secrets should be configured in the host's secret/environment settings.
-
-Configuration is validated centrally in `lib/server-config.mjs`, shared by server handlers and CLI tools. Invalid settings report the variable name without printing its contents. Missing or empty optional settings use the defaults below.
+All settings live in `.env.example`, are parsed centrally in `lib/server-config.mjs`, and are server-only. Invalid values fail with the variable name but never print the value. Hosting-injected variables take priority over files.
 
 | Variable | Purpose | Default |
 | --- | --- | --- |
-| `PORT` | Development/production listener port | `3011` |
-| `SITE_URL` | Canonical HTTP(S) origin used by sitemap and robots; no path/query/fragment | `https://biznest.co.in` |
-| `MONGODB_URI` | Server-only database connection string, including credentials when needed | `mongodb://127.0.0.1:27017` |
+| `PORT` | Listener port for dev and production | `3011` |
+| `SITE_URL` | Canonical HTTP(S) origin for sitemap/robots; no path, query or fragment | `https://biznest.co.in` |
+| `MONGODB_URI` | MongoDB connection string (server-only) | `mongodb://127.0.0.1:27017` |
 | `MONGODB_DB` | Database name | `biznest` |
-| `MONGODB_MAX_POOL_SIZE` | Maximum connections in the shared pool | `10` |
+| `MONGODB_MAX_POOL_SIZE` | Max pooled connections (1–100) | `10` |
 | `MONGODB_CONNECT_TIMEOUT_MS` | Connection timeout | `5000` |
 | `MONGODB_SERVER_SELECTION_TIMEOUT_MS` | Server selection timeout | `5000` |
-| `MAX_REQUEST_BYTES` | Actual multipart body limit, including attachments and form fields | `6000000` |
-| `MAX_RESUME_BYTES` | Resume attachment limit | `5000000` |
+| `MAX_REQUEST_BYTES` | Multipart body limit, including attachments | `6000000` |
+| `MAX_RESUME_BYTES` | Resume size limit | `5000000` |
 | `INQUIRY_RATE_LIMIT_MAX` | New submissions per normalized email per window | `10` |
-| `INQUIRY_RATE_LIMIT_WINDOW_MS` | Fixed rate-limit window | `900000` (15 minutes) |
-| `INQUIRY_WEBHOOK_URL` | Optional HTTP(S) notification endpoint | Empty: storage only |
-| `INQUIRY_WEBHOOK_TOKEN` | Optional server-only bearer token | Empty |
-| `INQUIRY_WEBHOOK_TIMEOUT_MS` | Notification timeout | `15000` |
-| `SUBMISSIONS_API_KEY` | Private bearer credential for the submissions read API (32+ non-whitespace characters) | Empty: reads disabled |
-| `SUBMISSIONS_ALLOWED_ORIGINS` | Optional comma-separated browser origins for the read API | Empty: no cross-origin browser access |
-| `BACKEND_TEST_PORT` | Optional isolated integration-test listener | `3013` |
-| `NEXT_DIST_DIR` | Optional build-output override for tooling | `.next` in development; `.next-production` in production |
+| `INQUIRY_RATE_LIMIT_WINDOW_MS` | Fixed rate-limit window | `900000` |
+| `INQUIRY_WEBHOOK_URL` | Optional notification endpoint | empty (storage only) |
+| `INQUIRY_WEBHOOK_TOKEN` | Optional bearer token for the webhook | empty |
+| `INQUIRY_WEBHOOK_TIMEOUT_MS` | Webhook timeout | `15000` |
+| `SUBMISSIONS_API_KEY` | Bearer key for the read API | empty (reads disabled) |
+| `SUBMISSIONS_ALLOWED_ORIGINS` | Comma-separated browser origins for the read API | empty |
+| `AWS_ACCESS_KEY_ID` | S3 access key (server-only) | empty |
+| `AWS_SECRET_ACCESS_KEY` | S3 secret key (server-only) | empty |
+| `AWS_SESSION_TOKEN` | Optional temporary-credential token | empty |
+| `BACKEND_TEST_PORT` | Isolated integration-test port | `3013` |
 
-The request limit must exceed the resume limit by at least 65,536 bytes for multipart metadata and other fields. Uploads are capped at 10 MB and request bodies at 12 MB to retain room under MongoDB's document limit. Form schema rules, collection names, text, styles and animation durations remain application code/content rather than deployment settings.
+Constraints enforced at startup:
 
-`npm run dev` and `npm start` load env files through `scripts/serve.mjs` before invoking the installed Next.js CLI in the same process, so `PORT` in `.env` works on Windows and Unix. There is no custom HTTP server. Direct `next dev` / `next start` commands need `--port` or a shell `PORT` setting because Next opens its listener before loading app env files.
+- `MAX_REQUEST_BYTES` must be at least `MAX_RESUME_BYTES` + 65,536 for multipart overhead (max 12,000,000).
+- `MAX_RESUME_BYTES` is capped at 10,000,000.
+- `SITE_URL` must be an HTTP(S) origin without credentials.
+- `SUBMISSIONS_ALLOWED_ORIGINS` entries must be bare origins without trailing slashes.
 
-Next.js resolves settings in this order: existing process environment, `.env.$NODE_ENV.local`, `.env.local` (except test mode), `.env.$NODE_ENV`, then `.env`. The launcher selects development for `npm run dev` and production for `npm start`. Database/audit tools load development files by default; set `NODE_ENV=production` when running them against production settings. Do not put `NODE_ENV` in the env template.
+Set `SITE_URL` **before** building; metadata is generated at build time. Restart after changing runtime settings. Never expose any of these through `NEXT_PUBLIC_` variables, `next.config.env`, client components, page JSON or logs.
 
-All database, upload/rate-limit and webhook settings are server-only. No `NEXT_PUBLIC_` secrets or `next.config.env` exports are used. Never expose credentials in client components, page JSON, logs, or Git. Never put credentials in `SITE_URL` or the webhook URL; use `INQUIRY_WEBHOOK_TOKEN` for notification authentication.
+## Database and operator commands
 
-Restart after changing runtime settings. Set `SITE_URL` before building and rebuild when it changes, since metadata is generated during the build. Run `npm run test:config` to verify defaults, overrides, validation, and secret-safe diagnostics. Backend integration tests force default operational limits inside their disposable server so local tuning does not change the test expectations.
+```sh
+npm run db:setup
+npm run db:check
+npm run db:collections
+npm run db:inquiries
+npm run db:inquiries -- career
+npm run db:inquiries -- <inquiry-id>
+npm run db:resume -- <inquiry-id> ./resume.pdf
+npm run db:migrate-resumes
+node scripts/database.mjs migrate-resumes --apply
+```
 
-## Caching and builds
+The operator CLI loads development env files by default; set `NODE_ENV=production` when running against production settings.
 
-[next.config.ts](next.config.ts) enables Cache Components and Partial Prefetching. `ReferencePage` uses `'use cache'` with `cacheLife('max')`; the requested page name distinguishes cached page results.
+### Migrating legacy data
 
-The production build prepares known pages from the manifest. In production, rebuild and restart after changing committed content, renderer code, or styles. During development, filesystem-read JSON changes may require a server restart to appear because the renderer reads and caches those files.
+`npm run db:migrate` consolidates older per-form collections into `partner`, `product` and `career`, flattens answers to top-level fields and fills `companyType`. It validates before mutating, writes a BSON-aware Extended JSON backup under `.reference/mongodb-backups/`, verifies every copy, and then removes obsolete collections. Conflicting values, unknown sources or inconsistent duplicate IDs stop the migration. It is safe to rerun after mapping changes; stop applications still using the old layout first.
 
-Development output goes to `.next`, while production output goes to `.next-production`. This separates build artifacts, but does not allow both servers to listen on the same port.
+### Troubleshooting data
 
-The project also sets `X-Content-Type-Options`, `Referrer-Policy`, and `X-Frame-Options` response headers in `next.config.ts`.
+Connect MongoDB Compass to `mongodb://127.0.0.1:27017` and open `biznest`:
 
-## Verification
+```js
+db.product.find({ source: "/Private_Workspace.html" }).sort({ createdAt: -1 })
+db.career.find({ email: "person@example.com" })
+db.submission_limits.find()
+```
 
-Run source linting and the production build:
+Do not expose port 27017 publicly. Backup and retention follow your MongoDB operations policy; the app does not delete submissions automatically.
+
+## Verification and tests
 
 ```sh
 npm run lint
 npm run build
+npm run test:config
 ```
 
-With development stopped, start the production server:
-
-```sh
-npm start
-```
-
-In a second terminal, from the repository root:
+With a production server running (`npm start`), audit routes, assets and content integrity:
 
 ```sh
 node scripts/verify-site.mjs
+node scripts/verify-site.mjs http://localhost:3011
 ```
 
-The audit checks:
+`verify-site.mjs` checks that:
 
-- The homepage, every manifest URL, robots, and sitemap return HTTP 200.
-- An unknown legacy HTML URL returns HTTP 404.
-- Referenced local `href`, `src`, and `poster` assets exist.
-- Internal HTML links are registered in the manifest.
-- Content trees contain no script nodes or inline event-handler attributes.
-- An invalid form submission returns 400, and a mismatched origin returns 403.
+- `/`, every manifest page, `/robots.txt` and `/sitemap.xml` return `200` (52 requests);
+- unknown legacy `.html` URLs return `404`;
+- referenced local `href`/`src`/`poster` assets exist;
+- internal `.html` links are manifest keys;
+- no page tree contains `<script>` or inline `on*` handlers;
+- animation markers and pending reveal states survive server rendering;
+- invalid form input returns `400` and a foreign origin returns `403`.
 
-At the initial migration size, it reports **52 route checks** and **151 distinct local assets referenced through those attributes**. The full asset capture contains 214 files, including CSS dependencies and supporting files; those counts measure different things.
-
-The audit does not verify every CSS URL, external service, browser layout, successful external notification delivery, or complete accessibility behavior. It is a smoke audit, not a unit or end-to-end test suite. Use a production server for the route audit, particularly when checking filenames containing encoded characters.
-
-The Tailwind migration has an additional audit:
+Backend integration (after a build; requires MongoDB):
 
 ```sh
-# Standard-library checks of every page's migration
+npm run test:backend
+```
+
+It starts an isolated production server on port 3013 with a randomly named `biznest_test_*` database, exercises all 37 form pages, retry keys, validation, rate limits, S3 resume links, notification failure handling, migration/backup and the protected read API, then removes its database and server. Set `BACKEND_TEST_PORT` if 3013 is busy. Tests force default limits so local tuning does not change expectations.
+
+Tailwind migration audits (optional; require Python, and `tinycss2` for compiled-CSS checks):
+
+```sh
 python scripts/verify-tailwind.py
-
-# Also verify every generated utility exists in the compiled CSS
-# This optional compiled-CSS check requires tinycss2.
-python scripts/verify-tailwind.py .next-production
+python scripts/verify-tailwind.py .next
+python scripts/verify-navigation-parity.py BASELINE_URL OPTIMIZED_URL
 ```
 
-It checks all 49 pages for utility classes, removed page CSS, and removed authored inline styles. If the ignored pre-migration snapshot is available, it also verifies that text, structure, attributes and behavior hooks were preserved. The compiled-CSS check catches candidates that Tailwind could not generate, including malformed SVG data URLs.
+These are smoke and migration audits, not a unit/end-to-end suite. They do not prove every browser, interaction state or pixel-identical rendering, and they do not deliver a real webhook notification. Manually inspect desktop and mobile layouts, navigation, galleries, sliders, FAQs, focus behavior and form feedback for visible changes.
 
-Responsive comparisons during migration used 390×844, 768×1024 and 1440×900 viewports on 14 representative page types. Computed layout, typography, colors, borders and pseudo-element properties were compared with the pre-migration build. Lazy-image loading, running slider positions and transition timing must be settled or treated separately when repeating visual comparisons. These checks do not prove every browser and interaction state is pixel-identical.
+## Build and deployment
 
-For visible changes, manually inspect desktop and mobile layouts, navigation, galleries, sliders, FAQs, focus behavior, form pending states, and failure feedback. Test successful form delivery separately after configuring a receiver.
-
-## Deployment
-
-Use hosting that supports this Next.js version's Node.js runtime, server filesystem reads, route handlers, proxy behavior, and caching configuration. A static-file-only host cannot run the current form endpoint or full server application.
-
-For a Node.js server deployment:
-
-1. Install locked dependencies with `npm ci`.
-2. Configure environment variables, including `SITE_URL` before the build.
-3. Build with `npm run build`.
-4. Run `npm start` from the project root under the hosting platform's process manager.
-5. Route the public HTTPS domain to the application listener on port 3011.
-6. Verify page URLs, assets, 404s, sitemap URLs, and form behavior on that deployment.
-
-For a manual server installation, retain `.next-production`, `public`, `content`, the required Node dependencies, and project configuration. The renderer resolves `content/pages` from the process working directory, so do not run it from an unrelated folder or omit content files. Framework-managed deployment packaging should be checked to ensure those filesystem-read files are included.
-
-The project does not currently configure static export or standalone output. If a host requires a platform-assigned port, adapt the startup command to that platform rather than assuming the locally fixed port will be accepted. `NEXT_DIST_DIR` optionally selects an isolated build directory for comparison work; omit it for the normal `.next`/`.next-production` directories.
-
-No automatic deployment or GitHub Actions workflow is included.
-
-## Source migration tools
-
-These tools are optional and are not required to run or deploy the checked-in website.
+The application requires a **Node.js runtime**: server-side filesystem reads, route handlers, `proxy.ts` and Cache Components. A static-only host cannot run it.
 
 ```sh
-python -m pip install beautifulsoup4 html5lib
-python scripts/mirror-reference.py
-python scripts/convert-reference.py
+npm ci
+# configure environment, including SITE_URL
+npm run build
+npm start
 ```
 
-The mirror script downloads linked public pages and assets, writes raw HTML plus an inventory under ignored `.reference/`, and stores local assets under `public/assets/`. Inspect the inventory's failures before conversion.
+Checklist:
 
-The converter uses that inventory to generate `content/pages/*.json` and `content/manifest.json`. It removes source scripts and inline event handlers, localizes URLs, repairs certain invalid controls, and adds accessibility attributes and main landmarks where applicable.
+1. `npm ci` on the server (commit any intentional lockfile changes).
+2. Configure env/secrets in the hosting panel: `SITE_URL`, MongoDB settings, `AWS_*`, and optionally `SUBMISSIONS_API_KEY`, `SUBMISSIONS_ALLOWED_ORIGINS`, webhook settings.
+3. Build, then start under a process manager.
+4. Route the HTTPS domain to port `3011` (or lower the platform port through `PORT`).
+5. Verify page URLs, assets, 404s, sitemap host, and a real form submission on the deployment.
 
-**These are legacy capture tools. Raw conversion overwrites page JSON with pre-Tailwind content and must not be run as a normal content-editing step.** Preserve manual edits and the local pre-Tailwind snapshot before using them. `migrate-to-tailwind.py` operates from `.reference/tailwind-before/`, the ignored snapshot retained during this migration; it is a one-time migration utility, not part of the build or a fresh-clone setup requirement. Re-running it overwrites page trees from that snapshot. Normal development edits the committed Tailwind page trees directly.
+Deployment packaging must include `public/`, `content/` and the build output — the renderer resolves `content/pages` from the process working directory, so do not start it from an unrelated folder. No static export, standalone output, CI workflow or automatic deployment is configured. Response headers set in `next.config.ts`: `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `X-Frame-Options: SAMEORIGIN`.
 
-The CSS migration utility requires `tinycss2` and `cssselect2` in addition to the optional capture dependencies. Always review the diff and repeat both content and visual verification after regenerating source. A new capture can reflect later changes on the original public website.
+Reverse proxies must preserve the request `Origin`/protocol used by the same-origin form check, or valid submissions will return `403`.
 
 ## Troubleshooting
 
-| Symptom | What to check |
+| Symptom | Check |
 | --- | --- |
-| `EADDRINUSE` on port 3011 | Another server already owns the port. Stop the identified development or production process before restarting. |
-| “Another next dev server is already running” | A development process is still using this checkout. Stop that process rather than launching a second one. |
-| `npm start` cannot find a production build | Run `npm run build` successfully first. Production output is `.next-production`. |
-| JSON edits are not visible | Validate the JSON, restart development if necessary, and rebuild/restart production. |
-| An inner page returns 404 | Check its exact manifest key, content filename, case, and URL encoding. |
-| Asset returns 404 | Confirm it exists under `public`; its URL must omit the `public` prefix. |
-| A gallery or popup stops working | Check the selectors used by `site-interactions.tsx` against the page markup. |
-| Forms return 503 | Configure `INQUIRY_WEBHOOK_URL`, or retain the documented email fallback. |
-| Forms return 502 | Check receiver availability, authorization settings, and the 15-second timeout. |
-| Forms return 403 after deployment | Check the browser origin and how the reverse proxy forwards the request origin/protocol. |
-| Sitemap points to the wrong host | Set `SITE_URL` and rebuild. |
-| Development route audit shows transient errors or encoded-page failures | Stop development and check a production build; capture reproducible development failures separately. |
+| `EADDRINUSE` on 3011 | Stop the process using the port; dev and prod share it |
+| “Another next dev server is already running” | Stop the existing dev process for this checkout |
+| `npm start` has no build | Run `npm run build` successfully first |
+| JSON edits not visible | Validate JSON; restart dev (render cache); rebuild production |
+| Inner page 404 | Exact manifest key, filename case, and URL encoding |
+| Asset 404 | File exists under `public`; URL omits the `public` prefix |
+| Gallery/popup stopped working | Selectors such as `.glightbox`, `.swiper`, `#popup-modal` still present |
+| Forms return `503` | MongoDB reachable; S3 credentials set for resumes |
+| Forms return `403` after deploy | Proxy origin/protocol forwarding and browser origin |
+| Forms return `429` | Email hit the 10-per-15-minute bucket |
+| Sitemap uses the wrong host | Set `SITE_URL` and rebuild |
+| Tailwind class missing | Run `npm run styles:sync`; class must be complete, not concatenated |
 
-## Contributing and maintenance
+## Contributing conventions
 
-- Keep content, styles, and browser behavior changes focused and reviewable.
-- Preserve existing legacy URLs unless redirects are deliberately introduced.
-- Update every affected page tree when changing duplicated navigation/footer content.
-- Keep secrets out of Git and browser-delivered code.
-- Retain vendor attribution and license notices in copied assets.
-- Run relevant checks and document what was verified in the pull request.
-- Update this README and `.env.example` when commands, architecture, or configuration change.
+- Keep changes focused: content edits in `content/`, behavior in `components/`, server logic in `lib/` or route handlers.
+- Preserve legacy `.html` URLs unless redirects are deliberately introduced.
+- Update every affected page tree when shared navigation/footer markup changes.
+- Regenerate `form-contracts.json` after changing form fields (`npm run forms:sync`).
+- Keep secrets out of Git and out of anything shipped to the browser.
+- Retain vendor attribution and license notices.
+- Run the relevant checks and state what was verified in the pull request.
+- Update this README and `.env.example` when commands, architecture or configuration change.
+- Coding agents must follow [`AGENTS.md`](AGENTS.md) and read the bundled Next.js 16 documentation under `node_modules/next/dist/docs/` before changing framework code.
 
-This repository includes Next.js-version-specific instructions in [AGENTS.md](AGENTS.md). Coding agents must follow them and read the relevant bundled documentation under `node_modules/next/dist/docs/` before changing framework code. Those documents become available after dependency installation.
+## Known limitations
 
-## Current limitations
-
-- The content structure is a migration snapshot. Most inner pages are JSON trees, and header/footer markup is duplicated across them.
-- Local MongoDB persists inquiries and resumes. Email notification is optional; no CMS, account system, or payment backend is added.
-- Login, social profiles, embedded maps, and video destinations depend on external services. The separately hosted login application was not replicated.
-- The original live site rendered blank in the available browser during initial implementation. Representative local pages and interactions were checked, but exact screenshot-to-screenshot parity and exhaustive mobile/accessibility verification have not been established.
-- Installed vendor assets do not imply every original vendor script is executed. The migration replaces source tracking and page scripts with the application's own rendering and interaction code.
+- The content is a migration snapshot: inner pages are JSON trees and header/footer markup is duplicated across them.
+- The renderer is tailored to this captured markup, not a general CMS.
+- Login, booking, maps, social profiles and some media depend on external services; the separate login application was not replicated.
+- No CMS, account system, payment flow, automated tests or deployment pipeline is included.
+- There is no automatic retry for failed webhook notifications.
+- Exact pixel parity across every browser and interaction state has not been established.
