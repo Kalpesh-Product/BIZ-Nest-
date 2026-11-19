@@ -147,6 +147,11 @@
         ]
       },
       {
+        "type": "date",
+        "name": "sdate",
+        "required": true
+      },
+      {
         "type": "hidden",
         "name": "pagename",
         "value": "CO - WORKING landing page",
@@ -351,6 +356,11 @@
           "Less then 20 Seats",
           "Less then 50 Seats"
         ]
+      },
+      {
+        "type": "date",
+        "name": "sdate",
+        "required": true
       },
       {
         "type": "hidden",
@@ -588,6 +598,11 @@
         ]
       },
       {
+        "type": "date",
+        "name": "sdate",
+        "required": true
+      },
+      {
         "type": "hidden",
         "name": "pagename",
         "value": "VIRTUAL OFFICE landing page",
@@ -623,6 +638,11 @@
           "50-100 People",
           "More then 100 People"
         ]
+      },
+      {
+        "type": "date",
+        "name": "sdate",
+        "required": true
       },
       {
         "type": "hidden",

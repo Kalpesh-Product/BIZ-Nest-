@@ -137,6 +137,7 @@ tw:legacy-inline:justify-center
 tw:legacy-inline:relative
 tw:legacy-inline:text-center
 tw:legacy-inline:uppercase
+tw:md:min-w-[11rem]
 tw:r000001:[outline:3px_solid_#ffc732]
 tw:r000002:[outline-offset:4px]
 tw:r000003:fixed

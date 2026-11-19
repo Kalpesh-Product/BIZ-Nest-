@@ -3,7 +3,7 @@ import { MongoServerError, ObjectId } from 'mongodb';
 import { deleteAttachment, uploadAttachment } from '@/lib/s3-attachments.mjs';
 import { database } from '@/lib/mongodb';
 import { InvalidInquiry, validateInquiry } from '@/lib/inquiry-validation';
-import { collectionForSource, companyTypeForSource, ensureFormIndexes, purposeForSource } from '@/lib/form-collections.mjs';
+import { collectionForSource, companySubtypeForSource, companyTypeForSource, ensureFormIndexes, purposeForSource } from '@/lib/form-collections.mjs';
 import { businessFieldsFor } from '@/lib/submission-document.mjs';
 import { getInquiryConfig } from '@/lib/server-config.mjs';
 
@@ -42,10 +42,12 @@ export async function POST(request: Request) {
     if (error instanceof RangeError) return reply(`Please keep attachments under ${settings.resumeMaxBytes / 1_000_000} MB.`, 413);
     return reply(error instanceof InvalidInquiry ? error.message : 'Invalid form data.', 400);
   }
+  let storageStep = 'connect';
   try {
     const db = await database();
     const collectionName = collectionForSource(inquiry.source);
     if (!collectionName) return reply('Invalid source page.', 400);
+    storageStep = 'prepare indexes';
     await ensureFormIndexes(db, collectionName);
     const inquiries = db.collection(collectionName);
     const fingerprint = createHash('sha256').update(JSON.stringify([inquiry.source, inquiry.fields])).update(inquiry.resume?.bytes || '').digest('hex');
@@ -53,11 +55,13 @@ export async function POST(request: Request) {
       const previous = await inquiries.findOne({ source: inquiry.source, idempotencyKey: key }, { projection: { fingerprint: 1 } });
       return previous ? previous.fingerprint === fingerprint ? accepted(previous._id.toHexString()) : reply('This submission identifier was already used.', 409) : null;
     };
+    storageStep = 'check retry';
     if (key) { const previous = await replay(); if (previous) return previous; }
     const now = new Date();
     // Atomic shared limit; temporary records contain an email hash, not its value.
     const bucket = Math.floor(now.getTime() / settings.rateLimitWindowMs);
     const limitKey = createHash('sha256').update(`${inquiry.fields.email.toLowerCase()}:${bucket}`).digest('hex');
+    storageStep = 'check rate limit';
     const limit = await db.collection<{ _id: string; count: number; expiresAt: Date }>('submission_limits').findOneAndUpdate({ _id: limitKey }, {
       $inc: { count: 1 }, $setOnInsert: { expiresAt: new Date((bucket + 2) * settings.rateLimitWindowMs) },
     }, { upsert: true, returnDocument: 'after' });
@@ -65,12 +69,18 @@ export async function POST(request: Request) {
     const webhook = settings.webhookUrl;
     const _id = new ObjectId();
     const id = _id.toHexString();
+    const { resume, source, kind, fields } = inquiry;
+    storageStep = 'prepare submission';
+    const companySubtype = companySubtypeForSource(source, fields.category);
     let resumeLink: string | undefined;
     try {
-      const { resume, source, kind, fields } = inquiry;
-      if (resume) resumeLink = await uploadAttachment(id, resume.filename, resume.contentType, resume.bytes);
+      if (resume) {
+        storageStep = 'upload attachment';
+        resumeLink = await uploadAttachment(id, resume.filename, resume.contentType, resume.bytes);
+      }
+      storageStep = 'save submission';
       await inquiries.insertOne({ _id, source, kind, sourceCompany: 'BIZ Nest',
-        ...(kind === 'product' ? { companyType: companyTypeForSource(source) } : {}),
+        ...(kind === 'product' ? { companyType: companyTypeForSource(source), companySubtype } : {}),
         ...businessFieldsFor(purposeForSource(source), fields),
         ...(resume && resumeLink ? { resumeLink, resume: { filename: resume.filename, contentType: resume.contentType, size: resume.size } } : {}),
         ...(key ? { idempotencyKey: key } : {}), fingerprint, status: 'new', createdAt: now, updatedAt: now,
@@ -91,6 +101,7 @@ export async function POST(request: Request) {
       let status = 'failed';
       try {
         for (const [name, value] of Object.entries(inquiry.fields)) data.set(name, value);
+        if (companySubtype) data.set('companySubtype', companySubtype);
         const response = await fetch(webhook, { method: 'POST', body: data, signal: AbortSignal.timeout(settings.webhookTimeoutMs),
           headers: { 'Idempotency-Key': id, ...(settings.webhookToken ? { Authorization: `Bearer ${settings.webhookToken}` } : {}) } });
         if (response.ok) status = 'delivered';
@@ -100,8 +111,11 @@ export async function POST(request: Request) {
       catch { console.error('Inquiry notification status update failed.'); }
     }
     return accepted(id);
-  } catch {
-    console.error('Inquiry storage failed. Check MongoDB and S3 configuration.');
+  } catch (error) {
+    // Keep database diagnostics in the server log without logging submitted data.
+    const name = error instanceof Error ? error.name : 'UnknownError';
+    const code = error instanceof MongoServerError ? ` (${error.code ?? 'unknown'})` : '';
+    console.error(`Inquiry storage failed at ${storageStep}: ${name}${code}.`);
     return reply('We could not save your inquiry. Please try again or email response@biznest.co.in.', 503);
   }
 }

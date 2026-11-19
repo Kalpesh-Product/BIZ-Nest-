@@ -39,6 +39,8 @@ export async function validateInquiry(data: FormData) {
     }
     if (raw !== null && typeof raw !== 'string') throw new InvalidInquiry('Invalid field value.');
     const value = (raw || '').trim();
+    // Older Goa landing form requests omitted the date entirely.
+    if (field.name === 'sdate' && raw === null && allowed.has('category')) continue;
     if (field.required && !value) throw new InvalidInquiry(`Please complete the ${field.name} field.`);
     if (value.length > (field.name === 'name' ? 200 : field.name === 'email' ? 254 : 10_000)) throw new InvalidInquiry('A field is too long.');
     if (value && field.options && !field.options.some(option => option.trim() === value)) throw new InvalidInquiry('Please select an available option.');

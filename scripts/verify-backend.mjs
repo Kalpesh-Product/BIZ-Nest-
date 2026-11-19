@@ -50,6 +50,7 @@ function payload(source, email = `fixture-${randomUUID()}@example.test`) {
   for (const field of contracts[source][0]) {
     let value = field.value || `Test ${field.name}`;
     if (field.options) value = field.options.find(Boolean) || '';
+    if (source === '/Virtualoffice_Goa.html' && field.name === 'category') value = 'Managed Virtual Office';
     if (field.type === 'number') value = '2';
     if (field.type === 'date') value = field.name === 'dob' ? '2000-01-01' : '2030-01-01';
     if (field.name === 'email') value = email;
@@ -99,6 +100,7 @@ try {
   await db.createCollection('inquiries_legacy_backup');
   const retrySource = '/Co-Working_Goa.html';
   const retryData = payload(retrySource);
+  retryData.delete('sdate');
   const retryFields = Object.fromEntries([...retryData].filter(([key]) => key !== 'source'));
   const retryKey = randomUUID();
   const retryRecord = { ...retryFields, _id: new ObjectId(), source: retrySource, kind: 'product', idempotencyKey: retryKey,
@@ -122,6 +124,21 @@ try {
   const replayAfterMigration = await post(retryData, { 'Idempotency-Key': retryKey });
   assert.equal(replayAfterMigration.status, 200);
   assert.equal((await replayAfterMigration.json()).id, retryRecord._id.toHexString(), 'Existing retry keys survive consolidation and nesting');
+  for (const source of ['/Co-Working_Goa.html', '/Workation_Goa.html', '/Meetingrooms_Goa.html', '/Virtualoffice_Goa.html']) {
+    const response = await fetch(base + source);
+    assert.equal(response.status, 200, source);
+    const html = await response.text();
+    assert.match(html, /<input(?=[^>]*type="date")(?=[^>]*name="sdate")(?=[^>]*required="")(?=[^>]*aria-label="Start Date")[^>]*>/, source);
+    assert.doesNotMatch(html, /<(?:input|select)[^>]*name="companySubtype"/, source);
+    const invalid = payload(source);
+    invalid.set('companySubtype', 'Private Workspace');
+    assert.equal((await post(invalid)).status, 400);
+    const invalidDate = payload(source);
+    invalidDate.set('sdate', '2030-02-30');
+    assert.equal((await post(invalidDate)).status, 400);
+    invalidDate.set('sdate', '');
+    assert.equal((await post(invalidDate)).status, 400);
+  }
   // Every schema is exercised against HTTP and checked in MongoDB, not mocked.
   for (const source of Object.keys(contracts)) {
     const response = await post(payload(source));
@@ -135,6 +152,19 @@ try {
     assert.ok(stored.email.endsWith('@example.test'));
     assert.equal(stored.sourceCompany, 'BIZ Nest');
     assert.equal(stored.companyType, stored.kind === 'product' ? companyTypeForSource(source) : undefined);
+    const expectedSubtype = {
+      '/Co-Working_Goa.html': 'Co-Working Space', '/Co-Working_Space.html': 'Co-Working Space',
+      '/Private_Workspace.html': 'Private Workspace', '/Managed_Workspace.html': 'Managed Office',
+      '/Workation_Goa.html': 'Regular Workations', '/Meetingrooms_Goa.html': 'Meeting Room',
+      '/Co-Living_Space.html': 'Co-Living Space', '/Exclusive_Campus.html': 'Company Campus',
+      '/Exclusive_Workations.html': 'Exclusive Workations', '/Private_Apartments_Villas.html': 'Private Apartments & Villas',
+      '/Cafe.html': 'Work from Cafe', '/Meetings&Conferences.html': 'Meeting / Conference Rooms',
+      '/Trainings&Events.html': 'Training / Event Rooms', '/Virtual_Office.html': 'Virtual Office',
+      '/Car_Renting.html': 'Car & Bike Renting', '/Yatch_Renting.html': 'Yatch Renting',
+      '/Virtualoffice_Goa.html': 'Managed Virtual Office',
+    }[source];
+    assert.equal(stored.companySubtype, stored.kind === 'product' ? expectedSubtype ?? null : undefined);
+    if (stored.kind === 'product') assert.equal(stored.sdate, '2030-01-01');
     assert.equal(stored.status, 'new');
     assert.equal(stored.notification.status, 'failed');
     if (source.startsWith('/career_')) {
@@ -146,9 +176,15 @@ try {
     }
   }
   assert.deepEqual(collectionNames, ['partner', 'product', 'career']);
-  assert.equal(companyTypeForSource('/Co-Working_Goa.html'), 'Co-Working');
-  assert.equal(companyTypeForSource('/Meetingrooms_Goa.html'), 'Meeting Room');
-  assert.equal(companyTypeForSource('/Workation_Goa.html'), 'Workation');
+  const typeGroups = {
+    'Co-Working': ['Co-Working_Goa', 'Co-Working_Space', 'Private_Workspace', 'Managed_Workspace'],
+    Workation: ['Co-Living_Space', 'Exclusive_Campus', 'Exclusive_Workations', 'Private_Apartments_Villas', 'Workation_Goa'],
+    Meetings: ['Cafe', 'Meetingrooms_Goa', 'Meetings&Conferences', 'Trainings&Events'],
+    'Alternate Channels': ['Virtual_Office', 'Virtualoffice_Goa', 'Car_Renting', 'Yatch_Renting'],
+  };
+  for (const [type, pages] of Object.entries(typeGroups)) {
+    for (const page of pages) assert.equal(companyTypeForSource(`/${page}.html`), type, page);
+  }
   assert.deepEqual((await db.listCollections({}, { nameOnly: true }).toArray()).map(row => row.name).sort(), [...collectionNames, 'submission_limits'].sort());
   for (const name of collectionNames) {
     for await (const record of db.collection(name).find({}, { projection: { source: 1 } })) assert.equal(collectionForSource(record.source), name, 'Collections must group submissions by purpose');
@@ -209,6 +245,7 @@ try {
   assert.equal(table.data.length,table.pagination.total);
   assert.equal(table.pagination.hasNextPage,false);
   assert.ok(table.columns.some(column=>column.field==='email' && column.headerName==='Email'));
+  assert.ok(table.columns.some(column=>column.field==='companySubtype' && column.sortable));
   const shape=Object.keys(table.data[0]).sort();
   for(const row of table.data){
     assert.deepEqual(Object.keys(row).sort(),shape);
@@ -216,6 +253,9 @@ try {
     assert.equal(typeof row.id,'string');
     assert.equal(row.companyType, row.kind === 'product' ? companyTypeForSource(row.source) : null);
   }
+  const offerings = await (await fetch(base+api+'?kind=virtual-office-goa&search=Managed&sortBy=companySubtype', {headers:auth})).json();
+  assert.equal(offerings.data.length, 1);
+  assert.equal(offerings.data[0].companySubtype, 'Managed Virtual Office');
   const career=table.data.find(row=>row.kind==='application' && row.resumeLink);
   assert.match(career.resumeLink,/\/file\.pdf$/);
   assert.equal(career.resumeFilename, undefined);

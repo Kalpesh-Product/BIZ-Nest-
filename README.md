@@ -332,7 +332,7 @@ All 50 forms post multipart data to `POST /api/inquiry`, replacing the original 
 | `career` | All job applications | `name`, `email`, `dob`, `mobile`, `location`, `experience`, `linkedin`, `currentmonthlysalary`, `expectedsalary`, `canjoin`, `relocategoa`, `personality`, `skills`, `specialexperience`, `willing`, `message`, `job_position` |
 | `submission_limits` | Hashed email rate-limit buckets | `_id` (hash), `count`, `expiresAt` (TTL) |
 
-Every record also stores `source`, `kind`, `sourceCompany` (`"BIZ Nest"`), `status`, `createdAt`, `updatedAt`, `notification`, `fingerprint`, optional `idempotencyKey`, and for product records a server-derived `companyType` (for example `Co-Working`, `Meeting Room`, `Workation`, `Virtual Office`).
+Every record also stores `source`, `kind`, `sourceCompany` (`"BIZ Nest"`), `status`, `createdAt`, `updatedAt`, `notification`, `fingerprint`, optional `idempotencyKey`, and for product records a server-derived `companyType` of `Co-Working`, `Workation`, `Meetings`, or `Alternate Channels`.
 
 `lib/form-collections.mjs` maps each source page to its collection and company type; `lib/submission-document.mjs` whitelists the fields a client may write, so submitted answers cannot overwrite system metadata.
 
