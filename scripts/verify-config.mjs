@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { getPort, getSiteUrl, getDatabaseConfig, getInquiryConfig, getSubmissionsApiConfig } from '../lib/server-config.mjs';
 
-const names = ['SUBMISSIONS_API_KEY', 'SUBMISSIONS_ALLOWED_ORIGINS', 'PORT', 'SITE_URL', 'MONGODB_URI', 'MONGODB_DB', 'MONGODB_MAX_POOL_SIZE', 'MONGODB_CONNECT_TIMEOUT_MS', 'MONGODB_SERVER_SELECTION_TIMEOUT_MS', 'MAX_REQUEST_BYTES', 'MAX_RESUME_BYTES', 'INQUIRY_RATE_LIMIT_MAX', 'INQUIRY_RATE_LIMIT_WINDOW_MS', 'INQUIRY_WEBHOOK_URL', 'INQUIRY_WEBHOOK_TOKEN', 'INQUIRY_WEBHOOK_TIMEOUT_MS'];
+const names = ['SUBMISSIONS_API_KEY', 'SUBMISSIONS_WRITE_API_KEY', 'SUBMISSIONS_ALLOWED_ORIGINS', 'PORT', 'SITE_URL', 'MONGODB_URI', 'MONGODB_DB', 'MONGODB_MAX_POOL_SIZE', 'MONGODB_CONNECT_TIMEOUT_MS', 'MONGODB_SERVER_SELECTION_TIMEOUT_MS', 'MAX_REQUEST_BYTES', 'MAX_RESUME_BYTES', 'INQUIRY_RATE_LIMIT_MAX', 'INQUIRY_RATE_LIMIT_WINDOW_MS', 'INQUIRY_WEBHOOK_URL', 'INQUIRY_WEBHOOK_TOKEN', 'INQUIRY_WEBHOOK_TIMEOUT_MS'];
 const original = Object.fromEntries(names.map(name => [name, process.env[name]]));
 try {
   for (const name of names) delete process.env[name];
@@ -27,6 +27,12 @@ try {
   assert.equal(getSubmissionsApiConfig().key, '');
   process.env.SUBMISSIONS_API_KEY = 'short'; assert.throws(getSubmissionsApiConfig, /SUBMISSIONS_API_KEY/);
   process.env.SUBMISSIONS_API_KEY = 'x'.repeat(32);
+  assert.equal(getSubmissionsApiConfig('write').key, '');
+  process.env.SUBMISSIONS_WRITE_API_KEY = 'short';
+  assert.throws(() => getSubmissionsApiConfig('write'), /SUBMISSIONS_WRITE_API_KEY/);
+  assert.equal(getSubmissionsApiConfig().key, 'x'.repeat(32));
+  process.env.SUBMISSIONS_WRITE_API_KEY = 'y'.repeat(32);
+  assert.equal(getSubmissionsApiConfig('write').key, 'y'.repeat(32));
   process.env.SUBMISSIONS_ALLOWED_ORIGINS = 'http://localhost:4200,https://tables.example.test';
   assert.equal(getSubmissionsApiConfig().origins.length, 2);
   process.env.SUBMISSIONS_ALLOWED_ORIGINS = '*'; assert.throws(getSubmissionsApiConfig, /SUBMISSIONS_ALLOWED_ORIGINS/);

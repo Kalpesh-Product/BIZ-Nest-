@@ -1,8 +1,8 @@
-# Submissions API for external tables
+# Submissions API for external tables and edit forms
 
 **Endpoint:** `GET http://localhost:3011/api/submissions`
 
-Form submissions are read from the `partner`, `product`, and `career` collections. Answers and `sourceCompany` are stored as top-level database fields. The read API is protected, read-only, paginated and uncached.
+Form submissions are stored in the `partner`, `product`, and `career` collections. Answers and `sourceCompany` are top-level fields. The list API is protected, paginated and uncached.
 
 ## Authentication and sharing
 
@@ -32,6 +32,35 @@ const result = await response.json();
 const rows = result.data;
 const totalRows = result.pagination.filteredTotal;
 ```
+
+## Edit a submission
+
+Read the selected row from `GET /api/submissions` and keep its `id` and `kind`. The `id` is the 24-character MongoDB ObjectId returned as a string. Use the collection that corresponds to the row’s `kind`.
+
+| Row `kind` | Collection | Endpoint |
+| --- | --- | --- |
+| `partnership` | `partner` | `PATCH /api/submissions/partner/{id}` |
+| `product` | `product` | `PATCH /api/submissions/product/{id}` |
+| `application` | `career` | `PATCH /api/submissions/career/{id}` |
+
+Call PATCH from the external project’s authenticated backend. Configure `SUBMISSIONS_WRITE_API_KEY` on BIZ Nest and put the same value in the external backend’s secret configuration. The read key continues to authorize GET only. Keep both keys server-side. An empty write key disables PATCH.
+
+```http
+PATCH /api/submissions/product/507f1f77bcf86cd799439011
+Authorization: Bearer <SUBMISSIONS_WRITE_API_KEY>
+Content-Type: application/json
+
+{"sdate":"2027-01-15","status":"contacted"}
+```
+
+Send a flat JSON object with just the changed fields. Values are strings, including date fields (`YYYY-MM-DD`) and numeric answers. An empty string clears an optional field. Edits apply only to editable fields present on the original form.
+
+- Partner offers `name`, `email`, `mobile`, and `message`.
+- Product offers `name`, `email`, `mobile`, `count`, `sdate`, and `category`, depending on the form. Changing the Virtual Office Goa selection also refreshes its subtype.
+- Career offers applicant contact details and the visible application answers, such as `dob`, `experience`, `linkedin`, and `skills`.
+- All three accept a `status` of up to 64 characters using letters, numbers, spaces, underscores, or hyphens, starting with a letter or number.
+
+IDs, source and kind, hidden form labels such as `pagename` and `job_position`, classification fields, timestamps and attachments are managed by BIZ Nest. PATCH returns `200` with `{ "data": { … } }` in the same row shape as GET. Invalid edits return `400`, missing or wrong credentials return `401`, and a valid ID in the wrong collection returns `404`.
 
 ## Query parameters
 

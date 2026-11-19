@@ -20,6 +20,7 @@ const client = new MongoClient(databaseConfig.uri, databaseConfig.options);
 const db = client.db(dbName);
 const contracts = JSON.parse(await readFile('content/form-contracts.json', 'utf8'));
 const readKey = randomUUID()+randomUUID();
+const writeKey = randomUUID()+randomUUID();
 let notifications = 0;
 const receiver = createServer(async (req, res) => {
   for await (const chunk of req) void chunk;
@@ -69,7 +70,7 @@ async function post(data, headers = {}) {
 async function startServer(uri = databaseConfig.uri) {
   output = '';
   server = spawn(process.execPath, ['scripts/serve.mjs', 'start'], {
-    env: { ...process.env, PORT: String(port), MONGODB_URI: uri, MONGODB_DB: dbName, SUBMISSIONS_API_KEY: readKey, SUBMISSIONS_ALLOWED_ORIGINS: 'http://localhost:4200',
+    env: { ...process.env, PORT: String(port), MONGODB_URI: uri, MONGODB_DB: dbName, SUBMISSIONS_API_KEY: readKey, SUBMISSIONS_WRITE_API_KEY: writeKey, SUBMISSIONS_ALLOWED_ORIGINS: 'http://localhost:4200',
       AWS_ENDPOINT_URL_S3: `http://127.0.0.1:${s3.address().port}`, AWS_ACCESS_KEY_ID: 'test', AWS_SECRET_ACCESS_KEY: 'test', AWS_SESSION_TOKEN: '',
       MAX_REQUEST_BYTES: '6000000', MAX_RESUME_BYTES: '5000000', INQUIRY_RATE_LIMIT_MAX: '10', INQUIRY_RATE_LIMIT_WINDOW_MS: '900000',
       INQUIRY_WEBHOOK_URL: `http://127.0.0.1:${receiver.address().port}`, INQUIRY_WEBHOOK_TOKEN: '', INQUIRY_WEBHOOK_TIMEOUT_MS: '15000' },
@@ -271,6 +272,46 @@ try {
   const dt=await (await fetch(base+api+'?'+dtQuery,{headers:auth})).json();
   assert.equal(dt.draw,7);assert.equal(dt.recordsTotal,table.pagination.total);assert.equal(dt.data.length,2);assert.ok(dt.recordsFiltered>=2);
   console.log('PASS: protected table API, consistent rows, pagination/filtering/sorting, escaped search, DataTables responses, CORS and private-field exclusion.');
+
+  const product = table.data.find(row => row.source === '/Virtualoffice_Goa.html');
+  const partner = table.data.find(row => row.kind === 'partnership' && row.email?.endsWith('@example.test'));
+  const edit = (collection, id, payload, key = writeKey, origin) => fetch(`${base}${api}/${collection}/${id}`, {
+    method: 'PATCH', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', ...(origin && { Origin: origin }) },
+    body: JSON.stringify(payload),
+  });
+  assert.equal((await edit('product', product.id, { name: 'Test edit' }, readKey)).status, 401);
+  assert.equal((await edit('product', product.id, { name: 'Test edit' }, writeKey, 'https://blocked.example')).status, 403);
+  const editPreflight = await fetch(`${base}${api}/product/${product.id}`, {method:'OPTIONS',headers:{Origin:'http://localhost:4200','Access-Control-Request-Method':'PATCH'}});
+  assert.equal(editPreflight.status, 204);
+  assert.match(editPreflight.headers.get('access-control-allow-methods'), /PATCH/);
+  assert.equal((await edit('career', product.id, { name: 'Test edit' })).status, 404);
+  assert.equal((await edit('product', 'not-an-id', { name: 'Test edit' })).status, 400);
+  assert.equal((await edit('product', product.id, { companyType: 'Forged' })).status, 400);
+  assert.equal((await edit('product', product.id, { sdate: '2030-02-30' })).status, 400);
+  assert.equal((await edit('partner', partner.id, { sdate: '2030-01-02' })).status, 400);
+  assert.equal((await edit('career', career.id, { resumeLink: 'https://example.test/' })).status, 400);
+  assert.equal((await edit('partner', partner.id, {})).status, 400);
+  const updatedProduct = await edit('product', product.id, { sdate: '2030-01-02', category: 'Simple Virtual Office', status: 'contacted' });
+  assert.equal(updatedProduct.status, 200);
+  const {data: changedProduct} = await updatedProduct.json();
+  assert.equal(changedProduct.id, product.id);
+  assert.equal(changedProduct.name, product.name);
+  assert.equal(changedProduct.companyType, product.companyType);
+  assert.equal(changedProduct.companySubtype, 'Simple Virtual Office');
+  assert.equal(changedProduct.sdate, '2030-01-02');
+  assert.equal(changedProduct.status, 'contacted');
+  assert.ok(changedProduct.updatedAt > product.updatedAt);
+  assert.equal((await db.collection('product').findOne({_id:new ObjectId(product.id)})).sdate, '2030-01-02');
+  const updatedPartner = await edit('partner', partner.id, { message: 'Edited partner note' });
+  assert.equal(updatedPartner.status, 200);
+  assert.equal((await updatedPartner.json()).data.message, 'Edited partner note');
+  const updatedCareer = await edit('career', career.id, { name: 'Edited candidate' });
+  assert.equal(updatedCareer.status, 200);
+  const {data: changedCareer} = await updatedCareer.json();
+  assert.equal(changedCareer.name, 'Edited candidate');
+  assert.equal(changedCareer.resumeLink, career.resumeLink);
+  assert.equal(Object.hasOwn(changedCareer, 'resume'), false);
+  console.log('PASS: authenticated partial edits for all three collections, field validation, CORS, and private metadata preservation.');
 
   for (let i = 0; i < 10; i++) assert.equal((await post(payload(i % 2 ? '/Co-Working_Goa.html' : source, 'rate-limit@example.test'))).status, 200);
   assert.equal((await post(payload(source, 'rate-limit@example.test'))).status, 429);

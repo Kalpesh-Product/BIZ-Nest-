@@ -397,6 +397,8 @@ No anonymous endpoint lists submissions or downloads resumes. Operator commands 
 
 `GET /api/submissions` exposes a read-only, paginated, uncached view for external tables.
 
+External edit forms use `PATCH /api/submissions/{collection}/{id}` with the matching row ID and a separate write key. See [the edit API contract](docs/submissions-api.md#edit-a-submission).
+
 ```text
 Authorization: Bearer <SUBMISSIONS_API_KEY>
 ```
@@ -431,6 +433,7 @@ All settings live in `.env.example`, are parsed centrally in `lib/server-config.
 | `INQUIRY_WEBHOOK_TOKEN` | Optional bearer token for the webhook | empty |
 | `INQUIRY_WEBHOOK_TIMEOUT_MS` | Webhook timeout | `15000` |
 | `SUBMISSIONS_API_KEY` | Bearer key for the read API | empty (reads disabled) |
+| `SUBMISSIONS_WRITE_API_KEY` | Bearer key for the edit API | empty (edits disabled) |
 | `SUBMISSIONS_ALLOWED_ORIGINS` | Comma-separated browser origins for the read API | empty |
 | `AWS_ACCESS_KEY_ID` | S3 access key (server-only) | empty |
 | `AWS_SECRET_ACCESS_KEY` | S3 secret key (server-only) | empty |
@@ -535,7 +538,7 @@ npm start
 Checklist:
 
 1. `npm ci` on the server (commit any intentional lockfile changes).
-2. Configure env/secrets in the hosting panel: `SITE_URL`, MongoDB settings, `AWS_*`, and optionally `SUBMISSIONS_API_KEY`, `SUBMISSIONS_ALLOWED_ORIGINS`, webhook settings.
+2. Configure env/secrets in the hosting panel: `SITE_URL`, MongoDB settings, `AWS_*`, and optionally `SUBMISSIONS_API_KEY`, `SUBMISSIONS_WRITE_API_KEY`, `SUBMISSIONS_ALLOWED_ORIGINS`, webhook settings.
 3. Build, then start under a process manager.
 4. Route the HTTPS domain to port `3011` (or lower the platform port through `PORT`).
 5. Verify page URLs, assets, 404s, sitemap host, and a real form submission on the deployment.

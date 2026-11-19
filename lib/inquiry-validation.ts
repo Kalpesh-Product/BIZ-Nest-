@@ -1,10 +1,48 @@
 import 'server-only';
 import contracts from '@/content/form-contracts.json';
+import { purposeForSource } from './form-collections.mjs';
 import { getInquiryConfig } from './server-config.mjs';
+import { businessFieldNames } from './submission-document.mjs';
 
 type Field = { name: string; type?: string; value?: string; required: boolean; min?: string; max?: string; options?: string[] };
 const pages = contracts as Record<string, Field[][]>;
 export class InvalidInquiry extends Error {}
+
+function validateField(field: Field, value: string) {
+  if (field.required && !value) throw new InvalidInquiry(`Please complete the ${field.name} field.`);
+  if (value.length > (field.name === 'name' ? 200 : field.name === 'email' ? 254 : 10_000)) throw new InvalidInquiry('A field is too long.');
+  if (value && field.options && !field.options.some(option => option.trim() === value)) throw new InvalidInquiry('Please select an available option.');
+  if (value && field.type === 'date' && (!/^\d{4}-\d{2}-\d{2}$/.test(value) || !Number.isFinite(Date.parse(value)) || new Date(value).toISOString().slice(0, 10) !== value)) throw new InvalidInquiry('Please enter a valid date.');
+  if (value && field.type === 'number' && (!Number.isFinite(Number(value)) || (field.min !== undefined && Number(value) < Number(field.min)) || (field.max !== undefined && Number(value) > Number(field.max)))) throw new InvalidInquiry('Please enter a valid number.');
+  return value;
+}
+
+function validateContact(fields: Record<string, string>) {
+  if (('email' in fields && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email)) ||
+      ('mobile' in fields && !/^[1-9]\d{9}$/.test(fields.mobile))) {
+    throw new InvalidInquiry('Please enter a valid email and a 10 digit mobile number.');
+  }
+}
+
+export function validateSubmissionEdits(source: string, input: Record<string, unknown>) {
+  try { source = decodeURIComponent(source); } catch { throw new InvalidInquiry('Invalid source page.'); }
+  const schema = Object.hasOwn(pages, source) ? pages[source][0] : undefined;
+  const purpose = purposeForSource(source);
+  if (!schema || !purpose) throw new InvalidInquiry('This submission has no editable form.');
+  const fields = Object.fromEntries(Object.entries(input).map(([name, raw]) => {
+    if (typeof raw !== 'string') throw new InvalidInquiry('Send edited values as strings.');
+    const value = raw.trim();
+    if (name === 'status') {
+      if (!/^[a-zA-Z0-9][a-zA-Z0-9 _-]{0,63}$/.test(value)) throw new InvalidInquiry('Invalid submission status.');
+      return [name, value];
+    }
+    const field = schema.find(field => field.name === name && field.type !== 'hidden' && field.type !== 'file');
+    if (!field || !businessFieldNames[purpose].includes(name)) throw new InvalidInquiry('A field is unavailable for editing on this form.');
+    return [name, validateField(field, value)];
+  }));
+  validateContact(fields);
+  return fields;
+}
 
 export async function validateInquiry(data: FormData) {
   let source = String(data.get('source') || '');
@@ -41,13 +79,8 @@ export async function validateInquiry(data: FormData) {
     const value = (raw || '').trim();
     // Older Goa landing form requests omitted the date entirely.
     if (field.name === 'sdate' && raw === null && allowed.has('category')) continue;
-    if (field.required && !value) throw new InvalidInquiry(`Please complete the ${field.name} field.`);
-    if (value.length > (field.name === 'name' ? 200 : field.name === 'email' ? 254 : 10_000)) throw new InvalidInquiry('A field is too long.');
-    if (value && field.options && !field.options.some(option => option.trim() === value)) throw new InvalidInquiry('Please select an available option.');
-    if (value && field.type === 'date' && (!/^\d{4}-\d{2}-\d{2}$/.test(value) || !Number.isFinite(Date.parse(value)) || new Date(value).toISOString().slice(0, 10) !== value)) throw new InvalidInquiry('Please enter a valid date.');
-    if (value && field.type === 'number' && (!Number.isFinite(Number(value)) || (field.min !== undefined && Number(value) < Number(field.min)) || (field.max !== undefined && Number(value) > Number(field.max)))) throw new InvalidInquiry('Please enter a valid number.');
-    fields[field.name] = value;
+    fields[field.name] = validateField(field, value);
   }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email) || !/^[1-9]\d{9}$/.test(fields.mobile)) throw new InvalidInquiry('Please enter a valid email and a 10 digit mobile number.');
+  validateContact(fields);
   return { source, fields, resume, kind: source.startsWith('/career_') ? 'application' : source === '/partner.html' ? 'partnership' : 'product' };
 }
